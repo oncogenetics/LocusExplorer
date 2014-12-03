@@ -1,7 +1,7 @@
 # Workspace ---------------------------------------------------------------
 require(shiny)
-require(data.table)
-require(sqldf)
+#require(data.table)
+#require(sqldf)
 # require(tcltk)
 # require(ggbio)
 # require(ggplot2)
