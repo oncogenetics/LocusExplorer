@@ -10,7 +10,7 @@ The source code and install instructions for Locus Explorer are available at htt
 
 ### Run
 ```R
-require(shiny)  
+library(shiny)  
 runGitHub("LocusExplorer", "oncogenetics")
 ```
 
