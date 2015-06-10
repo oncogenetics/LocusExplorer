@@ -5,7 +5,6 @@ An interactive graphical illustration of genomic regions of interest.
 ### Disclaimer
 Locus Explorer is currently under development and may include errors in both plots and analyses. Any results provided by Locus Explorer should be used with caution.
 
-
 ### Availability  
 The source code and install instructions for Locus Explorer are available at https://github.com/oncogenetics/LocusExplorer.
 
@@ -14,6 +13,10 @@ The source code and install instructions for Locus Explorer are available at htt
 require(shiny)  
 runGitHub("LocusExplorer", "oncogenetics")
 ```
+
+### Cite
+[Multiple novel prostate cancer susceptibility signals identified by fine-mapping of known risk loci among Europeans.](http://www.ncbi.nlm.nih.gov/pubmed/26025378)
+
 
 ### Contact  
 Questions, suggestions, and bug reports are welcome and appreciated. Please contact Tokhir Dadaev at tokhir.dadaev@icr.ac.uk.
