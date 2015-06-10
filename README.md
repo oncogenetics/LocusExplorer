@@ -4,6 +4,7 @@ An interactive graphical illustration of genomic regions of interest.
 
 ### Disclaimer
 Locus Explorer is currently under development and may include errors in both plots and analyses. Any results provided by Locus Explorer should be used with caution.
+**Next update is planned for 31 July 2015.**
 
 ### Availability  
 The source code and install instructions for Locus Explorer are available at https://github.com/oncogenetics/LocusExplorer.
