@@ -32,4 +32,4 @@ Genome-wide association studies (GWAS) have identified numerous common prostate 
 Questions, suggestions, and bug reports are welcome and appreciated. 
 - Submit [suggestions and bug-reports](https://github.com/oncogenetics/LocusExplorer/issues)
 - Send [pull request](https://github.com/oncogenetics/LocusExplorer/pulls)
-- Contact email [Dadaev T](tokhir.dadaev@icr.ac.uk)
+- Contact email [Dadaev T](mailto: tokhir.dadaev@icr.ac.uk)
