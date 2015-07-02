@@ -1,4 +1,4 @@
-Region,SNP,Old ID,chromN,chrom,chromStart,chromEnd
+Region,SNP,OldID,chromN,chrom,chromStart,chromEnd
 10q11,rs10993994,,10,chr10,51549495,51549496
 10q11,rs76934034,,10,chr10,46082984,46082985
 10q24,rs3850699,,10,chr10,104414220,104414221
