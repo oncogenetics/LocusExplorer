@@ -1,3 +1,19 @@
+# General options for all plots -------------------------------------------
+# ggplot() + udf_theme()
+udf_theme <- function(){
+    theme(legend.position="none",
+          panel.background = element_rect(fill="white"),
+          panel.grid.major=element_blank(),
+          panel.grid.minor=element_blank(),
+          axis.title=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank(),
+          axis.line=element_blank(),
+          panel.border=element_blank(),
+          #Y Axis font
+          axis.text.y=element_text(family="mono"))
+}
+
 # Padding function, used to add custom labels for Yaxis, to have them aligned.
 udf_pad <- function(labels){
   require(stringr)

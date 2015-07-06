@@ -8,18 +8,22 @@ ggplot() +
   #general options
   xlim(c(zoomStart(),zoomEnd())) +
   ylab("xxx") + 
-  theme(legend.position="none",
-        panel.background = element_rect(fill="white"),
-        panel.grid.major=element_blank(),
-        panel.grid.minor=element_blank(),
-        axis.title=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(),
-        axis.line=element_blank(),
-        panel.border=element_blank(),
-        #Y Axis font
-        axis.text.y=element_text(family="Courier")
-  )
+  udf_theme() +
+  #testing plot alignment
+  geom_vline(xintercept=173000000,col="red")
+  
+#   theme(legend.position="none",
+#         panel.background = element_rect(fill="white"),
+#         panel.grid.major=element_blank(),
+#         panel.grid.minor=element_blank(),
+#         axis.title=element_blank(),
+#         axis.text.x=element_blank(),
+#         axis.ticks.x=element_blank(),
+#         axis.line=element_blank(),
+#         panel.border=element_blank(),
+#         #Y Axis font
+#         axis.text.y=element_text(family="Courier")
+#   )
 
 # #subset region from list Grange object - "plotGenes"
 # 

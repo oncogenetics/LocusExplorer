@@ -27,7 +27,7 @@ ggplot(plotDatManhattan(), aes(x=BP,y=PLog)) +
               filter(SNP==LDSNP),
             aes(BP,PLog,label=LDSNP),
             vjust=1.1,hjust=-0.1,colour="black") +
-  
+  #zoom
   xlim(c(zoomStart(),zoomEnd())) +
   scale_y_continuous(
     limits=c(0,ROIPLogMax()),
@@ -36,16 +36,15 @@ ggplot(plotDatManhattan(), aes(x=BP,y=PLog)) +
     name="xxx"
     #name=expression(-log[10](italic(p)))
   ) +
-  #testing plot alignment
-  #geom_vline(xintercept=173000000,col="red") +
-  #general options
   scale_colour_identity() +
   theme(
     axis.title=element_blank(),
     #Y Axis font
-    axis.text.y=element_text(family="Courier"),
+    axis.text.y=element_text(family="mono"),
     panel.background = element_rect(fill="white")
-  )
+  ) +
+  #testing plot alignment
+  geom_vline(xintercept=173000000,col="red")
 
 
 

@@ -8,18 +8,7 @@ ggplot(ROIdatEQTL(),
                      labels=udf_pad("eQTL"),
                      name="xxx") +
   #testing plot alignment
-  #geom_vline(xintercept=173000000,col="red") +
-  #general options
+  geom_vline(xintercept=173000000,col="red") +
   xlim(c(zoomStart(),zoomEnd())) +
-  theme(legend.position="none",
-        panel.background = element_rect(fill="white"),
-        panel.grid.major=element_blank(),
-        panel.grid.minor=element_blank(),
-        axis.title=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(),
-        axis.line=element_blank(),
-        panel.border=element_blank(),
-        #Y Axis font
-        axis.text.y=element_text(family="Courier")
-        )
+  udf_theme()
+  
