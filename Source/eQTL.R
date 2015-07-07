@@ -7,8 +7,6 @@ ggplot(ROIdatEQTL(),
                      breaks=c(0),
                      labels=udf_pad("eQTL"),
                      name="xxx") +
-  #testing plot alignment
-  geom_vline(xintercept=173000000,col="red") +
   xlim(c(zoomStart(),zoomEnd())) +
   udf_theme()
   
