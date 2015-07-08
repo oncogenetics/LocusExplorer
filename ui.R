@@ -3,13 +3,14 @@
 
 # Workspace ---------------------------------------------------------------
 #CRAN
-# install.packages(c("shiny", "data.table", "dplyr", "ggplot2", "ggbio", "knitr", "markdown"),dependencies = TRUE)
+# install.packages(c("shiny", "data.table", "dplyr", "ggplot2", "ggbio", "knitr", "markdown", "stringr"),dependencies = TRUE)
 library(shiny)
 library(data.table)
 library(dplyr)
 library(ggplot2)
 library(knitr)
 library(markdown)
+library(stringr)
 
 #Bioconductor
 # source("http://bioconductor.org/biocLite.R")
@@ -22,14 +23,19 @@ library(org.Hs.eg.db) # gene symobols
 
 
 # Define UI ---------------------------------------------------------------
-shinyUI(navbarPage(
+shinyUI(
+  navbarPage(
   # Application title
   title = "Locus Explorer v0.2",
   windowTitle = "Locus Explorer",
-  
+  fluid = FALSE,
+  position = "fixed-top",
   # Data --------------------------------------------------------------------
-  tabPanel("Input Data",
+  tabPanel(
+    "Input Data",
            sidebarPanel(
+             tags$style(type="text/css", "body {padding-top: 70px;}"),
+             #tags$head(tags$link(rel="shortcut icon", href="www/favicon.ico")),
              radioButtons("dataType", h4("Input Data"),
                           c(#"Prostate"="Prostate",
                             "Custom"="Custom",
@@ -66,13 +72,13 @@ shinyUI(navbarPage(
                         h4("Association"),
                         dataTableOutput("SummaryStats")),
                tabPanel("LD",
-                        h4("LD"),
+                        h4("Linkage Disequilibrium"),
                         dataTableOutput("SummaryLD")),
-               tabPanel("LNCAP",
-                        h4("LNCAP"),
+               tabPanel("LNCaP",
+                        h4("Prostate Cancer Cells"),
                         dataTableOutput("SummaryLNCAP")),
                tabPanel("eQTL",
-                        h4("eQTL"),
+                        h4("Expression Quantitative Trait Loci"),
                         dataTableOutput("SummaryEQTL")),
                tabPanel("Input File Format",
                         h4("Input File Format"),
@@ -98,7 +104,7 @@ shinyUI(navbarPage(
                                   "LNCAP"="LNCAP",
                                   "eQTL"="eQTL",
                                   "Gene"="Gene"),
-                                selected=c("Chromosome","Manhattan","LD","SNPType","LNCAP","eQTL")),
+                                selected=c("Manhattan","LD")),
              h5("Recommneded to hide gene track until final zoom region is decided.")
            ), #sidebarPanel
            mainPanel(
@@ -120,10 +126,42 @@ shinyUI(navbarPage(
              #summary Data
              #textOutput("SummaryZoom")
            ) #mainPanel
-  ), #tabPanel("Plot"
+  ), #tabPanel - "Plot"
   # Plot Download -----------------------------------------------------------  
   tabPanel("Plot Download",
-           h4("Coming soon...")),
+           sidebarPanel(
+             # Choose Title for merged plot
+             uiOutput("downloadPlotTitle"),
+             # Choose download filename.
+             uiOutput("downloadPlotFileName"),
+             selectInput(
+               inputId = "downloadPlotType",
+               label   = "File type",
+               choices = list(
+                 "PDF"  = "pdf",
+                 "BMP"  = "bmp",
+                 "JPEG" = "jpeg",
+                 "PNG"  = "png",
+                 "SVG" = "svg"),
+               selected = "pdf"),
+             # Allow the user to set the height and width of the plot download.
+             numericInput(
+               inputId = "downloadPlotHeight",label = h5("Height (inches)"),
+               value = 14,min = 1,max = 100),
+             
+             numericInput(
+               inputId = "downloadPlotWidth",label = h5("Width (inches)"),
+               value = 10,min = 1,max = 100),
+             p(),
+             # File downloads when this button is clicked.
+             downloadButton(outputId = "downloadPlot", label = "Download Plot")
+             ), #sidebarPanel plot Download section
+           mainPanel(
+             #plot merge height is dynamic, based on seleceted tracks
+             uiOutput("plotMergeUI")
+             )
+           
+           ), #tabPanel - "Plot Download"
   
   tabPanel("Help",
            mainPanel(
@@ -135,9 +173,9 @@ shinyUI(navbarPage(
                         h4("Coming soon...")),
                tabPanel("R Session Info",
                         includeMarkdown("Markdown/RSessionInfo.md")
-                        )
-               )#tabsetPanel
-             )#mainPanel
-           )#tabPanel - Help
-  )#navbarPage
+               )
+             )#tabsetPanel
+           )#mainPanel
+  )#tabPanel - Help
+)#navbarPage
 )#shinyUI

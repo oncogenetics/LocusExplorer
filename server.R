@@ -19,7 +19,7 @@ shinyServer(function(input, output, session) {
              fread(inFile$datapath, header=TRUE, data.table=FALSE) 
            },
            Example = {
-             fread("Data/CustomDataExample/stats.txt",
+             fread("Data/CustomDataExample/Association.txt",
                    header=TRUE, data.table=FALSE)
            })
   })
@@ -252,8 +252,90 @@ shinyServer(function(input, output, session) {
   plotObjEQTL <- reactive({source("source/eQTL.R",local=TRUE)})
   output$PlotEQTL <- renderPlot({print(plotObjEQTL())})
   #Gene track
-  plotObjGene <- reactive({source("source/Genes.R",local=TRUE)})
+  plotObjGene <- reactive({source("source/Gene.R",local=TRUE)})
   output$PlotGene <- renderPlot({print(plotObjGene())})
+  
+  # Plot Merge --------------------------------------------------------------
+  #Dynamic size for tracks
+  RegionHitsCount <- reactive({ length(RegionHits()) })
+  RegionGeneCount <- reactive({ plotDatGeneN() })
+  RegionSNPTypeCount <- reactive({ length(unique(plotDatManhattan()$TYPED)) })
+  
+  #Default size per track
+  trackSize <- reactive({ 
+    data.frame(Track=c("Chromosome","Manhattan","LD","SNPType","LNCAP","eQTL","Gene"),
+               Size=c(100,400,
+                      RegionHitsCount()*30,
+                      RegionSNPTypeCount()*30,
+                      30,
+                      30,
+                      RegionGeneCount()*30)) })
+
+  #Create subset based on selected tracks
+  trackHeights <- reactive({
+    trackSize() %>% filter(Track %in% input$ShowHideTracks) %>% .$Size })
+  trackColours <- reactive({ 
+    cbind(trackHeights(),c('grey90','grey80'))[,2][1:length(trackHeights())] })
+  
+  #output plot
+  # See Dynamic UI section
+  
+  # Output to a file --------------------------------------------------------
+  # Get the selected download file type.
+  downloadPlotType <- reactive({input$downloadPlotType})
+  
+  observe({
+    plotType    <- input$downloadPlotType
+    plotTypePDF <- plotType %in% c("pdf","svg")
+    plotUnit    <- ifelse(plotTypePDF, "inches", "pixels")
+    plotUnitDefHeight <- ifelse(plotTypePDF, 12, 1200)
+    plotUnitDefWidth <- ifelse(plotTypePDF, 10, 1000)
+    
+    updateNumericInput(
+      session,
+      inputId = "downloadPlotHeight",
+      label = sprintf("Height (%s)", plotUnit),
+      value = plotUnitDefHeight)
+    
+    updateNumericInput(
+      session,
+      inputId = "downloadPlotWidth",
+      label = sprintf("Width (%s)", plotUnit),
+      value = plotUnitDefWidth)
+  })
+  
+  
+  # Get the download dimensions.
+  downloadPlotHeight <- reactive({
+    input$downloadPlotHeight
+  })
+  
+  downloadPlotWidth <- reactive({
+    input$downloadPlotWidth
+  })
+  
+  # Get the download file name.
+  downloadPlotFileName <- reactive({
+    input$downloadPlotFileName
+  })
+  
+  # Include a downloadable file of the plot in the output list.
+  output$downloadPlot <- downloadHandler(
+    filename = function() {
+      paste(downloadPlotFileName(), downloadPlotType(), sep=".")   
+    },
+    # The argument content below takes filename as a function
+    # and returns what's printed to it.
+    content = function(con) {
+      # Gets the name of the function to use from the 
+      # downloadFileType reactive element. Example:
+      # returns function pdf() if downloadFileType == "pdf".
+      plotFunction <- match.fun(downloadPlotType())
+      plotFunction(con, width = downloadPlotWidth(), height = downloadPlotHeight())
+      print(plotObjMerge())
+      dev.off(which=dev.cur())
+    }
+  )
   
   
   # Dynamic UI --------------------------------------------------------------
@@ -270,15 +352,41 @@ shinyServer(function(input, output, session) {
   output$HitSNPs <- 
     renderUI({
       checkboxGroupInput("HitSNPs", "Hit SNPs",
-                         RegionHits(), selected = RegionHits())
+                         RegionHits(), selected = RegionHits())})
+  
+  #download file name - default: chr_start_end
+  output$downloadPlotFileName <- renderUI({
+    textInput(
+      inputId = "downloadPlotFileName",
+      label = "Download file name",
+      value = paste(RegionChr(),zoomStart(),zoomEnd(),sep="_"))})
+  #download plot title - default: chr_start_end
+  output$downloadPlotTitle <- renderUI({
+    textInput(
+      inputId = "downloadPlotTitle",
+      label = "Plot title",
+      value = paste(RegionChr(),zoomStart(),zoomEnd(),sep="_"))})
+  
+  #merged plot with dynamic plot height
+  plotObjMerge <- reactive({source("Source/MergePlots.R",local=TRUE)})
+  output$plotMerge <- renderPlot({print(plotObjMerge())})
+  output$plotMergeUI <- renderUI({
+    plotOutput("plotMerge",width=800,height=sum(trackHeights()))
     })
+  
+  # Observe update ----------------------------------------------------------
+  # maximum of 5 SNPs can be selected to display LD, minimum 1 must be ticked.
   observe({
-    # maximum of 5 SNPs can be selected to display LD, minimum 1 must be ticked.
     if(length(input$HitSNPs) > 5){
       updateCheckboxGroupInput(session, "HitSNPs", selected= tail(input$HitSNPs,5))}
     if(length(input$HitSNPs) < 1){
       updateCheckboxGroupInput(session, "HitSNPs", selected= RegionHits()[1])}
+    if(length(input$ShowHideTracks) < 1){
+      updateCheckboxGroupInput(session, "ShowHideTracks", selected= "Manhattan")}
+    
+    
   })
+  
   
   
   
