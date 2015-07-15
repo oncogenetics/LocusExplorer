@@ -15,8 +15,4 @@ ggplot(data=temp,
   #testing plot alignment
   #geom_vline(xintercept=173000000,col="red") +
   xlim(c(zoomStart(),zoomEnd())) +
-<<<<<<< HEAD
   udf_theme()
-=======
-  udf_theme()
->>>>>>> origin/master

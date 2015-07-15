@@ -76,6 +76,10 @@ shinyServer(function(input, output, session) {
   })
   
   # Define ROI --------------------------------------------------------------
+  RegionFlank <- reactive({
+    if(input$Flank==""){rf <- 10000}else{rf <- input$Flank}
+    as.numeric(rf)
+  })
   RegionChr <- reactive({ datStats()$CHR[1] })
   RegionStart <- reactive({ 
     x <- datStats() %>% 
@@ -83,7 +87,8 @@ shinyServer(function(input, output, session) {
                !is.na(BP)) %>% 
       .$BP %>% min 
     #round down to 10K bp
-    as.integer(max(0,round((x-10000)/10000) * 10000))
+    as.integer(max(0,round((x-RegionFlank())/RegionFlank()) * RegionFlank()))
+    #as.integer(max(0,round((x-10000)/10000) * 10000))
     })
   RegionEnd <- reactive({ 
     x <- datStats() %>% 
@@ -91,13 +96,14 @@ shinyServer(function(input, output, session) {
                !is.na(BP)) %>% 
       .$BP %>% max 
     #round up to 10K bp
-    as.integer(round((x+10000)/10000) * 10000)
+    as.integer(round((x+RegionFlank())/RegionFlank()) * RegionFlank())
+    #as.integer(round((x+10000)/10000) * 10000)
     })
   RegionHits <- reactive({ 
     #CHR_A	BP_A	SNP_A	CHR_B	BP_B	SNP_B	R2
     #maximum LD SNPs is 5
     d <- datLD() %>% .$SNP_A %>% unique %>% sort
-    d[1:min(length(d),5)] })
+    d[1:min(length(d),15)] })
   
   RegionHitsSelected <- reactive({input$HitSNPs})
   
@@ -166,14 +172,16 @@ shinyServer(function(input, output, session) {
     #assign colours to LD 
     d_LD <- base::do.call(rbind,
                           lapply(RegionHitsSelected(), function(snp){
-                            #snp="rs13410475"
                             d <- LD %>% filter(SNP_A == snp)
                             #LD round minimum is 1 max 100
                             LDColIndex <- ifelse(round(d$R2,2)==0,1,round(d$R2,2)*100)
                             LDColIndex <- ifelse(LDColIndex>100,100,LDColIndex)
                             d$LDSNP <- snp
-                            d$LDSmoothCol <- colLD[[match(snp,RegionHits())]][100]
-                            d$LDCol <- colLD[[match(snp,RegionHits())]][LDColIndex]
+                            d$LDSmoothCol <- colLD[[match(snp,RegionHitsSelected())]][100]
+                            d$LDCol <- colLD[[match(snp,RegionHitsSelected())]][LDColIndex]
+                            
+                            #d$LDSmoothCol <- colLD[[match(snp,RegionHits())]][100]
+                            #d$LDCol <- colLD[[match(snp,RegionHits())]][LDColIndex]
                             return(d)
                           }))
     # to add smooth LD Y value used for Pvalue and LD 0-1
@@ -202,7 +210,11 @@ shinyServer(function(input, output, session) {
   
   #number of genes in zoomed region
   plotDatGeneN <- reactive({ 
-    length(unique(plotDatGene()@elementMetadata$gene_id)) })
+    res <- try({
+      length(unique(plotDatGene()@elementMetadata$gene_id))}, silent=TRUE)
+    if(class(res)=="try-error"){res <- 1}
+    return(res)
+    })
   
   
   # Output ------------------------------------------------------------------
@@ -230,6 +242,8 @@ shinyServer(function(input, output, session) {
   output$SummaryHeadPlotStats <- renderTable({head(plotDatStats())})
   output$SummaryHeadPlotDatManhattan <- renderDataTable({plotDatManhattan()})
   output$SummaryDimPlotDatManhattan <- renderTable({as.data.frame(dim(plotDatManhattan()))})
+  #output$SummaryROIdatEQTL <- renderTable({as.data.frame(ROIdatEQTL())})
+  #output$SummaryRegionFlank <- renderText({RegionFlank()})
   #output$SummaryZoom <- renderText({paste(zoomStart(),zoomEnd(),sep="-")})
   
   # Plot --------------------------------------------------------------------
@@ -257,7 +271,7 @@ shinyServer(function(input, output, session) {
   
   # Plot Merge --------------------------------------------------------------
   #Dynamic size for tracks
-  RegionHitsCount <- reactive({ length(RegionHits()) })
+  RegionHitsCount <- reactive({ length(RegionHitsSelected()) })
   RegionGeneCount <- reactive({ plotDatGeneN() })
   RegionSNPTypeCount <- reactive({ length(unique(plotDatManhattan()$TYPED)) })
   
@@ -346,13 +360,22 @@ shinyServer(function(input, output, session) {
                   min = RegionStart(),
                   max = RegionEnd(),
                   value = c(RegionStart(),RegionEnd()),
-                  step = 50000)})
+                  step = 20000)})
+  #Input BED style for zoom, eg.: chr2:100-200
+  output$RegionZoom <- renderUI({
+    textInput("RegionZoom", label = h5("Region zoom"),
+              value = "chr:start-end")
+              #value = paste0(RegionChr(),":",RegionStart(),"-",RegionEnd()))
+    })
   
   #Select hit SNPs
   output$HitSNPs <- 
     renderUI({
       checkboxGroupInput("HitSNPs", "Hit SNPs",
-                         RegionHits(), selected = RegionHits())})
+                         RegionHits(),
+                         #select max of 5 SNPs
+                         selected = 1:min(5,length(RegionHits())))
+      })
   
   #download file name - default: chr_start_end
   output$downloadPlotFileName <- renderUI({
@@ -367,6 +390,8 @@ shinyServer(function(input, output, session) {
       label = "Plot title",
       value = paste(RegionChr(),zoomStart(),zoomEnd(),sep="_"))})
   
+  
+  
   #merged plot with dynamic plot height
   plotObjMerge <- reactive({source("Source/MergePlots.R",local=TRUE)})
   output$plotMerge <- renderPlot({print(plotObjMerge())})
@@ -378,14 +403,20 @@ shinyServer(function(input, output, session) {
   # maximum of 5 SNPs can be selected to display LD, minimum 1 must be ticked.
   observe({
     if(length(input$HitSNPs) > 5){
-      updateCheckboxGroupInput(session, "HitSNPs", selected= tail(input$HitSNPs,5))}
+      updateCheckboxGroupInput(session, "HitSNPs", selected= head(input$HitSNPs,5))}
     if(length(input$HitSNPs) < 1){
-      updateCheckboxGroupInput(session, "HitSNPs", selected= RegionHits()[1])}
+      updateCheckboxGroupInput(
+        session, "HitSNPs",
+        selected= RegionHits()[1:min(5,length(RegionHits()))])}
     if(length(input$ShowHideTracks) < 1){
       updateCheckboxGroupInput(session, "ShowHideTracks", selected= "Manhattan")}
-    
-    
   })
+  observeEvent(input$RegionZoom,({
+    if(!input$RegionZoom %in% c("chr:start-end","")){
+      newStartEnd <- as.numeric(unlist(strsplit(input$RegionZoom,":|-"))[2:3])
+      updateSliderInput(session, "BPrange",
+                        value = newStartEnd)}
+    }))
   
   
   

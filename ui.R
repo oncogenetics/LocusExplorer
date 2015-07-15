@@ -67,7 +67,10 @@ shinyUI(
                tabPanel("Summary",
                         h4("Summary"),
                         tableOutput("SummaryRegion"),
-                        tableOutput("SummaryFileNrowNcol")),
+                        tableOutput("SummaryFileNrowNcol")
+                        #tableOutput("SummaryROIdatEQTL"),
+                        #textOutput("SummaryRegionFlank")
+                        ),
                tabPanel("Association",
                         h4("Association"),
                         dataTableOutput("SummaryStats")),
@@ -95,6 +98,13 @@ shinyUI(
              sliderInput("FilterMinLD", h5("LD"),
                          min = 0, max = 0.9, value = 0.3,step = 0.05),
              uiOutput("BPrange"),
+             uiOutput("RegionZoom"),
+             selectInput("Flank", label = h4("Region Flank"), 
+                         choices = list("10KB"=10000,
+                                        "50KB"=50000,
+                                        "1MB"=100000,
+                                        "2MB"=200000), 
+                         selected = 1),
              uiOutput("HitSNPs"),
              checkboxGroupInput("ShowHideTracks", "Tracks",
                                 c("Chromosome"="Chromosome",
@@ -122,10 +132,7 @@ shinyUI(
                               plotOutput("PlotEQTL",width=800,height=70)),
              conditionalPanel("input.ShowHideTracks.indexOf('Gene')>-1",
                               plotOutput("PlotGene",width=800,height=350))
-             
-             #summary Data
-             #textOutput("SummaryZoom")
-           ) #mainPanel
+             ) #mainPanel
   ), #tabPanel - "Plot"
   # Plot Download -----------------------------------------------------------  
   tabPanel("Plot Download",

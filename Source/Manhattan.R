@@ -40,12 +40,7 @@ ggplot(plotDatManhattan(), aes(x=BP,y=PLog)) +
     #Y Axis font
     axis.text.y=element_text(family="Courier"),
     panel.background = element_rect(fill="white")
-<<<<<<< HEAD
   ) +
   #testing plot alignment
   #geom_vline(xintercept=173000000,col="red") +
   udf_theme() 
-=======
-  ) 
-
->>>>>>> origin/master

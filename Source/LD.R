@@ -13,14 +13,8 @@ ggplot(data=plotDatManhattan(),
   scale_y_continuous(breaks=(1:length(RegionHitsSelected()))+0.5,
                      labels=udf_pad(RegionHitsSelected()),
                     name="xxx") +
-<<<<<<< HEAD
   #testing plot alignment
   #geom_vline(xintercept=173000000,col="red") +
   #general options
   xlim(c(zoomStart(),zoomEnd())) +
   udf_theme()
-=======
-  #general options
-  xlim(c(zoomStart(),zoomEnd())) +
-  udf_theme()
->>>>>>> origin/master
