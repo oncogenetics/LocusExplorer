@@ -47,7 +47,7 @@ shinyUI(
                               #Select CHR, 1:23 excluding chromosomes with no hit regions.
                               selectInput("Chr",label=h5("Chr"),
                                           choices=paste0("chr",c(1:14,16:22,"X")),
-                                          selected=1),
+                                          selected="chr3"),
                               uiOutput("RegionID")
              ),#conditionalPanel - prostate
              
