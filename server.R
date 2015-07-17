@@ -6,10 +6,17 @@ shinyServer(function(input, output, session) {
   
   source("source/UDF.R",local = TRUE)
   
+  regions <- read.csv("Data/ProstateData/regions.csv") %>% 
+    mutate(REGIONBED=paste0(CHR,"_",START,"_",END))
+  
+
   # Data level 1 - Raw Input ------------------------------------------------
   datStats <- reactive({
     switch(input$dataType,
-           Prostate = {},
+           Prostate = {
+             fread(paste0("Data/ProstateData/LE/",input$RegionID,"_assoc.txt"),
+                   header=TRUE, data.table=FALSE)
+             },
            Custom = {
              #input file check
              validate(need(input$FileStats != "", "Please upload file"))
@@ -26,7 +33,12 @@ shinyServer(function(input, output, session) {
   
   datLD <- reactive({
     switch(input$dataType,
-           Prostate = {},
+           Prostate = {
+             #input file check
+             validate(need(input$RegionID != "", "Please select RegionID"))
+             fread(paste0("Data/ProstateData/LE/",input$RegionID,"_LD.txt"),
+                    header=TRUE, data.table=FALSE)
+             },
            Custom = {
              #input file check
              validate(need(input$FileLD != "", "Please upload file"))
@@ -43,7 +55,12 @@ shinyServer(function(input, output, session) {
   
   datLNCAP <- reactive({
     switch(input$dataType,
-           Prostate = {},
+           Prostate = {
+             #input file check
+             validate(need(input$RegionID != "", "Please select RegionID"))
+             fread(paste0("Data/ProstateData/LE/",input$RegionID,"_LNCAP.txt"),
+                   header=TRUE, data.table=FALSE)
+             },
            Custom = {
              #input file check
              validate(need(input$FileLNCAP != "", "Please upload file"))
@@ -60,7 +77,12 @@ shinyServer(function(input, output, session) {
   
   datEQTL <- reactive({
     switch(input$dataType,
-           Prostate = {},
+           Prostate = {
+             #input file check
+             validate(need(input$RegionID != "", "Please select RegionID"))
+             fread(paste0("Data/ProstateData/LE/",input$RegionID,"_EQTL.txt"),
+                   header=TRUE, data.table=FALSE)
+             },
            Custom = {
              #input file check
              validate(need(input$FileEQTL != "", "Please upload file"))
@@ -81,6 +103,10 @@ shinyServer(function(input, output, session) {
     as.numeric(rf)
   })
   RegionChr <- reactive({ datStats()$CHR[1] })
+  RegionChrN <- reactive({
+    x <- gsub("chr","",RegionChr())
+    as.numeric(ifelse(x=="X","23",x))
+    })
   RegionStart <- reactive({ 
     x <- datStats() %>% 
       filter(CHR==RegionChr() &
@@ -239,9 +265,10 @@ shinyServer(function(input, output, session) {
                       ncol(datLNCAP()),ncol(datEQTL()))
     )})
   
-  output$SummaryHeadPlotStats <- renderTable({head(plotDatStats())})
-  output$SummaryHeadPlotDatManhattan <- renderDataTable({plotDatManhattan()})
-  output$SummaryDimPlotDatManhattan <- renderTable({as.data.frame(dim(plotDatManhattan()))})
+  #output$SummaryHeadPlotStats <- renderTable({head(plotDatStats())})
+  #output$SummaryHeadPlotDatManhattan <- renderDataTable({plotDatManhattan()})
+  #output$SummaryDimPlotDatManhattan <- renderTable({as.data.frame(dim(plotDatManhattan()))})
+  #output$SummaryplotDatManhattan <- renderTable({plotDatManhattan()})
   #output$SummaryROIdatEQTL <- renderTable({as.data.frame(ROIdatEQTL())})
   #output$SummaryRegionFlank <- renderText({RegionFlank()})
   #output$SummaryZoom <- renderText({paste(zoomStart(),zoomEnd(),sep="-")})
@@ -376,6 +403,12 @@ shinyServer(function(input, output, session) {
                          #select max of 5 SNPs
                          selected = 1:min(5,length(RegionHits())))
       })
+  
+  output$RegionID <- renderUI({
+    selectInput(inputId="RegionID", label= h5("RegionID"), 
+                choices=regions %>% filter(CHR==input$Chr) %>% .$REGIONBED,
+                selected=1)})
+  
   
   #download file name - default: chr_start_end
   output$downloadPlotFileName <- renderUI({

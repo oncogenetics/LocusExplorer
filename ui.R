@@ -37,16 +37,16 @@ shinyUI(
              tags$style(type="text/css", "body {padding-top: 70px;}"),
              #tags$head(tags$link(rel="shortcut icon", href="www/favicon.ico")),
              radioButtons("dataType", h4("Input Data"),
-                          c(#"Prostate"="Prostate",
+                          c("Prostate"="Prostate",
                             "Custom"="Custom",
                             "Example"="Example"),
-                          "Example"),
+                          "Prostate"),
              #"CustomExample"),
              
              conditionalPanel("input.dataType == 'Prostate'",
                               #Select CHR, 1:23 excluding chromosomes with no hit regions.
                               selectInput("Chr",label=h5("Chr"),
-                                          choices=c(1:23)[c(-15,-16,-21)],
+                                          choices=paste0("chr",c(1:14,16:22,"X")),
                                           selected=1),
                               uiOutput("RegionID")
              ),#conditionalPanel - prostate
@@ -68,6 +68,8 @@ shinyUI(
                         h4("Summary"),
                         tableOutput("SummaryRegion"),
                         tableOutput("SummaryFileNrowNcol")
+                        #tableOutput("SummaryDimPlotDatManhattan"),
+                        #tableOutput("SummaryplotDatManhattan")
                         #tableOutput("SummaryROIdatEQTL"),
                         #textOutput("SummaryRegionFlank")
                         ),
