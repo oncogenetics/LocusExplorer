@@ -1,4 +1,4 @@
-Locus Explorer
+Locus Explorer v0.2
 =============
 An interactive graphical illustration of genomic regions of interest and their biological context.
 
