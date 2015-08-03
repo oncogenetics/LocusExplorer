@@ -3,7 +3,7 @@ Locus Explorer v0.2
 An interactive graphical illustration of genomic regions of interest and their biological context.
 
 ### Disclaimer
-Locus Explorer is currently under development and may include errors in both plots and analyses. Any results provided by Locus Explorer should be used with caution. **Note: Next update is planned for 31 July 2015.**
+Locus Explorer is currently under development and may include errors in both plots and analyses. Any results provided by Locus Explorer should be used with caution. 
 
 ### Availability  
 The source code and installation instructions for Locus Explorer are available at https://github.com/oncogenetics/LocusExplorer.
