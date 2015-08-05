@@ -19,7 +19,8 @@ Files are at: *LocusExplorer\\Data\\CustomDataExample*
  - CHR_B - chromosome of SNP in LD with hit SNP
  - BP_B	- position of SNP in LD with hit SNPSNP_B
  - R2 - LD score, numeric, 0 to 1
-    - *Note:* Online resources to extract LD: [LDlink](http://analysistools.nci.nih.gov/LDlink/), [SNAP](https://www.broadinstitute.org/mpg/snap/ldsearchpw.php), [Haploreg v3](http://www.broadinstitute.org/mammals/haploreg/haploreg_v3.php), [plink](http://pngu.mgh.harvard.edu/~purcell/plink/ld.shtml), [Ensemble](http://www.ensembl.info/blog/2015/06/18/1000-genomes-phase-3-frequencies-genotypes-and-ld-data/), [Biostars: 1000 Genomes Ld Calculation](https://www.biostars.org/p/2909/)
+- *Note:* Online resources to extract LD: 
+[Biostars: 1000 Genomes Ld Calculation](https://www.biostars.org/p/2909/), [LDlink](http://analysistools.nci.nih.gov/LDlink/), [Haploreg v3](http://www.broadinstitute.org/mammals/haploreg/haploreg_v3.php), [plink](http://pngu.mgh.harvard.edu/~purcell/plink/ld.shtml), [Ensemble](http://www.ensembl.info/blog/2015/06/18/1000-genomes-phase-3-frequencies-genotypes-and-ld-data/)
 
 3. LNCAP - *LNCAP.txt*  
  - CHR - chromosome name, chr2
@@ -31,6 +32,6 @@ Gene expression data.
  - CHR - chromosome name, chr2
  - START - position, transcript start position
  - END - position, trabscript end position
- - DIRECTION - overextressed 1, underexpressed -1
+ - DIRECTION - overexpressed 1, underexpressed -1
 
 
