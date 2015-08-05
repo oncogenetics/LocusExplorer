@@ -1,6 +1,5 @@
 # Workspace ---------------------------------------------------------------
 
-
 # Define Server -----------------------------------------------------------
 shinyServer(function(input, output, session) {  
   
@@ -316,7 +315,11 @@ shinyServer(function(input, output, session) {
   trackHeights <- reactive({
     trackSize() %>% filter(Track %in% input$ShowHideTracks) %>% .$Size })
   trackColours <- reactive({ 
-    cbind(trackHeights(),c('grey90','grey80'))[,2][1:length(trackHeights())] })
+    res <- cbind(trackHeights(),c('grey90','grey80'))[,2][1:length(trackHeights())] 
+    #chromosome background must be white
+    if("Chromosome" %in% input$ShowHideTracks){res[1] <- "white"}
+    return(res)
+  })
   
   #output plot
   # See Dynamic UI section
@@ -378,6 +381,15 @@ shinyServer(function(input, output, session) {
     }
   )
   
+  #example Plot output SVG
+#   output$exampleSVG <- renderImage({
+#     list(
+#       src = "www/chr17_36020000_36140000.svg",
+#       contentType = "image/svg",
+#       alt = "PlotExampleSVG"
+#     )
+#     
+#   })
   
   # Dynamic UI --------------------------------------------------------------
   #Zoom to region X axis BP
@@ -407,7 +419,8 @@ shinyServer(function(input, output, session) {
   output$RegionID <- renderUI({
     selectInput(inputId="RegionID", label= h5("RegionID"), 
                 choices=regions %>% filter(CHR==input$Chr) %>% .$REGIONBED,
-                selected=1)})
+                #pre selected a region to demonstrate as an example - HNF1B gene
+                selected="chr17_35947000_36204000")})
   
   
   #download file name - default: chr_start_end
@@ -450,9 +463,6 @@ shinyServer(function(input, output, session) {
       updateSliderInput(session, "BPrange",
                         value = newStartEnd)}
     }))
-  
-  
-  
   
 })#END shinyServer
 

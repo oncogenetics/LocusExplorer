@@ -1,8 +1,13 @@
 #make dynamic merge plot string
+
+# exclude LDSmooth - it is part of Manhattan.R
+plotList <- input$ShowHideTracks[input$ShowHideTracks != "LDSmooth"]
+
+# character string to parse, plot only selected tracks
 trackString <-
   paste("tracks(",
         paste(
-          paste(sapply(input$ShowHideTracks,function(i)
+          paste(sapply(plotList,function(i)
             paste0("source('Source/",i,".R',local=TRUE)$value")
           ),collapse=","),
           "heights = trackHeights()",

@@ -1,4 +1,5 @@
-ggplot(plotDatManhattan(), aes(x=BP,y=PLog)) + 
+gg_out <-
+  ggplot(plotDatManhattan(), aes(x=BP,y=PLog)) + 
   # all snps grey hollow circles
   geom_point(size=4,colour="grey80",shape=plotDatManhattan()$TYPED) +
   #Recomb lines in background
@@ -10,10 +11,16 @@ ggplot(plotDatManhattan(), aes(x=BP,y=PLog)) +
              size=4,
              shape=ifelse(plotDatManhattan()$TYPED==2,17,16),
              col=plotDatManhattan()$LDCol,
-             alpha=0.8) +
-  #LD smooth per hit SNP
-  geom_smooth(data=plotDatManhattan(),aes(x=BP,y=R2_Adj,col=LDSmoothCol),
-              method="loess",se=FALSE) +
+             alpha=0.8)
+
+# LD smooth per hit SNP - optional
+if("LDSmooth" %in% input$ShowHideTracks) {
+  gg_out <- gg_out +
+    geom_smooth(data=plotDatManhattan(),aes(x=BP,y=R2_Adj,col=LDSmoothCol),
+                method="loess",se=FALSE)}
+
+# add other plots
+gg_out <- gg_out +
   #mark hit SNPs
   geom_segment(data=plotDatManhattan() %>% 
                  filter(SNP==LDSNP),
@@ -44,3 +51,7 @@ ggplot(plotDatManhattan(), aes(x=BP,y=PLog)) +
   #testing plot alignment
   #geom_vline(xintercept=173000000,col="red") +
   udf_theme() 
+
+
+#result
+gg_out
