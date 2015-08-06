@@ -1,20 +1,38 @@
-Locus Explorer 0.2
+Locus Explorer v0.2
 =============
-An interactive graphical illustration of genomic regions of interest.
+**An interactive graphical illustration of genetic associations and their biological context.**
 
 ### Disclaimer
-Locus Explorer is currently under development and may include errors in both plots and analyses. Any results provided by Locus Explorer should be used with caution. **Note: Next update is planned for 31 July 2015.**
+Locus Explorer should be used for illustrative purposes only. Any results provided by Locus Explorer should be used with caution. 
 
 ### Availability  
-The source code and install instructions for Locus Explorer are available at https://github.com/oncogenetics/LocusExplorer.
+The source code and installation instructions for Locus Explorer are available at https://github.com/oncogenetics/LocusExplorer.
 
-### Run
+Locus Explorer is made available under the xxxx license.
+
+### Required Software
+Locus Explorer runs in the R environment but is designed to be an easy to use interface that does not require familiarity with R as a prerequisite. Locus explorer is platform agnostic and able to run on any operating system for which R is available.
+
+The latest version of R can be downloaded by following the instructions at [https://www.r-project.org/](https://www.r-project.org/])
+
+After installation of  the R software, R packages used by Locus Explorer must be installed prior to use. This may take a few minutes, but is only required on the first occasion. To install packages, open the R program, copy the following code into the R console and hit Return:
+```R
+install.packages(c("shiny", "data.table", "dplyr", "ggplot2", "ggbio", "knitr", "markdown", "stringr"),dependencies = TRUE)
+source("http://bioconductor.org/biocLite.R")
+biocLite(c("ggbio","GenomicRanges","TxDb.Hsapiens.UCSC.hg19.knownGene","org.Hs.eg.db"))
+```
+
+### Launching the Locus Explorer Application
+To start Locus Explorer, open R, copy the following code into the console and hit Return:
 ```R
 library(shiny)  
 runGitHub("LocusExplorer", "oncogenetics")
 ```
+
+Locus Explorer runs through a web browser and uses an intuitive interface that does not require high level computational skills to operate
+
 #### Troubleshooting
-If you get error:
+If you see the following error:
 > Error in download.file(URL, destfile = ...) : 
 >   unsupported URL scheme
 
@@ -23,10 +41,16 @@ Try running:
 setInternet2(TRUE)
 ```
 
-### Cite
-[Multiple novel prostate cancer susceptibility signals identified by fine-mapping of known risk loci among Europeans.](http://www.ncbi.nlm.nih.gov/pubmed/26025378) Al Olama AA<sup>1</sup>, Dadaev T<sup>2</sup>
-##### Abstract
-Genome-wide association studies (GWAS) have identified numerous common prostate cancer (PrCa) susceptibility loci. We have fine-mapped 64 GWAS regions known at the conclusion of the iCOGS study using large scale genotyping and imputation in 25,723 PrCa cases and 26,274 controls of European ancestry.We detected evidence for multiple independent signals at 16 regions, 12 of which contained additional newly identified significant associations. A single signal comprising a spectrum of correlated variation was observed at 39 regions; 35 of which are now described by a novel more significantly associated lead SNP, whilst the originally reported variant remained as the lead SNP only in 4 regions. We also confirmed 2 association signals in Europeans that had been previously reported only in East-Asian GWAS.Based on statistical evidence and LD structure we have curated and narrowed down the list of the most likely candidate causal variants for each region. Functional annotation using data from ENCODE filtered for PrCa cell lines and eQTL analysis demonstrated significant enrichment for overlap with bio-features within this set. By incorporating the novel risk variants identified here alongside the refined data for existing association signals, we estimate that these loci now explain approximately 38.9% of the familial relative risk of PrCa, an 8.9% improvement over the previously reported GWAS tag SNPs. This suggests that a significant fraction of the heritability of PrCa may have been hidden during the discovery phase of GWAS, in particular due to the presence of multiple independent signals within the same region.
+### To Cite Locus Explorer
+[Locus Explorer: a user-friendly tool for integrated visualisation of genetic association data and biological annotations](url to add) Tokhir Dadaev<sup>1</sup>, Daniel A Leongamornlert<sup>1</sup>, Edward J Saunders<sup>1</sup>, Zsofia Kote-Jarai<sup>1</sup>
+/<sup>1</sup>The Institute of Cancer Research, London
+#### Abstract
+**Summary:** In this article we present Locus Explorer, a data visualisation and exploration tool for genetic association data. Locus Explorer is written in R using the Shiny library, providing access to powerful R-based functions and libraries through a simple user interface. Locus Explorer allows users to simultaneously display genetic, statistical and biological data in a single image and allows dynamic zooming and customisation of the plot display. Publication quality plots may be downloaded in a variety of file formats.
+/**Availability:** Locus Explorer is open source, runs through R and a web browser, and available at https://github.com/oncogenetics/LocusExplorer, where additional README information and example data are also provided.
+
+### Additional Publications That Use Locus Explorer
+[Multiple novel prostate cancer susceptibility signals identified by fine-mapping of known risk loci among Europeans.](http://www.ncbi.nlm.nih.gov/pubmed/26025378) Al Olama AA *et al.*
+<sup>1<>
 
 ### Contact  
 Questions, suggestions, and bug reports are welcome and appreciated. 
