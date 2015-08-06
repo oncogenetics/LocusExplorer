@@ -1,7 +1,7 @@
 ### Required libraries
 ```R
 #CRAN
-# install.packages(c("shiny", "data.table", "dplyr", "tidyr", ggplot2",
+# install.packages(c("shiny", "data.table", "dplyr", "tidyr", "ggplot2",
 #                    "knitr", "markdown", "stringr","DT"),
 #                  dependencies = TRUE)
 library(shiny)

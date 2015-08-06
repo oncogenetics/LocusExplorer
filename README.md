@@ -17,7 +17,7 @@ The latest version of R can be downloaded by following the instructions at [http
 
 After installation of  the R software, R packages used by Locus Explorer must be installed prior to use. This may take a few minutes, but is only required on the first occasion. To install packages, open the R program, copy the following code into the R console and hit Return:
 ```R
-install.packages(c("shiny", "data.table", "dplyr", "tidyr", ggplot2","knitr", "markdown", "stringr","DT"), dependencies = TRUE)
+install.packages(c("shiny", "data.table", "dplyr", "tidyr", "ggplot2", "knitr", "markdown", "stringr","DT"), dependencies = TRUE)
 
 source("http://bioconductor.org/biocLite.R")
 biocLite(c("ggbio","GenomicRanges","TxDb.Hsapiens.UCSC.hg19.knownGene","org.Hs.eg.db"))
