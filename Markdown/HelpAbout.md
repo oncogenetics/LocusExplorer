@@ -42,11 +42,11 @@ setInternet2(TRUE)
 ```
 
 ### To Cite Locus Explorer
-[Locus Explorer: a user-friendly tool for integrated visualisation of genetic association data and biological annotations](url to add) Tokhir Dadaev<sup>1</sup>, Daniel A Leongamornlert<sup>1</sup>, Edward J Saunders<sup>1</sup>, Zsofia Kote-Jarai<sup>1</sup>
-/<sup>1</sup>The Institute of Cancer Research, London
+[Locus Explorer: a user-friendly tool for integrated visualisation of genetic association data and biological annotations](url to add) Tokhir Dadaev<sup>1</sup>, Daniel A Leongamornlert<sup>1</sup>, Edward J Saunders<sup>1</sup>, Zsofia Kote-Jarai<sup>1</sup>  
+<sup>1</sup>The Institute of Cancer Research, London
 #### Abstract
-**Summary:** In this article we present Locus Explorer, a data visualisation and exploration tool for genetic association data. Locus Explorer is written in R using the Shiny library, providing access to powerful R-based functions and libraries through a simple user interface. Locus Explorer allows users to simultaneously display genetic, statistical and biological data in a single image and allows dynamic zooming and customisation of the plot display. Publication quality plots may be downloaded in a variety of file formats.
-/**Availability:** Locus Explorer is open source, runs through R and a web browser, and available at https://github.com/oncogenetics/LocusExplorer, where additional README information and example data are also provided.
+**Summary:** In this article we present Locus Explorer, a data visualisation and exploration tool for genetic association data. Locus Explorer is written in R using the Shiny library, providing access to powerful R-based functions and libraries through a simple user interface. Locus Explorer allows users to simultaneously display genetic, statistical and biological data in a single image and allows dynamic zooming and customisation of the plot display. Publication quality plots may be downloaded in a variety of file formats.  
+**Availability:** Locus Explorer is open source, runs through R and a web browser, and available at https://github.com/oncogenetics/LocusExplorer, where additional README information and example data are also provided.
 
 ### Additional Publications That Use Locus Explorer
 [Multiple novel prostate cancer susceptibility signals identified by fine-mapping of known risk loci among Europeans.](http://www.ncbi.nlm.nih.gov/pubmed/26025378) Al Olama AA *et al.*
