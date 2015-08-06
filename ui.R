@@ -50,7 +50,7 @@ shinyUI(
                                      choices=paste0("chr",c(1:14,16:22,"X")),
                                      selected="chr17"),
                          uiOutput("RegionID")
-                         ),#conditionalPanel - prostate
+        ),#conditionalPanel - prostate
         
         conditionalPanel("input.dataType == 'Custom'",
                          fileInput("FileStats", "Association File (required)"),
@@ -108,7 +108,7 @@ shinyUI(
                uiOutput("BPrange"),
                #Zoom using text: chr1:36020000-36140000
                textInput("RegionZoom", label = h5("Region zoom"),
-                           value = "chr:start-end"),
+                         value = "chr:start-end"),
                selectInput("Flank", label = h5("Region Flank"), 
                            choices = list("10KB"=10000,
                                           "50KB"=50000,
@@ -133,7 +133,7 @@ shinyUI(
                #actionButton("resetInput", "Reset inputs",icon = icon("undo"))
                actionButton("resetInput", "Reset inputs",icon = icon("ambulance"),
                             style = "background-color:#C9DD03")
-               ), #sidebarPanel
+             ), #sidebarPanel
              mainPanel(
                conditionalPanel("input.ShowHideTracks.indexOf('Chromosome')>-1",
                                 plotOutput("PlotChromosome",width=800,height=70)),
@@ -149,17 +149,17 @@ shinyUI(
                                 plotOutput("PlotEQTL",width=800,height=70)),
                conditionalPanel("input.ShowHideTracks.indexOf('Gene')>-1",
                                 plotOutput("PlotGene",width=800,height=350))
-               ) #mainPanel
-#  Legend Floating --------------------------------------------------------
-#              absolutePanel(id = "Legend", right = 20, bottom = 20, 
-#                            class = "modal", fixed = FALSE, draggable = TRUE,
-#                            wellPanel(
-#                            h5("Legend")),
-#                            style = "opacity: 0.92")
+             ) #mainPanel
+             #  Legend Floating --------------------------------------------------------
+             #              absolutePanel(id = "Legend", right = 20, bottom = 20, 
+             #                            class = "modal", fixed = FALSE, draggable = TRUE,
+             #                            wellPanel(
+             #                            h5("Legend")),
+             #                            style = "opacity: 0.92")
              
              
     ), #tabPanel - "Plot"
-    # Plot Download -----------------------------------------------------------  
+    # Final Plot --------------------------------------------------------------  
     tabPanel("Final Plot",
              sidebarPanel(
                # Choose Title for merged plot
@@ -187,38 +187,59 @@ shinyUI(
                p(),
                #if jpeg or tiff then set resolution
                conditionalPanel("(input.downloadPlotType == 'jpeg' || 
-                                  input.downloadPlotType == 'tiff')",
+                                input.downloadPlotType == 'tiff')",
                                 sliderInput("downloadPlotResolution",
                                             h4("Resolution"),
                                             min = 100, max = 600, value = 100,
                                             step = 50)),
                # File downloads when this button is clicked.
                downloadButton(outputId = "downloadPlot", label = "Download Plot")
-             ), #sidebarPanel plot Download section
-             mainPanel(
-               #plot merge height is dynamic, based on seleceted tracks
-               uiOutput("plotMergeUI")
-             )
-             
-    ), #tabPanel - "Plot Download"
+    ), #sidebarPanel plot Download section
+    mainPanel(
+      #plot merge height is dynamic, based on seleceted tracks
+      uiOutput("plotMergeUI")
+    )
     
-    tabPanel("Help",
-             mainPanel(
-               tabsetPanel(
-                 tabPanel("About",
-                          #includeMarkdown("Markdown/HelpAbout.md")
-                          includeMarkdown("README.md")
-                 ),
-                 tabPanel("Example Plot",
-                          h4("PDF"),
-                          tags$iframe(src = "chr17_36020000_36140000.pdf",
-                                      width="600", height="600")
-                          ),
-                 tabPanel("R Session Info",
-                          includeMarkdown("Markdown/RSessionInfo.md")
-                 )
-               )#tabsetPanel
-             )#mainPanel
-    )#tabPanel - Help
+  ), #tabPanel - "Final Plot"
+  
+  tabPanel("Make LD file",
+           sidebarPanel(
+             fileInput("FileLDlink", "Unprocessed LDlink output file"),
+             
+             # File downloads when this button is clicked.
+             downloadButton(outputId = "downloadLDFile", label = "Download LD file")
+             
+           ),
+           mainPanel(
+             tabsetPanel(
+               tabPanel("LDlink file",
+                        dataTableOutput("SummaryLDlink")),
+               tabPanel("Processed LDlink file",
+                        dataTableOutput("SummaryLDlinkProcess")),
+               tabPanel("LD Tutorial",
+                        includeMarkdown("Markdown/LDTutorial.md"))
+             )#tabsetPanel
+           )#mainPanel
+  ),#tabPanel - Make LD file
+  
+  
+  
+  tabPanel("Help",
+           mainPanel(
+             tabsetPanel(
+               tabPanel("About",
+                        #includeMarkdown("Markdown/HelpAbout.md")
+                        includeMarkdown("README.md")),
+               tabPanel("Example Plot",
+                        h4("PDF"),
+                        tags$iframe(src = "chr17_36020000_36140000.pdf",
+                                    width="600", height="600")),
+               tabPanel("R Session Info",
+                        includeMarkdown("Markdown/RSessionInfo.md")),
+               tabPanel("LD Tutorial",
+                        includeMarkdown("Markdown/LDTutorial.md"))
+             )#tabsetPanel
+           )#mainPanel
+  )#tabPanel - Help
   )#navbarPage
 )#shinyUI

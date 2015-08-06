@@ -95,6 +95,35 @@ shinyServer(function(input, output, session) {
                    header=TRUE, data.table=FALSE) 
            })
   })
+
+  datLDlink <- reactive({
+    #input file check
+    validate(need(input$FileLDlink != "", "Please upload LDlink file"))
+    
+    inFile <- input$FileLDlink
+    if(is.null(inFile)){return(NULL)}
+    fread(inFile$datapath, header=TRUE, data.table=FALSE)
+    })
+  
+  datLDlinkProcess <- reactive({
+    #x <- fread("proxy20066.txt", header=TRUE, data.table=FALSE)
+      datLDlink() %>% 
+        ## select only relevant columns
+      dplyr::select(SNP_B = RS_Number,Coord,R2) %>% 
+      ## add index SNP for LD comparison
+      mutate(
+        SNP_B = ifelse(SNP_B==".",Coord,SNP_B),
+        SNP_A = SNP_B[c(1)]) %>% 
+      ## separate 'Coord' into CHR_B and BP_B
+      separate(Coord, into = c("CHR_B", "BP_B"), sep = ":") %>% 
+      mutate(CHR_B=gsub("chr", replacement = "", x = CHR_B),
+             ## add BP for index SNP
+             CHR_A = CHR_B[c(1)],
+             BP_A = BP_B[c(1)]) %>%
+      ## Reorder columns
+      dplyr::select(c(6,7,5,2,3,1,4)) %>% 
+        arrange(BP_B)
+    })
   
   # Define ROI --------------------------------------------------------------
   RegionFlank <- reactive({
@@ -291,6 +320,21 @@ shinyServer(function(input, output, session) {
                       ncol(datLNCAP()),ncol(datEQTL()))),
     options=list(paging=FALSE,searching=FALSE,searchable=FALSE))
   
+  output$SummaryLDlink <- DT::renderDataTable(datLDlink())
+  output$SummaryLDlinkProcess <- 
+    DT::renderDataTable({
+      datLDlinkProcess() %>% 
+        arrange(BP_B) %>% 
+        mutate(SNP_A=ifelse(substr(SNP_A,1,2)=="rs",
+                            paste0('<a href="http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=',
+                                   gsub("rs","",SNP_A),'">',SNP_A,'</a>'),
+                            SNP_A),
+               SNP_B=ifelse(substr(SNP_B,1,2)=="rs",
+                            paste0('<a href="http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=',
+                                   gsub("rs","",SNP_B),'">',SNP_B,'</a>'),
+                            SNP_B))
+    },escape=FALSE)
+  
   # Plot --------------------------------------------------------------------
   #Plot Chr ideogram
   plotObjChromosome <- reactive({source("source/Chromosome.R",local=TRUE)})
@@ -464,10 +508,15 @@ shinyServer(function(input, output, session) {
       
       print(plotObjMerge())
       dev.off(which=dev.cur())
-    }
-    
-    
-    )
+      }) #downloadHandler downloadPlot
+  
+  #download LDlink processed data as flat file tab separated
+  output$downloadLDFile <- downloadHandler(
+    filename = function() { paste0(datLDlinkProcess()[1,"SNP_A"],"_LD.txt") },
+    content = function(file) {
+      write.table(datLDlinkProcess(), file,
+                  sep="\t",row.names=FALSE, quote=FALSE)
+    })
   
   # Dynamic UI --------------------------------------------------------------
   #Zoom to region X axis BP
