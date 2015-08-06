@@ -1,37 +1,40 @@
- - Region of interest must be no more than 1-2Mb.  
- - Input files must be tab delimited.
+**Note -** The maximum region of interest that Locus Explorer can display is 2Mb  
 
-#### Example input files:  
-Files are at: *LocusExplorer\\Data\\CustomDataExample*    
+#### Input File Specifications and Format:  
+- Input files must be **tab-delimited** and saved as **.txt**
+- Headers are required and should use the exact column names described below and used in the example input files
+- Example files are available at: *oncogenetics//LocusExplorer//Data//CustomDataExample*  
 
 
-1. Association File - *Association.txt*   
- - CHR - chromosome name, chr2
- - SNP - variant name, string, rs12345
- - BP	- base pair position, numeric
- - P - pvalue, numeric
- - TYPED - if the SNP was typed (2) or imputed (1) 
+**1. Association File - _Association.txt_**  
+*Note* - Association File is mandatory for plot generation. All other files are optional but enhance plot asthetics and interpretation  
+ - **CHR -** Chromosome on which variant is located preceded by "chr". e.g `chr2` `chrX`
+ - **SNP -** Variant ID. e.g. `rs12345` `chr10:104329988:D` 
+ - **BP	-** Start coordinate of variant (does not include chromosome or end coordinate for in/del variants). e.g. `104356185`
+ - **P -** *P*-value for specified variant
+ - **TYPED -** Use code `2` for typed and `1` for imputed variants
 
-2. LD - *LD.txt*  
- - CHR_A - chromosome name, chr2
- - BP_A	- hit SNP position
- - SNP_A - hit SNP name
- - CHR_B - chromosome of SNP in LD with hit SNP
- - BP_B	- position of SNP in LD with hit SNPSNP_B
- - R2 - LD score, numeric, 0 to 1
-- *Note:* Online resources to extract LD: 
-[Biostars: 1000 Genomes Ld Calculation](https://www.biostars.org/p/2909/), [LDlink](http://analysistools.nci.nih.gov/LDlink/), [Haploreg v3](http://www.broadinstitute.org/mammals/haploreg/haploreg_v3.php), [plink](http://pngu.mgh.harvard.edu/~purcell/plink/ld.shtml), [Ensemble](http://www.ensembl.info/blog/2015/06/18/1000-genomes-phase-3-frequencies-genotypes-and-ld-data/)
+**2. LD File - _LD.txt_**  
+*Note* - LD File is not mandatory but is recommended for more informative plots. If user supplied LD data is not available, visit xxxxx for instructions of how LD data relative to the index SNP(s) can be obtained from the 1000 Genomes Project Phase 3 Dataset  
+ - **CHR_A -** Chromosome on which Index SNP is located (n.b. do not include "chr"). e.g. `2` `X`
+ - **BP_A	-** Index SNP start coordinate (Hg19, do not include chromosome or end coordinate for in/del variants). e.g. `104356185`
+ - **SNP_A -** Index SNP ID
+ - **CHR_B -** Chromosome for SNP in LD with Index SNP (SNP_A)
+ - **BP_B	-** Start coordinate (Hg19, do not include chromosome or end coordinate for in/del variants) of SNP in LD with Index SNP (SNP_A). e.g. `104315667`
+ - **SNP_B -** ID of SNP in LD with Index SNP (SNP_A). e.g. `rs10786679` `chr10:104329988:D` 
+ - **R2 -** LD score between SNP_A and SNP_B (0 to 1). e.g. `1` `0.740917`
 
-3. LNCAP - *LNCAP.txt*  
- - CHR - chromosome name, chr2
- - BP	- position, numeric
- - ANNOTATE - text string: exonic, intronic, UTR3, etc.
+**3. Biofeature BED Track - _LNCAP.txt_**  
+*Note* - Biofeature annotation File is not mandatory but can be used to display the positions of regulatory regions of interest from user supplied or publically available datasets. Visit xxxx for instructions of how to obtain data of interest from the ENCODE Project if custom data is unavailable  
+ - **CHR -** Chromosome on which Biofeature is located preceded by "chr". e.g `chr2` `chrX`
+ - **BP	-** Position of Biofeature
+ - **ANNOTATE -** Description of Biofeature. e.g. `exonic` `intronic` `UTR3` etc.
  
-4. eQTL - *eQTL.txt*  
-Gene expression data.
- - CHR - chromosome name, chr2
- - START - position, transcript start position
- - END - position, trabscript end position
- - DIRECTION - overexpressed 1, underexpressed -1
+**4. Gene Expression BED Track - _eQTL.txt_** 
+*Note* - Gene expression File is not mandatory but can be used to display the positions of genes differentially regulated by variants within the plot region. Genes within the plot region for which no eQTL is odserved should be excluded from the input file. Visit xxxx for instructions of how to obtain eQTL data from the TCGA or GTEx datasets if custom data is unavailable
+ - **CHR -** Chromosome on which differentially expressed gene is located preceded by "chr". e.g `chr2` `chrX`
+ - **START -** Transcript start position
+ - **END -** Transcript end position
+ - **DIRECTION -** Use `1` for Upregulated genes and `-1` for Downregulated genes
 
 
