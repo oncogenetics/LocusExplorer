@@ -18,7 +18,7 @@ shinyServer(function(input, output, session) {
              },
            Custom = {
              #input file check
-             validate(need(input$FileStats != "", "Please upload file"))
+             validate(need(input$FileStats != "", "Please upload Association file"))
              
              inFile <- input$FileStats
              if(is.null(inFile)){return(NULL)}
@@ -40,7 +40,7 @@ shinyServer(function(input, output, session) {
              },
            Custom = {
              #input file check
-             validate(need(input$FileLD != "", "Please upload file"))
+             validate(need(input$FileLD != "", "Please upload LD file"))
              
              inFile <- input$FileLD
              if(is.null(inFile)){return(NULL)}
@@ -62,7 +62,7 @@ shinyServer(function(input, output, session) {
              },
            Custom = {
              #input file check
-             validate(need(input$FileLNCAP != "", "Please upload file"))
+             validate(need(input$FileLNCAP != "", "Please upload FileLNCAP file"))
              
              inFile <- input$FileLNCAP
              if(is.null(inFile)){return(NULL)}
@@ -84,7 +84,7 @@ shinyServer(function(input, output, session) {
              },
            Custom = {
              #input file check
-             validate(need(input$FileEQTL != "", "Please upload file"))
+             validate(need(input$FileEQTL != "", "Please upload eQTL file"))
              
              inFile <- input$FileEQTL
              if(is.null(inFile)){return(NULL)}
@@ -124,9 +124,8 @@ shinyServer(function(input, output, session) {
     as.integer(round((x+RegionFlank())/RegionFlank()) * RegionFlank())
     #as.integer(round((x+10000)/10000) * 10000)
     })
+  
   RegionHits <- reactive({ 
-    #CHR_A	BP_A	SNP_A	CHR_B	BP_B	SNP_B	R2
-    #maximum LD SNPs is 5
     d <- datLD() %>% .$SNP_A %>% unique %>% sort
     d[1:min(length(d),15)] })
   
@@ -195,20 +194,20 @@ shinyServer(function(input, output, session) {
           SNP_A %in% RegionHitsSelected())
     
     #assign colours to LD 
-    d_LD <- base::do.call(rbind,
-                          lapply(RegionHitsSelected(), function(snp){
-                            d <- LD %>% filter(SNP_A == snp)
-                            #LD round minimum is 1 max 100
-                            LDColIndex <- ifelse(round(d$R2,2)==0,1,round(d$R2,2)*100)
-                            LDColIndex <- ifelse(LDColIndex>100,100,LDColIndex)
-                            d$LDSNP <- snp
-                            d$LDSmoothCol <- colLD[[match(snp,RegionHitsSelected())]][100]
-                            d$LDCol <- colLD[[match(snp,RegionHitsSelected())]][LDColIndex]
-                            
-                            #d$LDSmoothCol <- colLD[[match(snp,RegionHits())]][100]
-                            #d$LDCol <- colLD[[match(snp,RegionHits())]][LDColIndex]
-                            return(d)
-                          }))
+    d_LD <- 
+      base::do.call(
+        rbind,
+        lapply(RegionHitsSelected(), function(snp){
+          d <- LD %>% filter(SNP_A == snp)
+          #LD round minimum is 1 max 100
+          LDColIndex <- ifelse(round(d$R2,2)==0,1,round(d$R2,2)*100)
+          LDColIndex <- ifelse(LDColIndex>100,100,LDColIndex)
+          d$LDSNP <- snp
+          d$LDSmoothCol <- colLD[[match(snp,RegionHitsSelected())]][100]
+          d$LDCol <- colLD[[match(snp,RegionHitsSelected())]][LDColIndex]
+          return(d)
+        }))
+
     # to add smooth LD Y value used for Pvalue and LD 0-1
     # add pvalues for Y value on the plot
     d_LD <- 
@@ -244,41 +243,76 @@ shinyServer(function(input, output, session) {
   
   # Output ------------------------------------------------------------------
   # Output Summary ----------------------------------------------------------
-  output$SummaryStats <- renderDataTable({ datStats() %>% arrange(BP) }) 
-  output$SummaryLD <- renderDataTable({ datLD() %>% group_by(SNP_A) %>% arrange(BP_B) })
+  output$SummaryStats <- DT::renderDataTable( 
+    datStats() %>% arrange(P) %>% 
+      #if SNP name has rs number then convert to a link to NCBI
+      mutate(SNP=ifelse(substr(SNP,1,2)=="rs",
+                        paste0('<a href="http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=',
+                               gsub("rs","",SNP),'">',SNP,'</a>'),
+                        SNP)),
+    # FALSE to parse as a link
+    escape=FALSE)
+  
+  output$SummaryLD <- DT::renderDataTable({ 
+    datLD() %>% 
+      arrange(BP_B) %>% 
+      mutate(SNP_A=ifelse(substr(SNP_A,1,2)=="rs",
+                          paste0('<a href="http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=',
+                                 gsub("rs","",SNP_A),'">',SNP_A,'</a>'),
+                          SNP_A),
+             SNP_B=ifelse(substr(SNP_B,1,2)=="rs",
+                          paste0('<a href="http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=',
+                                 gsub("rs","",SNP_B),'">',SNP_B,'</a>'),
+                          SNP_B))
+    },escape=FALSE)
+  
+  
   output$SummaryLNCAP <- renderDataTable({ datLNCAP() %>% arrange(BP) })
   output$SummaryEQTL <- renderDataTable({ datEQTL() %>% arrange(START) })
+  output$SummaryRegion <- 
+    renderUI(a(paste0(RegionChr(),':',RegionStart(),'-',RegionEnd()),
+               href=paste0('http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=',
+                           RegionChr(),'%3A',RegionStart(),'-',RegionEnd())))
   
-  output$SummaryRegion <- renderTable({ 
-    data.frame(Chr=RegionChr(),
-               Start=RegionStart(),
-               End=RegionEnd(),
-               Size=RegionEnd()-RegionStart(),
-               Hits=paste(RegionHits(),collapse=", "))})
-  
-  output$SummaryFileNrowNcol <- renderTable({ 
-    data.frame(InputFile=c("Association","LD","LNCAP","eQTL"),
-               Nrow=c(nrow(datStats()),nrow(datLD()),
+  output$SummaryHits <- DT::renderDataTable( 
+    data.table(SNP = RegionHits()) %>% 
+      #if SNP name has rs number then convert to a link to NCBI
+      mutate(SNP=ifelse(substr(SNP,1,2)=="rs",
+                        paste0('<a href="http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=',
+                               gsub("rs","",SNP),'">',SNP,'</a>'),
+                        SNP)),
+    escape=FALSE,options=list(paging=FALSE,searching=FALSE,searchable=FALSE))
+
+  output$SummaryFileNrowNcol <- DT::renderDataTable( 
+    data.table(InputFile=c("Association","LD","LNCAP","eQTL"),
+               RowCount=c(nrow(datStats()),nrow(datLD()),
                       nrow(datLNCAP()),nrow(datEQTL())),
-               Ncol=c(ncol(datStats()),ncol(datLD()),
-                      ncol(datLNCAP()),ncol(datEQTL()))
-    )})
-  
-  #output$SummaryHeadPlotStats <- renderTable({head(plotDatStats())})
-  #output$SummaryHeadPlotDatManhattan <- renderDataTable({plotDatManhattan()})
-  #output$SummaryDimPlotDatManhattan <- renderTable({as.data.frame(dim(plotDatManhattan()))})
-  #output$SummaryplotDatManhattan <- renderTable({plotDatManhattan()})
-  #output$SummaryROIdatEQTL <- renderTable({as.data.frame(ROIdatEQTL())})
-  #output$SummaryRegionFlank <- renderText({RegionFlank()})
-  #output$SummaryZoom <- renderText({paste(zoomStart(),zoomEnd(),sep="-")})
+               ColumnCount=c(ncol(datStats()),ncol(datLD()),
+                      ncol(datLNCAP()),ncol(datEQTL()))),
+    options=list(paging=FALSE,searching=FALSE,searchable=FALSE))
   
   # Plot --------------------------------------------------------------------
   #Plot Chr ideogram
   plotObjChromosome <- reactive({source("source/Chromosome.R",local=TRUE)})
   output$PlotChromosome <- renderPlot({print(plotObjChromosome())})
   #Manhattan track
-  plotObjManhattan <- reactive({source("source/Manhattan.R",local=TRUE)})
-  output$PlotManhattan <- renderPlot({print(plotObjManhattan())})
+  plotObjManhattan <- reactive({
+    # Create a Progress object
+    progress <- shiny::Progress$new()
+    progress$set(message = "Plotting please wait...", value = 0)
+    # Close the progress when this reactive exits (even if there's an error)
+    on.exit(progress$close())
+    
+    source("source/Manhattan.R",local=TRUE)})
+  output$PlotManhattan <- renderPlot({
+    # Create a Progress object
+    progress <- shiny::Progress$new()
+    progress$set(message = "Almost there...", value = 0)
+    # Close the progress when this reactive exits (even if there's an error)
+    on.exit(progress$close())
+    
+    print(plotObjManhattan())})
+  
   #SNPType track
   plotObjSNPType <- reactive({source("source/SNPType.R",local=TRUE)})
   output$PlotSNPType <- renderPlot({print(plotObjSNPType())})
@@ -291,9 +325,24 @@ shinyServer(function(input, output, session) {
   #eQTL bar track
   plotObjEQTL <- reactive({source("source/eQTL.R",local=TRUE)})
   output$PlotEQTL <- renderPlot({print(plotObjEQTL())})
+  
   #Gene track
-  plotObjGene <- reactive({source("source/Gene.R",local=TRUE)})
-  output$PlotGene <- renderPlot({print(plotObjGene())})
+  plotObjGene <- reactive({
+    # Create a Progress object
+    progress <- shiny::Progress$new()
+    progress$set(message = "Plotting please wait...", value = 0)
+    # Close the progress when this reactive exits (even if there's an error)
+    on.exit(progress$close())
+    
+    source("source/Gene.R",local=TRUE)})
+  output$PlotGene <- renderPlot({
+    # Create a Progress object
+    progress <- shiny::Progress$new()
+    progress$set(message = "Almost there...", value = 0)
+    # Close the progress when this reactive exits (even if there's an error)
+    on.exit(progress$close())
+    
+    print(plotObjGene())})
   
   # Plot Merge --------------------------------------------------------------
   #Dynamic size for tracks
@@ -363,6 +412,11 @@ shinyServer(function(input, output, session) {
     input$downloadPlotFileName
   })
   
+  # Get the download resolution for jpeg/tiff
+  downloadPlotResolution <- reactive({
+    input$downloadPlotResolution
+  })
+  
   # Include a downloadable file of the plot in the output list.
   output$downloadPlot <- downloadHandler(
     filename = function() {
@@ -370,26 +424,50 @@ shinyServer(function(input, output, session) {
     },
     # The argument content below takes filename as a function
     # and returns what's printed to it.
+#     content = function(con) {
+#       # Gets the name of the function to use from the 
+#       # downloadFileType reactive element. Example:
+#       # returns function pdf() if downloadFileType == "pdf".
+#       plotFunction <- match.fun(downloadPlotType())
+#       plotFunction(con, width = downloadPlotWidth(), height = downloadPlotHeight())
+#       print(plotObjMerge())
+#       dev.off(which=dev.cur())
+#     }
+  
     content = function(con) {
       # Gets the name of the function to use from the 
       # downloadFileType reactive element. Example:
       # returns function pdf() if downloadFileType == "pdf".
       plotFunction <- match.fun(downloadPlotType())
-      plotFunction(con, width = downloadPlotWidth(), height = downloadPlotHeight())
+      
+      switch(input$downloadPlotType,
+             pdf = {plotFunction(con, 
+                                 width = downloadPlotWidth(),
+                                 height = downloadPlotHeight(),
+                                 useDingbats = FALSE)},
+             svg = {plotFunction(con, 
+                                 width = downloadPlotWidth(),
+                                 height = downloadPlotHeight())},
+             jpeg = {plotFunction(con, 
+                                  width = downloadPlotWidth(),
+                                  height = downloadPlotHeight(),
+                                  type="cairo",
+                                  res=downloadPlotResolution(),
+                                  quality = 100)},
+             tiff = {plotFunction(con, 
+                                  width = downloadPlotWidth(),
+                                  height = downloadPlotHeight(),
+                                  type="cairo",
+                                  res=downloadPlotResolution())}
+             
+             )
+      
       print(plotObjMerge())
       dev.off(which=dev.cur())
     }
-  )
-  
-  #example Plot output SVG
-#   output$exampleSVG <- renderImage({
-#     list(
-#       src = "www/chr17_36020000_36140000.svg",
-#       contentType = "image/svg",
-#       alt = "PlotExampleSVG"
-#     )
-#     
-#   })
+    
+    
+    )
   
   # Dynamic UI --------------------------------------------------------------
   #Zoom to region X axis BP
@@ -400,17 +478,10 @@ shinyServer(function(input, output, session) {
                   max = RegionEnd(),
                   value = c(RegionStart(),RegionEnd()),
                   step = 20000)})
-  #Input BED style for zoom, eg.: chr2:100-200
-  output$RegionZoom <- renderUI({
-    textInput("RegionZoom", label = h5("Region zoom"),
-              value = "chr:start-end")
-              #value = paste0(RegionChr(),":",RegionStart(),"-",RegionEnd()))
-    })
-  
   #Select hit SNPs
   output$HitSNPs <- 
     renderUI({
-      checkboxGroupInput("HitSNPs", "Hit SNPs",
+      checkboxGroupInput("HitSNPs", h4("Hit SNPs:"),
                          RegionHits(),
                          #select max of 5 SNPs
                          selected = 1:min(5,length(RegionHits())))
@@ -427,20 +498,39 @@ shinyServer(function(input, output, session) {
   output$downloadPlotFileName <- renderUI({
     textInput(
       inputId = "downloadPlotFileName",
-      label = "Download file name",
+      label = h4("Download file name"),
       value = paste(RegionChr(),zoomStart(),zoomEnd(),sep="_"))})
   #download plot title - default: chr_start_end
   output$downloadPlotTitle <- renderUI({
     textInput(
       inputId = "downloadPlotTitle",
-      label = "Plot title",
+      label = h4("Plot title"),
       value = paste(RegionChr(),zoomStart(),zoomEnd(),sep="_"))})
   
-  
-  
+  # Merged Final plot -------------------------------------------------------  
   #merged plot with dynamic plot height
-  plotObjMerge <- reactive({source("Source/MergePlots.R",local=TRUE)})
-  output$plotMerge <- renderPlot({print(plotObjMerge())})
+  plotObjMerge <- reactive({
+    # Create a Progress object
+    progress <- shiny::Progress$new()
+    progress$set(message = "Plotting please wait...", value = 0)
+    # Close the progress when this reactive exits (even if there's an error)
+    on.exit(progress$close())
+    
+    source("Source/MergePlots.R",local=TRUE)
+
+    })
+  output$plotMerge <- renderPlot({
+    # Create a Progress object
+    progress <- shiny::Progress$new()
+    progress$set(message = "Almost there...", value = 0)
+    # Close the progress when this reactive exits (even if there's an error)
+    on.exit(progress$close())
+    
+    print(plotObjMerge())
+    
+    })
+  
+  #plot merge height is dynamic, based on seleceted tracks
   output$plotMergeUI <- renderUI({
     plotOutput("plotMerge",width=800,height=sum(trackHeights()))
     })
@@ -463,6 +553,34 @@ shinyServer(function(input, output, session) {
       updateSliderInput(session, "BPrange",
                         value = newStartEnd)}
     }))
+  #reset plot options
+  observeEvent(input$resetInput,({
+    updateSliderInput(session,"FilterMinPlog", value=0)
+    updateSliderInput(session,"FilterMinLD", value=0)
+    updateSliderInput(session,"BPrange", value = c(RegionStart(),RegionEnd()))
+    updateTextInput(session,"RegionZoom",value="chr:start-end")
+    updateSelectInput(session,"Flank",
+                      choices = list("10KB"=10000,
+                                     "50KB"=50000,
+                                     "1MB"=100000,
+                                     "2MB"=200000), 
+                      selected = 10000)
+    updateCheckboxGroupInput(session,"HitSNPs",
+                             choices = RegionHits(),
+                             selected = 
+                               RegionHits()[1:min(5,length(RegionHits()))])
+    
+    updateCheckboxGroupInput(session,"ShowHideTracks",
+                             choices = c("Chromosome"="Chromosome",
+                                         "Manhattan"="Manhattan",
+                                         "LDSmooth"="LDSmooth",
+                                         "LD"="LD",
+                                         "SNPType"="SNPType",
+                                         "LNCAP"="LNCAP",
+                                         "eQTL"="eQTL",
+                                         "Gene"="Gene"),
+                             selected=c("Manhattan","LD","LDSmooth"))
+    })) #END observeEvent resetInput
   
 })#END shinyServer
 

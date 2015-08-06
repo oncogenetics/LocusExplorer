@@ -3,7 +3,9 @@
 
 # Workspace ---------------------------------------------------------------
 #CRAN
-# install.packages(c("shiny", "data.table", "dplyr", "ggplot2", "ggbio", "knitr", "markdown", "stringr"),dependencies = TRUE)
+# install.packages(c("shiny", "data.table", "dplyr", "ggplot2",
+#                    "knitr", "markdown", "stringr","DT"),
+#                  dependencies = TRUE)
 library(shiny)
 library(data.table)
 library(dplyr)
@@ -11,6 +13,7 @@ library(ggplot2)
 library(knitr)
 library(markdown)
 library(stringr)
+library(DT)
 
 #Bioconductor
 # source("http://bioconductor.org/biocLite.R")
@@ -28,30 +31,30 @@ shinyUI(
     windowTitle = "Locus Explorer",
     fluid = FALSE,
     position = "fixed-top",
+    inverse = TRUE,
     # Data --------------------------------------------------------------------
     tabPanel(
       "Input Data",
       sidebarPanel(
+        #push it down 70px to avoid going under navbar
         tags$style(type="text/css", "body {padding-top: 70px;}"),
-        #tags$head(tags$link(rel="shortcut icon", href="www/favicon.ico")),
-        radioButtons("dataType", h4("Input Data"),
+        #Choose data type
+        radioButtons("dataType", h4("Input Data:"),
                      c("Prostate"="Prostate",
                        "Custom"="Custom",
                        "Example"="Example"),
-                     "Prostate"),
-        #"CustomExample"),
-        
+                     selected = "Example"),
         conditionalPanel("input.dataType == 'Prostate'",
                          #Select CHR, 1:23 excluding chromosomes with no hit regions.
                          selectInput("Chr",label=h5("Chr"),
                                      choices=paste0("chr",c(1:14,16:22,"X")),
                                      selected="chr17"),
                          uiOutput("RegionID")
-        ),#conditionalPanel - prostate
+                         ),#conditionalPanel - prostate
         
         conditionalPanel("input.dataType == 'Custom'",
-                         fileInput("FileStats", "Association File"),
-                         fileInput("FileLD", "LD File"),
+                         fileInput("FileStats", "Association File (required)"),
+                         fileInput("FileLD", "LD File (required)"),#recommended
                          fileInput("FileLNCAP", "LNCAP File"),
                          fileInput("FileEQTL", "eQTL File")
         ),#conditionalPanel- Custom
@@ -64,13 +67,14 @@ shinyUI(
         tabsetPanel(
           tabPanel("Summary",
                    h4("Summary"),
-                   tableOutput("SummaryRegion"),
-                   tableOutput("SummaryFileNrowNcol")
-                   #tableOutput("SummaryDimPlotDatManhattan"),
-                   #tableOutput("SummaryplotDatManhattan")
-                   #tableOutput("SummaryROIdatEQTL"),
-                   #textOutput("SummaryRegionFlank")
-          ),
+                   helpText("From association file the region - UCSC link:"),
+                   htmlOutput("SummaryRegion"),
+                   hr(),
+                   helpText("From LD file hit SNPs are as below - NCBI link:"),
+                   dataTableOutput("SummaryHits"),
+                   hr(),
+                   helpText("Input file number of rows and columns"),
+                   dataTableOutput("SummaryFileNrowNcol")),
           tabPanel("Association",
                    h4("Association"),
                    dataTableOutput("SummaryStats")),
@@ -90,23 +94,32 @@ shinyUI(
       )#mainPanel
     ),#tabPanel - Data
     # Plot --------------------------------------------------------------------  
-    tabPanel("Plot",
+    tabPanel("Plot Settings",
              sidebarPanel(
-               h4("SNP Filter:"),
+               h4("SNP Filters:"),
+               h6("Use sliders to set required threshold for P-value and LD. Filtered SNPs will not be plotted."),
                sliderInput("FilterMinPlog",h5("-Log10(PValue)"),
-                           min = 0, max = 5, value = 3, step = 0.5),
+                           min = 0, max = 5, value = 0, step = 0.5),
                sliderInput("FilterMinLD", h5("LD"),
-                           min = 0, max = 0.9, value = 0.3,step = 0.05),
+                           min = 0, max = 0.9, value = 0,step = 0.05),
+               hr(),
+               h4("Zoom region:"),
+               h6("Use sliders to zoom in to required region, or enter region as text, e.g.: chr1:36020000-36140000"),
                uiOutput("BPrange"),
-               uiOutput("RegionZoom"),
-               selectInput("Flank", label = h4("Region Flank"), 
+               #Zoom using text: chr1:36020000-36140000
+               textInput("RegionZoom", label = h5("Region zoom"),
+                           value = "chr:start-end"),
+               selectInput("Flank", label = h5("Region Flank"), 
                            choices = list("10KB"=10000,
                                           "50KB"=50000,
                                           "1MB"=100000,
                                           "2MB"=200000), 
-                           selected = 1),
+                           selected = 10000),
+               hr(),
                uiOutput("HitSNPs"),
-               checkboxGroupInput("ShowHideTracks", "Tracks",
+               h6("Maximum of 5 hit SNPs can be plotted."),
+               hr(),
+               checkboxGroupInput("ShowHideTracks", h4("Tracks:"),
                                   c("Chromosome"="Chromosome",
                                     "Manhattan"="Manhattan",
                                     "LDSmooth"="LDSmooth",
@@ -116,10 +129,12 @@ shinyUI(
                                     "eQTL"="eQTL",
                                     "Gene"="Gene"),
                                   selected=c("Manhattan","LD","LDSmooth")),
-               h5("Recommneded to hide tracks until final zoom region is decided.")
+               h6("Recommneded to hide tracks until final zoom region is decided."),
+               #actionButton("resetInput", "Reset inputs",icon = icon("undo"))
+               actionButton("resetInput", "Reset inputs",icon = icon("ambulance"),
+                            style = "background-color:#C9DD03")
                ), #sidebarPanel
              mainPanel(
-               #  Legend Floating --------------------------------------------------------
                conditionalPanel("input.ShowHideTracks.indexOf('Chromosome')>-1",
                                 plotOutput("PlotChromosome",width=800,height=70)),
                conditionalPanel("input.ShowHideTracks.indexOf('Manhattan')>-1",
@@ -135,6 +150,7 @@ shinyUI(
                conditionalPanel("input.ShowHideTracks.indexOf('Gene')>-1",
                                 plotOutput("PlotGene",width=800,height=350))
                ) #mainPanel
+#  Legend Floating --------------------------------------------------------
 #              absolutePanel(id = "Legend", right = 20, bottom = 20, 
 #                            class = "modal", fixed = FALSE, draggable = TRUE,
 #                            wellPanel(
@@ -144,31 +160,38 @@ shinyUI(
              
     ), #tabPanel - "Plot"
     # Plot Download -----------------------------------------------------------  
-    tabPanel("Plot Download",
+    tabPanel("Final Plot",
              sidebarPanel(
                # Choose Title for merged plot
                uiOutput("downloadPlotTitle"),
                # Choose download filename.
                uiOutput("downloadPlotFileName"),
+               h6("Use PDF or SVG format for further image editing."),
                selectInput(
                  inputId = "downloadPlotType",
-                 label   = "File type",
+                 label   = h4("File type"),
                  choices = list(
                    "PDF"  = "pdf",
-                   "BMP"  = "bmp",
+                   "SVG" = "svg",
                    "JPEG" = "jpeg",
-                   "PNG"  = "png",
-                   "SVG" = "svg"),
+                   "TIFF"  = "tiff"),
                  selected = "pdf"),
                # Allow the user to set the height and width of the plot download.
                numericInput(
-                 inputId = "downloadPlotHeight",label = h5("Height (inches)"),
+                 inputId = "downloadPlotHeight",label = h4("Height (inches)"),
                  value = 14,min = 1,max = 100),
                
                numericInput(
-                 inputId = "downloadPlotWidth",label = h5("Width (inches)"),
+                 inputId = "downloadPlotWidth",label = h4("Width (inches)"),
                  value = 10,min = 1,max = 100),
                p(),
+               #if jpeg or tiff then set resolution
+               conditionalPanel("(input.downloadPlotType == 'jpeg' || 
+                                  input.downloadPlotType == 'tiff')",
+                                sliderInput("downloadPlotResolution",
+                                            h4("Resolution"),
+                                            min = 100, max = 600, value = 100,
+                                            step = 50)),
                # File downloads when this button is clicked.
                downloadButton(outputId = "downloadPlot", label = "Download Plot")
              ), #sidebarPanel plot Download section
@@ -188,10 +211,9 @@ shinyUI(
                  ),
                  tabPanel("Example Plot",
                           h4("PDF"),
-                          tags$iframe(src = "chr17_36020000_36140000.pdf",width="600", height="600")
-                          #                         h4("SVG"),
-                          #                         imageOutput("exampleSVG")
-                 ),
+                          tags$iframe(src = "chr17_36020000_36140000.pdf",
+                                      width="600", height="600")
+                          ),
                  tabPanel("R Session Info",
                           includeMarkdown("Markdown/RSessionInfo.md")
                  )
