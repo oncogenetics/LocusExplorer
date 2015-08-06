@@ -57,3 +57,17 @@ Questions, suggestions, and bug reports are welcome and appreciated.
 - Submit [suggestions and bug-reports](https://github.com/oncogenetics/LocusExplorer/issues)
 - Send [pull request](https://github.com/oncogenetics/LocusExplorer/pulls)
 - Contact email [Dadaev T](mailto: tokhir.dadaev@icr.ac.uk)
+
+### To-do list
+-	LNCAP arrows for prostate data.
+-	Plot legend
+-	Make LD file optional
+-	Bed track custom, multiple files
+-	Input file validation
+-	Encode - wiggle data as bed track
+-	LD tutorial add tabix/plink option
+-	Multiple region upload
+-	Hide red error messages
+
+
+

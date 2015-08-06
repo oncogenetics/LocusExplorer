@@ -3,12 +3,13 @@
 
 # Workspace ---------------------------------------------------------------
 #CRAN
-# install.packages(c("shiny", "data.table", "dplyr", "ggplot2",
+# install.packages(c("shiny", "data.table", "dplyr", "tidyr", ggplot2",
 #                    "knitr", "markdown", "stringr","DT"),
 #                  dependencies = TRUE)
 library(shiny)
 library(data.table)
 library(dplyr)
+library(tidyr)
 library(ggplot2)
 library(knitr)
 library(markdown)
@@ -17,7 +18,8 @@ library(DT)
 
 #Bioconductor
 # source("http://bioconductor.org/biocLite.R")
-# biocLite(c("ggbio","GenomicRanges","TxDb.Hsapiens.UCSC.hg19.knownGene","org.Hs.eg.db"))
+# biocLite(c("ggbio","GenomicRanges","TxDb.Hsapiens.UCSC.hg19.knownGene",
+#            "org.Hs.eg.db"))
 library(ggbio)
 library(GenomicRanges)
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
