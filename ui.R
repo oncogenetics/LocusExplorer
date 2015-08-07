@@ -69,6 +69,14 @@ shinyUI(
         tabsetPanel(
           tabPanel("Summary",
                    h4("Summary"),
+                   
+                   #if Prostate data is selected then link to Ali finemapping paper
+                   conditionalPanel("input.dataType == 'Prostate'",
+                   hr(),
+                   includeMarkdown("Markdown/FinemappingPaperAbstract.md"),
+                   hr()
+                   ),
+                   
                    helpText("From association file the region - UCSC link:"),
                    htmlOutput("SummaryRegion"),
                    hr(),
@@ -233,9 +241,10 @@ shinyUI(
                         #includeMarkdown("Markdown/HelpAbout.md")
                         includeMarkdown("README.md")),
                tabPanel("Example Plot",
-                        h4("PDF"),
-                        tags$iframe(src = "chr17_36020000_36140000.pdf",
-                                    width="600", height="600")),
+                        h4("Sample JPEG output"),
+                        h5("res = 100, hight = 1200px, width = 1000px"),
+                        imageOutput("ExamplePlotJPEG")
+                        ),
                tabPanel("R Session Info",
                         includeMarkdown("Markdown/RSessionInfo.md")),
                tabPanel("LD Tutorial",

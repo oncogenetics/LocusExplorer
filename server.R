@@ -387,7 +387,14 @@ shinyServer(function(input, output, session) {
     on.exit(progress$close())
     
     print(plotObjGene())})
-  
+  # Example plot ------------------------------------------------------------
+  output$ExamplePlotJPEG <- renderImage({
+    return(list(
+        src = "www/chr17_36020000_36140000.jpeg",
+        contentType = "image/jpeg",
+        alt = "ExamplePlotOutput"
+      ))
+    }, deleteFile = FALSE)
   # Plot Merge --------------------------------------------------------------
   #Dynamic size for tracks
   RegionHitsCount <- reactive({ length(RegionHitsSelected()) })

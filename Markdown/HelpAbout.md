@@ -51,7 +51,7 @@ Tokhir Dadaev<sup>1</sup>, Daniel A Leongamornlert<sup>1</sup>, Edward J Saunder
 
 ### Additional Publications That Use Locus Explorer
 [Multiple novel prostate cancer susceptibility signals identified by fine-mapping of known risk loci among Europeans.](http://www.ncbi.nlm.nih.gov/pubmed/26025378)  
-Al Olama AA *et al.*<sup>1</sup>
+Al Olama AA *et al.*
 
 ### Contact  
 Questions, suggestions, and bug reports are welcome and appreciated. 
