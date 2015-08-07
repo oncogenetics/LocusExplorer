@@ -59,14 +59,5 @@ Questions, suggestions, and bug reports are welcome and appreciated.
 - Contact email [T Dadaev](mailto: tokhir.dadaev@icr.ac.uk)
 
 ### To-do list
--	Plot legend
--	Make LD file optional
--	Bed track custom, multiple files
--	Input file validation
--	Encode - wiggle data as bed track
--	LD tutorial add tabix/plink option
--	Multiple region upload
--	Hide red error messages
-
-
+https://github.com/oncogenetics/LocusExplorer/issues
 
