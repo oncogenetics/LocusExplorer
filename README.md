@@ -59,7 +59,6 @@ Questions, suggestions, and bug reports are welcome and appreciated.
 - Contact email [T Dadaev](mailto: tokhir.dadaev@icr.ac.uk)
 
 ### To-do list
--	LNCAP arrows for prostate data.
 -	Plot legend
 -	Make LD file optional
 -	Bed track custom, multiple files
