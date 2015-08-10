@@ -17,7 +17,7 @@ The latest version of R can be downloaded by following the instructions at [http
 
 After installation of  the R software, R packages used by Locus Explorer must be installed prior to use. This may take a few minutes, but is only required on the first occasion. To install packages, open the R program, copy the following code into the R console and hit Return:
 ```R
-install.packages(c("shiny", "data.table", "dplyr", "tidyr", "ggplot2", "knitr", "markdown", "stringr","DT"), dependencies = TRUE)
+install.packages(c("shiny", "data.table", "dplyr", "tidyr", "ggplot2", "knitr", "markdown", "stringr","DT", "devtools"), dependencies = TRUE)
 
 source("http://bioconductor.org/biocLite.R")
 biocLite(c("ggbio","GenomicRanges","TxDb.Hsapiens.UCSC.hg19.knownGene","org.Hs.eg.db"))
@@ -40,6 +40,26 @@ If you see the following error:
 Try running:
 ```R
 setInternet2(TRUE)
+```
+
+### Installing Locus Explorer locally
+Locus Explorer can be downloaded and saved locally. This enables faster start up, but necessitates manual update of the software after updates  
+To minimise the likelihood of permissions errors, by default Locus Explorer will download to the user home directory. Experienced R users can modify the installation directory from the code in the relevant Gist repositiories  
+If permissions issues prevent the local install of Locus Explorer to the default directory, we recommend launcing Locus Explorer directly from GitHub as described in the **Launching the Locus Explorer Application** section above
+
+#### Installing and updating Locus Explorer (Windows)
+To download Locus Explorer or update to the latest version, open R, copy the following code into the console and hit Return:
+```R
+library(devtools)  
+source_gist('b26906c69732f5e2b1b7')
+```
+This is only required on the first occasion, or when updating to the latest version
+
+#### Starting Locus Explorer after Installation (Windows)
+After installation, to start Locus Explorer, open R, copy the following code into the console and hit Return:
+```R
+library(devtools)  
+source_gist('162f4bc84eada0a12f52')
 ```
 
 ### To Cite Locus Explorer
