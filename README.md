@@ -17,15 +17,16 @@ The latest version of R can be downloaded by following the instructions at [http
 
 After installation of  the R software, R packages used by Locus Explorer must be installed prior to use. This may take a few minutes, but is only required on the first occasion. To install packages, open the R program, copy the following code into the R console and hit Return:
 ```R
+#install if missing
 packages <- c("shiny", "data.table", "dplyr", "tidyr", "ggplot2", "knitr", "markdown", "stringr","DT", "devtools")
 if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
   install.packages(setdiff(packages, rownames(installed.packages())), dependencies = TRUE)  
-} else { print("All CRAN packages installed")}
+} else { print("All required CRAN packages installed")}
 
 bioc <- c("ggbio","GenomicRanges","TxDb.Hsapiens.UCSC.hg19.knownGene","org.Hs.eg.db")
 if (length(setdiff(bioc, rownames(installed.packages()))) > 0) {
   biocLite(setdiff(bioc, rownames(installed.packages())))  
-} else { print("All Bioconductor packages installed")}
+} else { print("All required Bioconductor packages installed")}
 ```
 
 ### Launching the Locus Explorer Application
