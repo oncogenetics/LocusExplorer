@@ -1,0 +1,12 @@
+# Launch Instructions -----------------------------------------------------
+
+#### Launch Locus Explorer (Windows)
+library(shiny)
+LocusExplorer <- function() {
+  ## Recall Installation Path 
+  LEdir <- paste(paste(Sys.getenv(c("HOMEDRIVE", "HOMEPATH")), collapse=""), "\\LocusExplorer\\LocusExplorer-master", sep = "")
+    ## Launch App
+  runApp(appDir = LEdir)
+}
+
+LocusExplorer()
