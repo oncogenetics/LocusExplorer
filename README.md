@@ -8,7 +8,7 @@ Locus Explorer should be used for illustrative purposes only. Any results provid
 ### Availability  
 The source code and installation instructions for Locus Explorer are available at https://github.com/oncogenetics/LocusExplorer.
 
-Locus Explorer is made available under the xxxx license.
+Locus Explorer is made available under the MIT license.
 
 ### Required Software
 Locus Explorer runs in the R environment but is designed to be an easy to use interface that does not require familiarity with R as a prerequisite. Locus explorer is platform agnostic and able to run on any operating system for which R is available.

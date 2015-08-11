@@ -1,4 +1,8 @@
-# Created 13/01/2015 by Tokhir Dadaev
+# Author: Tokhir Dadaev
+# License: MIT + file LICENSE.txt
+
+
+# About -------------------------------------------------------------------
 # User interface file for shiny
 
 # Workspace ---------------------------------------------------------------
@@ -19,11 +23,12 @@ library(DT)
 #Bioconductor
 # source("http://bioconductor.org/biocLite.R")
 # biocLite(c("ggbio","GenomicRanges","TxDb.Hsapiens.UCSC.hg19.knownGene",
-#            "org.Hs.eg.db"))
+#            "org.Hs.eg.db","rtracklayer"))
 library(ggbio)
 library(GenomicRanges)
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 library(org.Hs.eg.db) # gene symobols
+library(rtracklayer) # bigwig
 
 # Define UI ---------------------------------------------------------------
 shinyUI(
