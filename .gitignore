@@ -11,3 +11,9 @@
 # produced vignettes
 vignettes/*.html
 vignettes/*.pdf
+
+# Encode bigWig files
+Data/EncodeBigWig/*.bigWig
+
+# Genetic Map files
+/Data/GeneticMap1KG/*.txt

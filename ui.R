@@ -8,7 +8,7 @@
 # Workspace ---------------------------------------------------------------
 #CRAN
 # install.packages(c("shiny", "data.table", "dplyr", "tidyr", "ggplot2",
-#                    "knitr", "markdown", "stringr","DT"),
+#                    "knitr", "markdown", "stringr","DT","seqminer"),
 #                  dependencies = TRUE)
 library(shiny)
 library(data.table)
@@ -19,6 +19,7 @@ library(knitr)
 library(markdown)
 library(stringr)
 library(DT)
+library(seqminer)
 
 #Bioconductor
 # source("http://bioconductor.org/biocLite.R")
@@ -96,9 +97,13 @@ shinyUI(
           tabPanel("LD",
                    h4("Linkage Disequilibrium"),
                    dataTableOutput("SummaryLD")),
-          tabPanel("LNCaP",
-                   h4("Prostate Cancer Cells"),
-                   dataTableOutput("SummaryLNCAP")),
+          tabPanel("Cell lines",
+                   h4("LNCaP - Prostate Cancer Cells"),
+                   dataTableOutput("SummaryLNCAP"),
+                   hr(),
+                   h4("ENCODE - H3K27Ac Mark (Often Found Near Active Regulatory Elements) on 7 cell lines"),
+                   helpText("Scores filtered at 5+, and rounded and set maximum value to 100."),
+                   dataTableOutput("SummaryENCODE")),
           tabPanel("eQTL",
                    h4("Expression Quantitative Trait Loci"),
                    dataTableOutput("SummaryEQTL")),
@@ -140,6 +145,7 @@ shinyUI(
                                     "LDSmooth"="LDSmooth",
                                     "LD"="LD",
                                     "SNPType"="SNPType",
+                                    "ENCODE"="ENCODE",
                                     "LNCAP"="LNCAP",
                                     "eQTL"="eQTL",
                                     "Gene"="Gene"),
@@ -158,6 +164,8 @@ shinyUI(
                                 plotOutput("PlotSNPLD",width=800,height=110)),
                conditionalPanel("input.ShowHideTracks.indexOf('SNPType')>-1",
                                 plotOutput("PlotSNPType",width=800,height=90)),
+               conditionalPanel("input.ShowHideTracks.indexOf('ENCODE')>-1",
+                                plotOutput("PlotENCODE",width=800,height=90)),
                conditionalPanel("input.ShowHideTracks.indexOf('LNCAP')>-1",
                                 plotOutput("PlotLNCAP",width=800,height=70)),
                conditionalPanel("input.ShowHideTracks.indexOf('eQTL')>-1",

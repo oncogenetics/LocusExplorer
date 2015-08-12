@@ -58,3 +58,4 @@ Questions, suggestions, and bug reports are welcome and appreciated.
 - Submit [suggestions and bug-reports](https://github.com/oncogenetics/LocusExplorer/issues)
 - Send [pull request](https://github.com/oncogenetics/LocusExplorer/pulls)
 - Contact email [Dadaev T](mailto: tokhir.dadaev@icr.ac.uk)
+

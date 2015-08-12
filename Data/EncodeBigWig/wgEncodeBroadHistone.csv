@@ -1,0 +1,8 @@
+Name,Colour,ColourDark,File
+GM12878,#FF8080,#FF1F1F,wgEncodeBroadHistoneGm12878H3k27acStdSig.bigWig
+H1-hESC,#FFD480,#FFB41F,wgEncodeBroadHistoneH1hescH3k27acStdSig.bigWig
+HSMM,#78EBCC,#2ADFAF,wgEncodeBroadHistoneHsmmH3k27acStdSig.bigWig
+HUVEC,#80D4FF,#1FB4FF,wgEncodeBroadHistoneHuvecH3k27acStdSig.bigWig
+K562,#8080FF,#1F1FFF,wgEncodeBroadHistoneK562H3k27acStdSig.bigWig
+NHEK,#D480FF,#B41FFF,wgEncodeBroadHistoneNhekH3k27acStdSig.bigWig
+NHLF,#FF80D4,#FF1FB4,wgEncodeBroadHistoneNhlfH3k27acStdSig.bigWig
