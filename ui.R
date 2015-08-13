@@ -149,7 +149,10 @@ shinyUI(
                                     "LNCAP"="LNCAP",
                                     "eQTL"="eQTL",
                                     "Gene"="Gene"),
-                                  selected=c("Manhattan","LD","LDSmooth")),
+                                  selected=c("Manhattan")
+                                  #selected=c("Manhattan","LD","LDSmooth")
+                                  ),
+               
                h6("Recommneded to hide tracks until final zoom region is decided."),
                #actionButton("resetInput", "Reset inputs",icon = icon("undo"))
                actionButton("resetInput", "Reset inputs",icon = icon("ambulance"),

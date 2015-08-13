@@ -53,7 +53,7 @@ shinyServer(function(input, output, session) {
              },
            Custom = {
              #input file check
-             validate(need(input$FileLD != "", "Please upload LD file"))
+             #validate(need(input$FileLD != "", "Please upload LD file"))
              
              inFile <- input$FileLD
              if(is.null(inFile)){return(NULL)}
@@ -244,25 +244,25 @@ shinyServer(function(input, output, session) {
   
   
   # Data level 3 - Plot data ------------------------------------------------
-  # http://stackoverflow.com/a/8197703/680068
-  # hcl(h=seq(15, 375, length=6), l=65, c=100)[1:5]
-  # colors match first 5 colours of default ggplot2
-  colourLD5 <- c("#F8766D","#A3A500","#00BF7D","#00B0F6","#E76BF3")
-  #create pallete LD 0 to 100
-  colLD <- lapply(colourLD5,function(i)colorRampPalette(c("grey95",i))(100))
-  
-  plotDatManhattan <- reactive({
-    Stats <- 
-      ROIdatStats() %>% 
+  plotDatStats <- reactive({
+    ROIdatStats() %>% 
       filter(BP>=zoomStart() &
                BP<=zoomEnd() &
-               PLog >= input$FilterMinPlog)
-    
-    
+               PLog >= input$FilterMinPlog)})
+  
+  plotDatLD <- reactive({
+    #subset LD based on ui input
     LD <- ROIdatLD() %>% 
       filter(
         R2 >= input$FilterMinLD &
           SNP_A %in% RegionHitsSelected())
+    
+    # http://stackoverflow.com/a/8197703/680068
+    # hcl(h=seq(15, 375, length=6), l=65, c=100)[1:5]
+    # colors match first 5 colours of default ggplot2
+    colourLD5 <- c("#F8766D","#A3A500","#00BF7D","#00B0F6","#E76BF3")
+    #create pallete LD 0 to 100
+    colLD <- lapply(colourLD5,function(i)colorRampPalette(c("grey95",i))(100))
     
     #assign colours to LD 
     d_LD <- 
@@ -278,16 +278,15 @@ shinyServer(function(input, output, session) {
           d$LDCol <- colLD[[match(snp,RegionHitsSelected())]][LDColIndex]
           return(d)
         }))
-
+    
     # to add smooth LD Y value used for Pvalue and LD 0-1
     # add pvalues for Y value on the plot
     d_LD <- 
       base::merge.data.frame(
-        Stats,
+        plotDatStats(),
         d_LD[,c("BP_B","R2","LDSNP","LDSmoothCol","LDCol")],
         by.x="BP",by.y="BP_B",all.x=TRUE) %>% 
       mutate(R2_Adj=ROIPLogMax()*R2)
-    
     
     return(d_LD)
   })

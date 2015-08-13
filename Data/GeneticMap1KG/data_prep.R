@@ -7,7 +7,7 @@
 #      - bgzip GeneticMap1KG.txt
 #      - tabix -s 1 -b 2 -e 2 GeneticMap1KG.txt.gz
 #      - issue "tabix.read.table" function throwing error... 
-#              - manual conversion to data.frame
+#              - manual conversion to data.frame in server.R
 
 
 # Workspace ---------------------------------------------------------------
