@@ -16,8 +16,8 @@ shinyServer(function(input, output, session) {
   regions <- read.csv("Data/ProstateData/regions.csv") %>% 
     mutate(REGIONBED=paste0(CHR,"_",START,"_",END))
   
-  #Encode bigwig data description
-  EncodeFileDesc <- 
+  #wgEncodeBroadHistone bigwig data description
+  wgEncodeBroadHistoneFileDesc <- 
     read.csv("Data/wgEncodeBroadHistone/wgEncodeBroadHistone.csv",
              stringsAsFactors = FALSE)
   
@@ -183,7 +183,7 @@ shinyServer(function(input, output, session) {
   
   RegionHitsSelected <- reactive({input$HitSNPs})
   
-  #Genomic ranges to subset bigwig data - encode
+  #Genomic ranges to subset bigwig data - wgEncodeBroadHistone
   RegionGR <- 
     reactive({
       GRanges(seqnames = RegionChr(),
@@ -244,7 +244,19 @@ shinyServer(function(input, output, session) {
     #                BP<=RegionEnd()) 
   })
   
+  ROIdatwgEncodeRegDnaseClustered <- reactive({ 
+    
+    tabixRegion <- paste0(RegionChr(),":",
+                          RegionStart(),"-",
+                          RegionEnd())
+    x <- tabix.read("Data/wgEncodeRegDnaseClustered/wgEncodeRegDnaseClusteredV3.txt.gz",tabixRegion)
+    x <- data.frame(temp=x)
+    x <- separate(x,col=temp,into=c("CHR","START","END","SCORE"),sep="\t",convert=TRUE)
+    return(x)
+    })
   
+  
+    
   
   
   
@@ -320,20 +332,20 @@ shinyServer(function(input, output, session) {
     return(res)
     })
   
-  #ENCODE data 7 big wig data
-  plotDatENCODE <- reactive({
+  #wgEncodeBroadHistone data 7 big wig data
+  plotDatwgEncodeBroadHistone <- reactive({
     #subset region 
     wgEncodeBroadHistone <- 
       rbind_all(
         #seven bigwig files
-        lapply(1:nrow(EncodeFileDesc), function(i){
-          #i=1  EncodeFileDesc$File[1]
+        lapply(1:nrow(wgEncodeBroadHistoneFileDesc), function(i){
+          #i=1  wgEncodeBroadHistoneFileDesc$File[1]
           as.data.frame(
-            import(paste0("Data/EncodeBigWig/",EncodeFileDesc$File[i]),
+            import(paste0("Data/wgEncodeBroadHistone/",wgEncodeBroadHistoneFileDesc$File[i]),
                    which=RegionGR())) %>% 
             filter(score >= 5) %>% 
             transmute(BP=start,
-                      ENCODE=EncodeFileDesc$Name[i],
+                      ENCODE=wgEncodeBroadHistoneFileDesc$Name[i],
                       SCORE=round(ifelse(score >= 100, 100, score),0))
           }))
     
@@ -350,8 +362,8 @@ shinyServer(function(input, output, session) {
         ))
     })
   
-  #temp testing output of ENCODE data
-  output$SummaryENCODE <- renderDataTable({ plotDatENCODE() %>% arrange(BP) })
+  #output of wgEncodeBroadHistone data
+  output$SummarywgEncodeBroadHistone <- renderDataTable({ plotDatwgEncodeBroadHistone() %>% arrange(BP) })
   
   
   # Output ------------------------------------------------------------------
@@ -448,9 +460,14 @@ shinyServer(function(input, output, session) {
   plotObjSNPLD <- reactive({source("source/LD.R",local=TRUE)})
   output$PlotSNPLD <- renderPlot({print(plotObjSNPLD())})
   
-  #ENCODE 7 bigwig data track
-  plotObjENCODE <- reactive({source("source/ENCODE.R",local=TRUE)})
-  output$PlotENCODE <- renderPlot({print(plotObjENCODE())})
+  #wgEncodeBroadHistone 7 bigwig data track
+  plotObjwgEncodeBroadHistone <- reactive({source("source/wgEncodeBroadHistone.R",local=TRUE)})
+  output$PlotwgEncodeBroadHistone <- renderPlot({print(plotObjwgEncodeBroadHistone())})
+  
+  #wgEncodeRegDnaseClustered 1 bed file
+  plotObjwgEncodeRegDnaseClustered <- reactive({source("source/wgEncodeRegDnaseClustered.R",local=TRUE)})
+  output$PlotwgEncodeRegDnaseClustered <- renderPlot({print(plotObjwgEncodeRegDnaseClustered())})
+  
   
   #LNCAP Smooth track
   plotObjLNCAP <- reactive({source("source/LNCAP.R",local=TRUE)})
@@ -492,11 +509,14 @@ shinyServer(function(input, output, session) {
   
   #Default size per track
   trackSize <- reactive({ 
-    data.frame(Track=c("Chromosome","Manhattan","LD","SNPType","ENCODE","LNCAP","eQTL","Gene"),
+    data.frame(Track=c("Chromosome","Manhattan","LD","SNPType",
+                       "wgEncodeBroadHistone","wgEncodeRegDnaseClustered",
+                       "LNCAP","eQTL","Gene"),
                Size=c(100,400,
                       RegionHitsCount()*25,
                       RegionSNPTypeCount()*25,
-                      60, # encode
+                      60, # wgEncodeBroadHistone
+                      20, # wgEncodeRegDnaseClustered
                       20, # lncap
                       30, # eqtl
                       RegionGeneCount()*30)) })
@@ -722,7 +742,8 @@ shinyServer(function(input, output, session) {
                                          "LDSmooth"="LDSmooth",
                                          "LD"="LD",
                                          "SNPType"="SNPType",
-                                         "ENCODE"="ENCODE",
+                                         "wgEncodeBroadHistone"="wgEncodeBroadHistone",
+                                         "wgEncodeRegDnaseClustered"="wgEncodeRegDnaseClustered",
                                          "LNCAP"="LNCAP",
                                          "eQTL"="eQTL",
                                          "Gene"="Gene"),
