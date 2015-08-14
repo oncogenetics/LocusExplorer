@@ -80,7 +80,7 @@ shinyUI(
                    #if Prostate data is selected then link to Ali finemapping paper
                    conditionalPanel("input.dataType == 'Prostate'",
                    hr(),
-                   includeMarkdown("Markdown/FinemappingPaperAbstract.md"),
+                   includeMarkdown("Data/ProstateData/README.md"),
                    hr()
                    ),
                    
@@ -102,9 +102,12 @@ shinyUI(
                    h4("LNCaP - Prostate Cancer Cells"),
                    dataTableOutput("SummaryLNCAP"),
                    hr(),
-                   h4("ENCODE - H3K27Ac Mark (Often Found Near Active Regulatory Elements) on 7 cell lines"),
+                   includeMarkdown("Data/wgEncodeBroadHistone/README.md"),
                    helpText("Scores filtered at 5+, and rounded and set maximum value to 100."),
-                   dataTableOutput("SummaryENCODE")),
+                   dataTableOutput("SummaryENCODE"),
+                   hr(),
+                   includeMarkdown("Data/wgEncodeRegDnaseClustered/README.md")
+                   ),
           tabPanel("eQTL",
                    h4("Expression Quantitative Trait Loci"),
                    dataTableOutput("SummaryEQTL")),

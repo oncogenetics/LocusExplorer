@@ -18,7 +18,7 @@ shinyServer(function(input, output, session) {
   
   #Encode bigwig data description
   EncodeFileDesc <- 
-    read.csv("Data/EncodeBigWig/wgEncodeBroadHistone.csv",
+    read.csv("Data/wgEncodeBroadHistone/wgEncodeBroadHistone.csv",
              stringsAsFactors = FALSE)
   
 
