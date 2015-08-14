@@ -8,7 +8,8 @@
 # Workspace ---------------------------------------------------------------
 #CRAN
 # install.packages(c("shiny", "data.table", "dplyr", "tidyr", "ggplot2",
-#                    "knitr", "markdown", "stringr","DT","seqminer"),
+#                    "knitr", "markdown", "stringr","DT","seqminer",
+#                    "lattice","cluster"),
 #                  dependencies = TRUE)
 library(shiny)
 library(data.table)

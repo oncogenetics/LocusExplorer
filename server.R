@@ -55,9 +55,19 @@ shinyServer(function(input, output, session) {
              #input file check
              #validate(need(input$FileLD != "", "Please upload LD file"))
              
+             # If the LD file is missing then create a dummy LD input, 
+             # with top SNP LD at 0.01
              inFile <- input$FileLD
-             if(is.null(inFile)){return(NULL)}
-             fread(inFile$datapath, header=TRUE, data.table=FALSE)
+             if(is.null(inFile)){
+               datStats() %>% 
+                 transmute(CHR_A=RegionChrN(),
+                           BP_A=datStats() %>% arrange(P) %>% head(1) %>% .$BP,
+                           SNP_A=datStats() %>% arrange(P) %>% head(1) %>% .$SNP,
+                           CHR_B=CHR_A,
+                           BP_B=BP,
+                           SNP_B=SNP,
+                           R2=0.01)
+               }else {fread(inFile$datapath, header=TRUE, data.table=FALSE) }
            },
            Example = {
              fread("Data/CustomDataExample/LD.txt",
@@ -478,7 +488,7 @@ shinyServer(function(input, output, session) {
   #Dynamic size for tracks
   RegionHitsCount <- reactive({ length(RegionHitsSelected()) })
   RegionGeneCount <- reactive({ plotDatGeneN() })
-  RegionSNPTypeCount <- reactive({ length(unique(plotDatManhattan()$TYPED)) })
+  RegionSNPTypeCount <- reactive({ length(unique(plotDatStats()$TYPED)) })
   
   #Default size per track
   trackSize <- reactive({ 
