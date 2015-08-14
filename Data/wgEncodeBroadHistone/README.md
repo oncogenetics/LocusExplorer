@@ -1,4 +1,4 @@
-## ENCODE bigWig files
+## ENCODE Histone track files
 
 ### H3K27Ac Mark (Often Found Near Active Regulatory Elements) on 7 cell lines from ENCODE
 
