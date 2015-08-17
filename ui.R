@@ -63,8 +63,8 @@ shinyUI(
         
         conditionalPanel("input.dataType == 'Custom'",
                          fileInput("FileStats", "Association File (required)"),
-                         fileInput("FileLD", "LD File (required)"),#recommended
-                         fileInput("FileLNCAP", "LNCAP File"),
+                         fileInput("FileLD", "LD File (recommended)"),
+                         #fileInput("FileLNCAP", "LNCAP File"),
                          fileInput("FileEQTL", "eQTL File")
         ),#conditionalPanel- Custom
         
@@ -84,14 +84,12 @@ shinyUI(
                    hr()
                    ),
                    
-                   helpText("From association file the region - UCSC link:"),
+                   helpText("UCSC link to selected region:"),
                    htmlOutput("SummaryRegion"),
                    hr(),
-                   helpText("From LD file hit SNPs are as below - NCBI link:"),
+                   helpText("NCBI link to hit SNPs:"),
                    dataTableOutput("SummaryHits"),
-                   hr(),
-                   helpText("Input file number of rows and columns"),
-                   dataTableOutput("SummaryFileNrowNcol")),
+                   hr()),
           tabPanel("Association",
                    h4("Association"),
                    dataTableOutput("SummaryStats")),
@@ -106,7 +104,8 @@ shinyUI(
                    helpText("Scores filtered at 5+, and rounded and set maximum value to 100."),
                    dataTableOutput("SummarywgEncodeBroadHistone"),
                    hr(),
-                   includeMarkdown("Data/wgEncodeRegDnaseClustered/README.md")
+                   includeMarkdown("Data/wgEncodeRegDnaseClustered/README.md"),
+                   dataTableOutput("SummarywgEncodeRegDnaseClustered")
                    ),
           tabPanel("eQTL",
                    h4("Expression Quantitative Trait Loci"),
@@ -151,7 +150,7 @@ shinyUI(
                                     "SNPType"="SNPType",
                                     "wgEncodeBroadHistone"="wgEncodeBroadHistone",
                                     "wgEncodeRegDnaseClustered"="wgEncodeRegDnaseClustered",
-                                    "LNCAP"="LNCAP",
+                                    "LNCaP Prostate"="LNCAP",
                                     "eQTL"="eQTL",
                                     "Gene"="Gene"),
                                   selected=c("Manhattan")

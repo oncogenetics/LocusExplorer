@@ -4,7 +4,7 @@
 ggplot(data=plotDatwgEncodeBroadHistone(),
        aes(BP,SCORE,fill=ENCODE)) +
   geom_area(alpha = 0.5, position = "identity") +
-  scale_fill_manual(values = EncodeFileDesc$ColourDark) +
+  scale_fill_manual(values = wgEncodeBroadHistoneFileDesc$ColourDark) +
   scale_y_continuous(breaks=50,
                      labels=udf_pad("Histone"),
                      name="xxx") +

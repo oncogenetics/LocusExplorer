@@ -2,7 +2,9 @@
 
 ### H3K27Ac Mark (Often Found Near Active Regulatory Elements) on 7 cell lines from ENCODE
 
-Download bigWig files into `Data/EncodeBigWig/` from UCSC golden path link: 
+**Note**
+Histone BigWig files are not included in this app, to display this track please download below files
+files into `Data/EncodeBigWig/` from UCSC golden path link: 
 http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeRegMarkH3k27ac/
 
 

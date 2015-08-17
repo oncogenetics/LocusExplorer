@@ -76,25 +76,26 @@ shinyServer(function(input, output, session) {
   })
   
   datLNCAP <- reactive({
-    switch(input$dataType,
-           Prostate = {
-             #input file check
-             validate(need(input$RegionID != "", "Please select RegionID"))
-             fread(paste0("Data/ProstateData/LE/",input$RegionID,"_LNCAP.txt"),
-                   header=TRUE, data.table=FALSE)
-             },
-           Custom = {
-             #input file check
-             validate(need(input$FileLNCAP != "", "Please upload FileLNCAP file"))
-             
-             inFile <- input$FileLNCAP
-             if(is.null(inFile)){return(NULL)}
-             fread(inFile$datapath, header=TRUE, data.table=FALSE) 
-           },
-           Example = {
-             fread("Data/CustomDataExample/LNCAP.txt",
-                   header=TRUE, data.table=FALSE) 
-           })
+    fread("Data/ProstateLNCAP/ProstateLNCAP.txt")
+#     switch(input$dataType,
+#            Prostate = {
+#              #input file check
+#              validate(need(input$RegionID != "", "Please select RegionID"))
+#              fread(paste0("Data/ProstateData/LE/",input$RegionID,"_LNCAP.txt"),
+#                    header=TRUE, data.table=FALSE)
+#              },
+#            Custom = {
+#              #input file check
+#              validate(need(input$FileLNCAP != "", "Please upload FileLNCAP file"))
+#              
+#              inFile <- input$FileLNCAP
+#              if(is.null(inFile)){return(NULL)}
+#              fread(inFile$datapath, header=TRUE, data.table=FALSE) 
+#            },
+#            Example = {
+#              fread("Data/CustomDataExample/LNCAP.txt",
+#                    header=TRUE, data.table=FALSE) 
+#            })
   })
   
   datEQTL <- reactive({
@@ -362,9 +363,13 @@ shinyServer(function(input, output, session) {
         ))
     })
   
-  #output of wgEncodeBroadHistone data
-  output$SummarywgEncodeBroadHistone <- renderDataTable({ plotDatwgEncodeBroadHistone() %>% arrange(BP) })
-  
+  #output of ENCODE data
+  #wgEncodeBroadHistone data
+  output$SummarywgEncodeBroadHistone <- 
+    renderDataTable({ plotDatwgEncodeBroadHistone() %>% arrange(BP) })
+  #wgEncodeRegDnaseClustered
+  output$SummarywgEncodeRegDnaseClustered <-
+    renderDataTable({ ROIdatwgEncodeRegDnaseClustered() %>%  arrange(START) })
   
   # Output ------------------------------------------------------------------
   # Output Summary ----------------------------------------------------------
@@ -408,13 +413,13 @@ shinyServer(function(input, output, session) {
                         SNP)),
     escape=FALSE,options=list(paging=FALSE,searching=FALSE,searchable=FALSE))
 
-  output$SummaryFileNrowNcol <- DT::renderDataTable( 
-    data.table(InputFile=c("Association","LD","LNCAP","eQTL"),
-               RowCount=c(nrow(datStats()),nrow(datLD()),
-                      nrow(datLNCAP()),nrow(datEQTL())),
-               ColumnCount=c(ncol(datStats()),ncol(datLD()),
-                      ncol(datLNCAP()),ncol(datEQTL()))),
-    options=list(paging=FALSE,searching=FALSE,searchable=FALSE))
+#   output$SummaryFileNrowNcol <- DT::renderDataTable( 
+#     data.table(InputFile=c("Association","LD","LNCAP","eQTL"),
+#                RowCount=c(nrow(datStats()),nrow(datLD()),
+#                       nrow(datLNCAP()),nrow(datEQTL())),
+#                ColumnCount=c(ncol(datStats()),ncol(datLD()),
+#                       ncol(datLNCAP()),ncol(datEQTL()))),
+#     options=list(paging=FALSE,searching=FALSE,searchable=FALSE))
   
   output$SummaryLDlink <- DT::renderDataTable(datLDlink())
   output$SummaryLDlinkProcess <- 
@@ -513,8 +518,8 @@ shinyServer(function(input, output, session) {
                        "wgEncodeBroadHistone","wgEncodeRegDnaseClustered",
                        "LNCAP","eQTL","Gene"),
                Size=c(100,400,
-                      RegionHitsCount()*25,
-                      RegionSNPTypeCount()*25,
+                      RegionHitsCount()*20,
+                      RegionSNPTypeCount()*20,
                       60, # wgEncodeBroadHistone
                       20, # wgEncodeRegDnaseClustered
                       20, # lncap
@@ -744,7 +749,7 @@ shinyServer(function(input, output, session) {
                                          "SNPType"="SNPType",
                                          "wgEncodeBroadHistone"="wgEncodeBroadHistone",
                                          "wgEncodeRegDnaseClustered"="wgEncodeRegDnaseClustered",
-                                         "LNCAP"="LNCAP",
+                                         "LNCaP Prostate"="LNCAP",
                                          "eQTL"="eQTL",
                                          "Gene"="Gene"),
                              selected=c("Manhattan","LD","LDSmooth"))
