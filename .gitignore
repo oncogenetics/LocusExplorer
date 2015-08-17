@@ -11,3 +11,14 @@
 # produced vignettes
 vignettes/*.html
 vignettes/*.pdf
+
+# Genetic Map files
+/Data/GeneticMap1KG/*.txt
+
+# Encode bigWig files
+Data/wgEncodeBroadHistone/*.bigWig
+
+# DNASE bed file
+/Data/wgEncodeRegDnaseClustered/*.bed
+/Data/wgEncodeRegDnaseClustered/*.txt
+

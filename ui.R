@@ -8,7 +8,8 @@
 # Workspace ---------------------------------------------------------------
 #CRAN
 # install.packages(c("shiny", "data.table", "dplyr", "tidyr", "ggplot2",
-#                    "knitr", "markdown", "stringr","DT"),
+#                    "knitr", "markdown", "stringr","DT","seqminer",
+#                    "lattice","cluster"),
 #                  dependencies = TRUE)
 library(shiny)
 library(data.table)
@@ -19,6 +20,7 @@ library(knitr)
 library(markdown)
 library(stringr)
 library(DT)
+library(seqminer)
 
 #Bioconductor
 # source("http://bioconductor.org/biocLite.R")
@@ -61,8 +63,8 @@ shinyUI(
         
         conditionalPanel("input.dataType == 'Custom'",
                          fileInput("FileStats", "Association File (required)"),
-                         fileInput("FileLD", "LD File (required)"),#recommended
-                         fileInput("FileLNCAP", "LNCAP File"),
+                         fileInput("FileLD", "LD File (recommended)"),
+                         #fileInput("FileLNCAP", "LNCAP File"),
                          fileInput("FileEQTL", "eQTL File")
         ),#conditionalPanel- Custom
         
@@ -78,27 +80,33 @@ shinyUI(
                    #if Prostate data is selected then link to Ali finemapping paper
                    conditionalPanel("input.dataType == 'Prostate'",
                    hr(),
-                   includeMarkdown("Markdown/FinemappingPaperAbstract.md"),
+                   includeMarkdown("Data/ProstateData/README.md"),
                    hr()
                    ),
                    
-                   helpText("From association file the region - UCSC link:"),
+                   helpText("UCSC link to selected region:"),
                    htmlOutput("SummaryRegion"),
                    hr(),
-                   helpText("From LD file hit SNPs are as below - NCBI link:"),
+                   helpText("NCBI link to hit SNPs:"),
                    dataTableOutput("SummaryHits"),
-                   hr(),
-                   helpText("Input file number of rows and columns"),
-                   dataTableOutput("SummaryFileNrowNcol")),
+                   hr()),
           tabPanel("Association",
                    h4("Association"),
                    dataTableOutput("SummaryStats")),
           tabPanel("LD",
                    h4("Linkage Disequilibrium"),
                    dataTableOutput("SummaryLD")),
-          tabPanel("LNCaP",
-                   h4("Prostate Cancer Cells"),
-                   dataTableOutput("SummaryLNCAP")),
+          tabPanel("Cell lines",
+                   h4("LNCaP - Prostate Cancer Cells"),
+                   dataTableOutput("SummaryLNCAP"),
+                   hr(),
+                   includeMarkdown("Data/wgEncodeBroadHistone/README.md"),
+                   helpText("Scores filtered at 5+, and rounded and set maximum value to 100."),
+                   dataTableOutput("SummarywgEncodeBroadHistone"),
+                   hr(),
+                   includeMarkdown("Data/wgEncodeRegDnaseClustered/README.md"),
+                   dataTableOutput("SummarywgEncodeRegDnaseClustered")
+                   ),
           tabPanel("eQTL",
                    h4("Expression Quantitative Trait Loci"),
                    dataTableOutput("SummaryEQTL")),
@@ -140,10 +148,15 @@ shinyUI(
                                     "LDSmooth"="LDSmooth",
                                     "LD"="LD",
                                     "SNPType"="SNPType",
-                                    "LNCAP"="LNCAP",
+                                    "wgEncodeBroadHistone"="wgEncodeBroadHistone",
+                                    "wgEncodeRegDnaseClustered"="wgEncodeRegDnaseClustered",
+                                    "LNCaP Prostate"="LNCAP",
                                     "eQTL"="eQTL",
                                     "Gene"="Gene"),
-                                  selected=c("Manhattan","LD","LDSmooth")),
+                                  selected=c("Manhattan")
+                                  #selected=c("Manhattan","LD","LDSmooth")
+                                  ),
+               
                h6("Recommneded to hide tracks until final zoom region is decided."),
                #actionButton("resetInput", "Reset inputs",icon = icon("undo"))
                actionButton("resetInput", "Reset inputs",icon = icon("ambulance"),
@@ -158,6 +171,10 @@ shinyUI(
                                 plotOutput("PlotSNPLD",width=800,height=110)),
                conditionalPanel("input.ShowHideTracks.indexOf('SNPType')>-1",
                                 plotOutput("PlotSNPType",width=800,height=90)),
+               conditionalPanel("input.ShowHideTracks.indexOf('wgEncodeBroadHistone')>-1",
+                                plotOutput("PlotwgEncodeBroadHistone",width=800,height=90)),
+               conditionalPanel("input.ShowHideTracks.indexOf('wgEncodeRegDnaseClustered')>-1",
+                                plotOutput("PlotwgEncodeRegDnaseClustered",width=800,height=90)),
                conditionalPanel("input.ShowHideTracks.indexOf('LNCAP')>-1",
                                 plotOutput("PlotLNCAP",width=800,height=70)),
                conditionalPanel("input.ShowHideTracks.indexOf('eQTL')>-1",

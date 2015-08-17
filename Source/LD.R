@@ -1,8 +1,7 @@
 # LD track
 # plot LD per hit SNPs on seperate Yaxis 1,2,3,etc
 
-
-ggplot(data=plotDatManhattan(),
+ggplot(data=plotDatLD(),
        aes(x=BP,xend=BP,
            y=as.numeric(as.factor(LDSNP)), yend=as.numeric(as.factor(LDSNP))+1,
            colour=LDSmoothCol)) +

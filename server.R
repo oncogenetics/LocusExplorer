@@ -12,8 +12,14 @@ shinyServer(function(input, output, session) {
   
   source("source/UDF.R",local = TRUE)
   
+  #prostate region names
   regions <- read.csv("Data/ProstateData/regions.csv") %>% 
     mutate(REGIONBED=paste0(CHR,"_",START,"_",END))
+  
+  #wgEncodeBroadHistone bigwig data description
+  wgEncodeBroadHistoneFileDesc <- 
+    read.csv("Data/wgEncodeBroadHistone/wgEncodeBroadHistone.csv",
+             stringsAsFactors = FALSE)
   
 
   # Data level 1 - Raw Input ------------------------------------------------
@@ -47,11 +53,21 @@ shinyServer(function(input, output, session) {
              },
            Custom = {
              #input file check
-             validate(need(input$FileLD != "", "Please upload LD file"))
+             #validate(need(input$FileLD != "", "Please upload LD file"))
              
+             # If the LD file is missing then create a dummy LD input, 
+             # with top SNP LD at 0.01
              inFile <- input$FileLD
-             if(is.null(inFile)){return(NULL)}
-             fread(inFile$datapath, header=TRUE, data.table=FALSE)
+             if(is.null(inFile)){
+               datStats() %>% 
+                 transmute(CHR_A=RegionChrN(),
+                           BP_A=datStats() %>% arrange(P) %>% head(1) %>% .$BP,
+                           SNP_A=datStats() %>% arrange(P) %>% head(1) %>% .$SNP,
+                           CHR_B=CHR_A,
+                           BP_B=BP,
+                           SNP_B=SNP,
+                           R2=0.01)
+               }else {fread(inFile$datapath, header=TRUE, data.table=FALSE) }
            },
            Example = {
              fread("Data/CustomDataExample/LD.txt",
@@ -60,25 +76,26 @@ shinyServer(function(input, output, session) {
   })
   
   datLNCAP <- reactive({
-    switch(input$dataType,
-           Prostate = {
-             #input file check
-             validate(need(input$RegionID != "", "Please select RegionID"))
-             fread(paste0("Data/ProstateData/LE/",input$RegionID,"_LNCAP.txt"),
-                   header=TRUE, data.table=FALSE)
-             },
-           Custom = {
-             #input file check
-             validate(need(input$FileLNCAP != "", "Please upload FileLNCAP file"))
-             
-             inFile <- input$FileLNCAP
-             if(is.null(inFile)){return(NULL)}
-             fread(inFile$datapath, header=TRUE, data.table=FALSE) 
-           },
-           Example = {
-             fread("Data/CustomDataExample/LNCAP.txt",
-                   header=TRUE, data.table=FALSE) 
-           })
+    fread("Data/ProstateLNCAP/ProstateLNCAP.txt")
+#     switch(input$dataType,
+#            Prostate = {
+#              #input file check
+#              validate(need(input$RegionID != "", "Please select RegionID"))
+#              fread(paste0("Data/ProstateData/LE/",input$RegionID,"_LNCAP.txt"),
+#                    header=TRUE, data.table=FALSE)
+#              },
+#            Custom = {
+#              #input file check
+#              validate(need(input$FileLNCAP != "", "Please upload FileLNCAP file"))
+#              
+#              inFile <- input$FileLNCAP
+#              if(is.null(inFile)){return(NULL)}
+#              fread(inFile$datapath, header=TRUE, data.table=FALSE) 
+#            },
+#            Example = {
+#              fread("Data/CustomDataExample/LNCAP.txt",
+#                    header=TRUE, data.table=FALSE) 
+#            })
   })
   
   datEQTL <- reactive({
@@ -167,15 +184,24 @@ shinyServer(function(input, output, session) {
   
   RegionHitsSelected <- reactive({input$HitSNPs})
   
+  #Genomic ranges to subset bigwig data - wgEncodeBroadHistone
+  RegionGR <- 
+    reactive({
+      GRanges(seqnames = RegionChr(),
+              IRanges(start = RegionStart(),
+                      end = RegionEnd())) 
+      })
+  
   # Genetic Map 1KG ---------------------------------------------------------
-  datGeneticMap <- reactive({
-    fread(paste0("Data/GeneticMap1KG/genetic_map_",
-                 RegionChr(),
-                 "_combined_b37.txt"),
-          header=TRUE, sep=" ", data.table = FALSE)  %>% 
-      transmute(BP=position,
-                Recomb=`COMBINED_rate(cM/Mb)`,
-                RecombAdj=Recomb*ROIPLogMax()/100)})
+#  datGeneticMap <- reactive({
+#     fread(paste0("Data/GeneticMap1KG/genetic_map_",
+#                  RegionChr(),
+#                  "_combined_b37.txt"),
+#           header=TRUE, sep=" ", data.table = FALSE)  %>% 
+#       transmute(BP=position,
+#                 Recomb=`COMBINED_rate(cM/Mb)`,
+#                 RecombAdj=Recomb*ROIPLogMax()/100)
+#    })
   
   # Data level 2 - ROI ------------------------------------------------------
   ROIdatStats <- reactive({ datStats() %>% 
@@ -194,14 +220,46 @@ shinyServer(function(input, output, session) {
       filter(CHR==RegionChr() &
                START>=RegionStart() &
                END<=RegionEnd()) })
-  ROIdatGeneticMap <- reactive({ datGeneticMap() %>% 
-      filter(BP>=RegionStart() &
-               BP<=RegionEnd()) })
+  
   ROIPLogMax <- reactive({
     #ylim Max for plotting Manhattan
     maxY <- max(ROIdatStats()$PLog,na.rm = TRUE)
     return(max(10,ceiling((maxY+1)/5)*5))
   })
+  
+  ROIdatGeneticMap <- reactive({ 
+    
+    tabixRegion <- paste0(RegionChr(),":",
+                          RegionStart(),"-",
+                          RegionEnd())
+    x <- tabix.read("Data/GeneticMap1KG/GeneticMap1KG.txt.gz",tabixRegion)
+    x <- data.frame(temp=gsub("\r","",x,fixed=TRUE))
+    x <- separate(x,col=temp,into=c("CHR","BP","RECOMB"),sep="\t",convert=TRUE)
+    
+    return(x %>% 
+             transmute(BP=BP,
+                       Recomb=RECOMB,
+                       RecombAdj=Recomb*ROIPLogMax()/100))
+    #     datGeneticMap() %>% 
+    #       filter(BP>=RegionStart() &
+    #                BP<=RegionEnd()) 
+  })
+  
+  ROIdatwgEncodeRegDnaseClustered <- reactive({ 
+    
+    tabixRegion <- paste0(RegionChr(),":",
+                          RegionStart(),"-",
+                          RegionEnd())
+    x <- tabix.read("Data/wgEncodeRegDnaseClustered/wgEncodeRegDnaseClusteredV3.txt.gz",tabixRegion)
+    x <- data.frame(temp=x)
+    x <- separate(x,col=temp,into=c("CHR","START","END","SCORE"),sep="\t",convert=TRUE)
+    return(x)
+    })
+  
+  
+    
+  
+  
   
   # Define Zoom Start End ---------------------------------------------------
   zoomStart <- reactive({ input$BPrange[1] })
@@ -209,25 +267,25 @@ shinyServer(function(input, output, session) {
   
   
   # Data level 3 - Plot data ------------------------------------------------
-  # http://stackoverflow.com/a/8197703/680068
-  # hcl(h=seq(15, 375, length=6), l=65, c=100)[1:5]
-  # colors match first 5 colours of default ggplot2
-  colourLD5 <- c("#F8766D","#A3A500","#00BF7D","#00B0F6","#E76BF3")
-  #create pallete LD 0 to 100
-  colLD <- lapply(colourLD5,function(i)colorRampPalette(c("grey95",i))(100))
-  
-  plotDatManhattan <- reactive({
-    Stats <- 
-      ROIdatStats() %>% 
+  plotDatStats <- reactive({
+    ROIdatStats() %>% 
       filter(BP>=zoomStart() &
                BP<=zoomEnd() &
-               PLog >= input$FilterMinPlog)
-    
-    
+               PLog >= input$FilterMinPlog)})
+  
+  plotDatLD <- reactive({
+    #subset LD based on ui input
     LD <- ROIdatLD() %>% 
       filter(
         R2 >= input$FilterMinLD &
           SNP_A %in% RegionHitsSelected())
+    
+    # http://stackoverflow.com/a/8197703/680068
+    # hcl(h=seq(15, 375, length=6), l=65, c=100)[1:5]
+    # colors match first 5 colours of default ggplot2
+    colourLD5 <- c("#F8766D","#A3A500","#00BF7D","#00B0F6","#E76BF3")
+    #create pallete LD 0 to 100
+    colLD <- lapply(colourLD5,function(i)colorRampPalette(c("grey95",i))(100))
     
     #assign colours to LD 
     d_LD <- 
@@ -243,22 +301,21 @@ shinyServer(function(input, output, session) {
           d$LDCol <- colLD[[match(snp,RegionHitsSelected())]][LDColIndex]
           return(d)
         }))
-
+    
     # to add smooth LD Y value used for Pvalue and LD 0-1
     # add pvalues for Y value on the plot
     d_LD <- 
       base::merge.data.frame(
-        Stats,
+        plotDatStats(),
         d_LD[,c("BP_B","R2","LDSNP","LDSmoothCol","LDCol")],
         by.x="BP",by.y="BP_B",all.x=TRUE) %>% 
       mutate(R2_Adj=ROIPLogMax()*R2)
-    
     
     return(d_LD)
   })
   
   #subset of recombination rates for zoomed region
-  plotDatGeneticMap <- reactive({ datGeneticMap() %>% 
+  plotDatGeneticMap <- reactive({ ROIdatGeneticMap() %>% 
       filter(BP>=zoomStart() &
                BP<=zoomEnd()) })
   
@@ -276,6 +333,43 @@ shinyServer(function(input, output, session) {
     return(res)
     })
   
+  #wgEncodeBroadHistone data 7 big wig data
+  plotDatwgEncodeBroadHistone <- reactive({
+    #subset region 
+    wgEncodeBroadHistone <- 
+      rbind_all(
+        #seven bigwig files
+        lapply(1:nrow(wgEncodeBroadHistoneFileDesc), function(i){
+          #i=1  wgEncodeBroadHistoneFileDesc$File[1]
+          as.data.frame(
+            import(paste0("Data/wgEncodeBroadHistone/",wgEncodeBroadHistoneFileDesc$File[i]),
+                   which=RegionGR())) %>% 
+            filter(score >= 5) %>% 
+            transmute(BP=start,
+                      ENCODE=wgEncodeBroadHistoneFileDesc$Name[i],
+                      SCORE=round(ifelse(score >= 100, 100, score),0))
+          }))
+    
+    #merge on BP, to plot overlappling
+    res <- data.frame(BP=unique(wgEncodeBroadHistone$BP))
+    return( 
+      rbind_all(
+        lapply(unique(wgEncodeBroadHistone$ENCODE), function(i){
+          d <- merge(res,wgEncodeBroadHistone %>% filter(ENCODE==i),by="BP",all.x=TRUE)
+          d$ENCODE <- i
+          d$SCORE[ is.na(d$SCORE) ] <- 0
+          return(d)
+          })
+        ))
+    })
+  
+  #output of ENCODE data
+  #wgEncodeBroadHistone data
+  output$SummarywgEncodeBroadHistone <- 
+    renderDataTable({ plotDatwgEncodeBroadHistone() %>% arrange(BP) })
+  #wgEncodeRegDnaseClustered
+  output$SummarywgEncodeRegDnaseClustered <-
+    renderDataTable({ ROIdatwgEncodeRegDnaseClustered() %>%  arrange(START) })
   
   # Output ------------------------------------------------------------------
   # Output Summary ----------------------------------------------------------
@@ -319,13 +413,13 @@ shinyServer(function(input, output, session) {
                         SNP)),
     escape=FALSE,options=list(paging=FALSE,searching=FALSE,searchable=FALSE))
 
-  output$SummaryFileNrowNcol <- DT::renderDataTable( 
-    data.table(InputFile=c("Association","LD","LNCAP","eQTL"),
-               RowCount=c(nrow(datStats()),nrow(datLD()),
-                      nrow(datLNCAP()),nrow(datEQTL())),
-               ColumnCount=c(ncol(datStats()),ncol(datLD()),
-                      ncol(datLNCAP()),ncol(datEQTL()))),
-    options=list(paging=FALSE,searching=FALSE,searchable=FALSE))
+#   output$SummaryFileNrowNcol <- DT::renderDataTable( 
+#     data.table(InputFile=c("Association","LD","LNCAP","eQTL"),
+#                RowCount=c(nrow(datStats()),nrow(datLD()),
+#                       nrow(datLNCAP()),nrow(datEQTL())),
+#                ColumnCount=c(ncol(datStats()),ncol(datLD()),
+#                       ncol(datLNCAP()),ncol(datEQTL()))),
+#     options=list(paging=FALSE,searching=FALSE,searchable=FALSE))
   
   output$SummaryLDlink <- DT::renderDataTable(datLDlink())
   output$SummaryLDlinkProcess <- 
@@ -358,7 +452,7 @@ shinyServer(function(input, output, session) {
   output$PlotManhattan <- renderPlot({
     # Create a Progress object
     progress <- shiny::Progress$new()
-    progress$set(message = "Almost there...", value = 0)
+    progress$set(message = "Almost there...", value = 80)
     # Close the progress when this reactive exits (even if there's an error)
     on.exit(progress$close())
     
@@ -370,6 +464,16 @@ shinyServer(function(input, output, session) {
   #SNP LD track
   plotObjSNPLD <- reactive({source("source/LD.R",local=TRUE)})
   output$PlotSNPLD <- renderPlot({print(plotObjSNPLD())})
+  
+  #wgEncodeBroadHistone 7 bigwig data track
+  plotObjwgEncodeBroadHistone <- reactive({source("source/wgEncodeBroadHistone.R",local=TRUE)})
+  output$PlotwgEncodeBroadHistone <- renderPlot({print(plotObjwgEncodeBroadHistone())})
+  
+  #wgEncodeRegDnaseClustered 1 bed file
+  plotObjwgEncodeRegDnaseClustered <- reactive({source("source/wgEncodeRegDnaseClustered.R",local=TRUE)})
+  output$PlotwgEncodeRegDnaseClustered <- renderPlot({print(plotObjwgEncodeRegDnaseClustered())})
+  
+  
   #LNCAP Smooth track
   plotObjLNCAP <- reactive({source("source/LNCAP.R",local=TRUE)})
   output$PlotLNCAP <- renderPlot({print(plotObjLNCAP())})
@@ -389,7 +493,7 @@ shinyServer(function(input, output, session) {
   output$PlotGene <- renderPlot({
     # Create a Progress object
     progress <- shiny::Progress$new()
-    progress$set(message = "Almost there...", value = 0)
+    progress$set(message = "Almost there...", value = 80)
     # Close the progress when this reactive exits (even if there's an error)
     on.exit(progress$close())
     
@@ -406,16 +510,20 @@ shinyServer(function(input, output, session) {
   #Dynamic size for tracks
   RegionHitsCount <- reactive({ length(RegionHitsSelected()) })
   RegionGeneCount <- reactive({ plotDatGeneN() })
-  RegionSNPTypeCount <- reactive({ length(unique(plotDatManhattan()$TYPED)) })
+  RegionSNPTypeCount <- reactive({ length(unique(plotDatStats()$TYPED)) })
   
   #Default size per track
   trackSize <- reactive({ 
-    data.frame(Track=c("Chromosome","Manhattan","LD","SNPType","LNCAP","eQTL","Gene"),
+    data.frame(Track=c("Chromosome","Manhattan","LD","SNPType",
+                       "wgEncodeBroadHistone","wgEncodeRegDnaseClustered",
+                       "LNCAP","eQTL","Gene"),
                Size=c(100,400,
-                      RegionHitsCount()*30,
-                      RegionSNPTypeCount()*30,
-                      30,
-                      30,
+                      RegionHitsCount()*20,
+                      RegionSNPTypeCount()*20,
+                      60, # wgEncodeBroadHistone
+                      20, # wgEncodeRegDnaseClustered
+                      20, # lncap
+                      30, # eqtl
                       RegionGeneCount()*30)) })
 
   #Create subset based on selected tracks
@@ -585,7 +693,7 @@ shinyServer(function(input, output, session) {
   output$plotMerge <- renderPlot({
     # Create a Progress object
     progress <- shiny::Progress$new()
-    progress$set(message = "Almost there...", value = 0)
+    progress$set(message = "Almost there...", value = 80)
     # Close the progress when this reactive exits (even if there's an error)
     on.exit(progress$close())
     
@@ -639,7 +747,9 @@ shinyServer(function(input, output, session) {
                                          "LDSmooth"="LDSmooth",
                                          "LD"="LD",
                                          "SNPType"="SNPType",
-                                         "LNCAP"="LNCAP",
+                                         "wgEncodeBroadHistone"="wgEncodeBroadHistone",
+                                         "wgEncodeRegDnaseClustered"="wgEncodeRegDnaseClustered",
+                                         "LNCaP Prostate"="LNCAP",
                                          "eQTL"="eQTL",
                                          "Gene"="Gene"),
                              selected=c("Manhattan","LD","LDSmooth"))
