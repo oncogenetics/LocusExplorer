@@ -130,10 +130,12 @@ shinyServer(function(input, output, session) {
     })
   
   datLDlinkProcess <- reactive({
-    #x <- fread("proxy20066.txt", header=TRUE, data.table=FALSE)
-      datLDlink() %>% 
-        ## select only relevant columns
-      dplyr::select(SNP_B = RS_Number,Coord,R2) %>% 
+    #x <- fread("../CIDR_Data/CIDR_UTAH/chr8_rs17446916.txt", header=TRUE, data.table=FALSE)
+    #x %>% head %>%  
+    
+    datLDlink() %>% 
+    ## select only relevant columns
+    dplyr::select(SNP_B = RS_Number,Coord,R2) %>% 
       ## add index SNP for LD comparison
       mutate(
         SNP_B = ifelse(SNP_B==".",Coord,SNP_B),
@@ -146,7 +148,7 @@ shinyServer(function(input, output, session) {
              BP_A = BP_B[c(1)]) %>%
       ## Reorder columns
       dplyr::select(c(6,7,5,2,3,1,4)) %>% 
-        arrange(BP_B)
+      arrange(BP_B)
     })
   
   # Define ROI --------------------------------------------------------------
@@ -397,7 +399,7 @@ shinyServer(function(input, output, session) {
     },escape=FALSE)
   
   
-  output$SummaryLNCAP <- renderDataTable({ datLNCAP() %>% arrange(BP) })
+  output$SummaryLNCAP <- renderDataTable({ ROIdatLNCAP() %>% arrange(BP) })
   output$SummaryEQTL <- renderDataTable({ datEQTL() %>% arrange(START) })
   output$SummaryRegion <- 
     renderUI(a(paste0(RegionChr(),':',RegionStart(),'-',RegionEnd()),
