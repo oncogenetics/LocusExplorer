@@ -130,10 +130,12 @@ shinyServer(function(input, output, session) {
     })
   
   datLDlinkProcess <- reactive({
-    #x <- fread("proxy20066.txt", header=TRUE, data.table=FALSE)
-      datLDlink() %>% 
-        ## select only relevant columns
-      dplyr::select(SNP_B = RS_Number,Coord,R2) %>% 
+    #x <- fread("../CIDR_Data/CIDR_UTAH/chr8_rs17446916.txt", header=TRUE, data.table=FALSE)
+    #x %>% head %>%  
+    
+    datLDlink() %>% 
+    ## select only relevant columns
+    dplyr::select(SNP_B = RS_Number,Coord,R2) %>% 
       ## add index SNP for LD comparison
       mutate(
         SNP_B = ifelse(SNP_B==".",Coord,SNP_B),
@@ -146,7 +148,7 @@ shinyServer(function(input, output, session) {
              BP_A = BP_B[c(1)]) %>%
       ## Reorder columns
       dplyr::select(c(6,7,5,2,3,1,4)) %>% 
-        arrange(BP_B)
+      arrange(BP_B)
     })
   
   # Define ROI --------------------------------------------------------------
@@ -192,17 +194,6 @@ shinyServer(function(input, output, session) {
                       end = RegionEnd())) 
       })
   
-  # Genetic Map 1KG ---------------------------------------------------------
-#  datGeneticMap <- reactive({
-#     fread(paste0("Data/GeneticMap1KG/genetic_map_",
-#                  RegionChr(),
-#                  "_combined_b37.txt"),
-#           header=TRUE, sep=" ", data.table = FALSE)  %>% 
-#       transmute(BP=position,
-#                 Recomb=`COMBINED_rate(cM/Mb)`,
-#                 RecombAdj=Recomb*ROIPLogMax()/100)
-#    })
-  
   # Data level 2 - ROI ------------------------------------------------------
   ROIdatStats <- reactive({ datStats() %>% 
       filter(BP>=RegionStart() &
@@ -232,17 +223,13 @@ shinyServer(function(input, output, session) {
     tabixRegion <- paste0(RegionChr(),":",
                           RegionStart(),"-",
                           RegionEnd())
-    x <- tabix.read("Data/GeneticMap1KG/GeneticMap1KG.txt.gz",tabixRegion)
-    x <- data.frame(temp=gsub("\r","",x,fixed=TRUE))
-    x <- separate(x,col=temp,into=c("CHR","BP","RECOMB"),sep="\t",convert=TRUE)
+    x <- tabix.read.table("Data/GeneticMap1KG/GeneticMap1KG.txt.gz",tabixRegion)
+    colnames(x) <- c("CHR","BP","RECOMB")
     
     return(x %>% 
              transmute(BP=BP,
                        Recomb=RECOMB,
                        RecombAdj=Recomb*ROIPLogMax()/100))
-    #     datGeneticMap() %>% 
-    #       filter(BP>=RegionStart() &
-    #                BP<=RegionEnd()) 
   })
   
   ROIdatwgEncodeRegDnaseClustered <- reactive({ 
@@ -397,7 +384,7 @@ shinyServer(function(input, output, session) {
     },escape=FALSE)
   
   
-  output$SummaryLNCAP <- renderDataTable({ datLNCAP() %>% arrange(BP) })
+  output$SummaryLNCAP <- renderDataTable({ ROIdatLNCAP() %>% arrange(BP) })
   output$SummaryEQTL <- renderDataTable({ datEQTL() %>% arrange(START) })
   output$SummaryRegion <- 
     renderUI(a(paste0(RegionChr(),':',RegionStart(),'-',RegionEnd()),
@@ -437,6 +424,12 @@ shinyServer(function(input, output, session) {
     },escape=FALSE)
   
   # Plot --------------------------------------------------------------------
+  #plot title
+  output$plotTitle <- 
+     renderUI(a(paste0(RegionChr(),':',zoomStart(),'-',zoomEnd()),
+                href=paste0('http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=',
+                            RegionChr(),'%3A',zoomStart(),'-',zoomEnd())))
+
   #Plot Chr ideogram
   plotObjChromosome <- reactive({source("source/Chromosome.R",local=TRUE)})
   output$PlotChromosome <- renderPlot({print(plotObjChromosome())})
@@ -724,7 +717,7 @@ shinyServer(function(input, output, session) {
       updateSliderInput(session, "BPrange",
                         value = newStartEnd)}
     }))
-  #reset plot options
+  #Reset plot options
   observeEvent(input$resetInput,({
     updateSliderInput(session,"FilterMinPlog", value=0)
     updateSliderInput(session,"FilterMinLD", value=0)
@@ -752,7 +745,9 @@ shinyServer(function(input, output, session) {
                                          "LNCaP Prostate"="LNCAP",
                                          "eQTL"="eQTL",
                                          "Gene"="Gene"),
-                             selected=c("Manhattan","LD","LDSmooth"))
+                             selected=c("Manhattan")
+                             #selected=c("Manhattan","LD","LDSmooth")
+                             )
     })) #END observeEvent resetInput
   
 })#END shinyServer

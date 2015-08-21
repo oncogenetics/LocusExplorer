@@ -163,6 +163,9 @@ shinyUI(
                             style = "background-color:#C9DD03")
              ), #sidebarPanel
              mainPanel(
+               # Plot title zoomed region, link to UCSC
+               htmlOutput("plotTitle", align = "center"),
+               # Conditional plots
                conditionalPanel("input.ShowHideTracks.indexOf('Chromosome')>-1",
                                 plotOutput("PlotChromosome",width=800,height=70)),
                conditionalPanel("input.ShowHideTracks.indexOf('Manhattan')>-1",
