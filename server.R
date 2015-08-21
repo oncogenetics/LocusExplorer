@@ -424,6 +424,12 @@ shinyServer(function(input, output, session) {
     },escape=FALSE)
   
   # Plot --------------------------------------------------------------------
+  #plot title
+  output$plotTitle <- 
+     renderUI(a(paste0(RegionChr(),':',zoomStart(),'-',zoomEnd()),
+                href=paste0('http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=',
+                            RegionChr(),'%3A',zoomStart(),'-',zoomEnd())))
+
   #Plot Chr ideogram
   plotObjChromosome <- reactive({source("source/Chromosome.R",local=TRUE)})
   output$PlotChromosome <- renderPlot({print(plotObjChromosome())})
@@ -711,7 +717,7 @@ shinyServer(function(input, output, session) {
       updateSliderInput(session, "BPrange",
                         value = newStartEnd)}
     }))
-  #reset plot options
+  #Reset plot options
   observeEvent(input$resetInput,({
     updateSliderInput(session,"FilterMinPlog", value=0)
     updateSliderInput(session,"FilterMinLD", value=0)
@@ -739,7 +745,9 @@ shinyServer(function(input, output, session) {
                                          "LNCaP Prostate"="LNCAP",
                                          "eQTL"="eQTL",
                                          "Gene"="Gene"),
-                             selected=c("Manhattan","LD","LDSmooth"))
+                             selected=c("Manhattan")
+                             #selected=c("Manhattan","LD","LDSmooth")
+                             )
     })) #END observeEvent resetInput
   
 })#END shinyServer
