@@ -194,17 +194,6 @@ shinyServer(function(input, output, session) {
                       end = RegionEnd())) 
       })
   
-  # Genetic Map 1KG ---------------------------------------------------------
-#  datGeneticMap <- reactive({
-#     fread(paste0("Data/GeneticMap1KG/genetic_map_",
-#                  RegionChr(),
-#                  "_combined_b37.txt"),
-#           header=TRUE, sep=" ", data.table = FALSE)  %>% 
-#       transmute(BP=position,
-#                 Recomb=`COMBINED_rate(cM/Mb)`,
-#                 RecombAdj=Recomb*ROIPLogMax()/100)
-#    })
-  
   # Data level 2 - ROI ------------------------------------------------------
   ROIdatStats <- reactive({ datStats() %>% 
       filter(BP>=RegionStart() &
@@ -234,17 +223,13 @@ shinyServer(function(input, output, session) {
     tabixRegion <- paste0(RegionChr(),":",
                           RegionStart(),"-",
                           RegionEnd())
-    x <- tabix.read("Data/GeneticMap1KG/GeneticMap1KG.txt.gz",tabixRegion)
-    x <- data.frame(temp=gsub("\r","",x,fixed=TRUE))
-    x <- separate(x,col=temp,into=c("CHR","BP","RECOMB"),sep="\t",convert=TRUE)
+    x <- tabix.read.table("Data/GeneticMap1KG/GeneticMap1KG.txt.gz",tabixRegion)
+    colnames(x) <- c("CHR","BP","RECOMB")
     
     return(x %>% 
              transmute(BP=BP,
                        Recomb=RECOMB,
                        RecombAdj=Recomb*ROIPLogMax()/100))
-    #     datGeneticMap() %>% 
-    #       filter(BP>=RegionStart() &
-    #                BP<=RegionEnd()) 
   })
   
   ROIdatwgEncodeRegDnaseClustered <- reactive({ 
