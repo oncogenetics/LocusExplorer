@@ -51,15 +51,16 @@ plink --vcf genotypes.vcf --ld rs9935228 rs1864163
    In phase alleles are GA/AG
 ```
 ###### 2.1.2 Calculate LD for list of SNP against all SNPs within 1000kb region.
-
 We will need a list of SNPs file, one SNP per row.
 ```
 # Example file snplist.txt
 > cat snplist.txt
 # rs9935228
 # rs1864163
+```
 
-# Now we pass snplist to plink. To learn more about plink options selected below see XYZ.
+Now we pass snplist to plink. To learn more about plink options selected below see [here](http://pngu.mgh.harvard.edu/~purcell/plink/ld.shtml) and [here](https://www.cog-genomics.org/plink2/ld).
+```
 plink --vcf  genotypes.vcf \
 --r2 \
 --ld-snp-list snplist.txt \
