@@ -32,8 +32,7 @@ Download vcf for region of interest `16:56995835-57017756` from 1000 genomes ftp
 `tabix -fh ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20100804/ALL.2of4intersection.20100804.genotypes.vcf.gz 16:56995835-57017756 > genotypes.vcf`
 
 ##### 2.1 Use plink to calculate LD
-###### 2.1.1
-Calcualte LD for 2 SNPs  
+###### 2.1.1 Calcualte LD for 2 SNPs  
 ```
 plink --vcf genotypes.vcf --ld rs9935228 rs1864163
 
@@ -51,19 +50,22 @@ plink --vcf genotypes.vcf --ld rs9935228 rs1864163
 
    In phase alleles are GA/AG
 ```
-###### 2.1.2
-Calculate LD for list of SNP against all SNPs within 1000kb region.
+###### 2.1.2 Calculate LD for list of SNP against all SNPs within 1000kb region.
 
-...
+We will need a list of SNPs file, one SNP per row.
+```
+# Example file snplist.txt
+> cat snplist.txt
+# rs9935228
+# rs1864163
 
-
-
-
-
-
-
-
-
-
-
+# Now we pass snplist to plink. To learn more about plink options selected below see XYZ.
+plink --vcf  genotypes.vcf \
+--r2 \
+--ld-snp-list snplist.txt \
+--ld-window-kb 1000 \
+--ld-window 99999 \
+--ld-window-r2 0 \
+--out LD_rs9935228_rs1864163
+```
 
