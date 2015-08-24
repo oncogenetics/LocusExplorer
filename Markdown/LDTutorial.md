@@ -29,7 +29,9 @@ Example:
 
 ##### 2.1 Download 1000 Genomes VCF
 Download vcf for region of interest `16:56995835-57017756` from 1000 genomes ftp site using tabix.  
-`tabix -fh ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20100804/ALL.2of4intersection.20100804.genotypes.vcf.gz 16:56995835-57017756 > genotypes.vcf`
+```
+tabix -fh ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20100804/ALL.2of4intersection.20100804.genotypes.vcf.gz 16:56995835-57017756 > genotypes.vcf
+```
 
 ##### 2.1 Use plink to calculate LD
 ###### 2.1.1 Calcualte LD for 2 SNPs  
