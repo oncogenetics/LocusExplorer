@@ -4,9 +4,8 @@
 
 **Note**
 Histone BigWig files are not included in this app, to display this track please download below files
-files into `Data/EncodeBigWig/` from UCSC golden path link: 
-http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeRegMarkH3k27ac/
-
+files into `Data/EncodeBigWig/` from 
+<a href="http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeRegMarkH3k27ac/" target="_blank">UCSC golden path</a>.
 
 This directory contains the downloadable files associated with this ENCODE
 composite track.

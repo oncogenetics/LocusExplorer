@@ -233,20 +233,15 @@ shinyServer(function(input, output, session) {
   })
   
   ROIdatwgEncodeRegDnaseClustered <- reactive({ 
-    
+    #define region to subset
     tabixRegion <- paste0(RegionChr(),":",
                           RegionStart(),"-",
                           RegionEnd())
-    x <- tabix.read("Data/wgEncodeRegDnaseClustered/wgEncodeRegDnaseClusteredV3.txt.gz",tabixRegion)
-    x <- data.frame(temp=x)
-    x <- separate(x,col=temp,into=c("CHR","START","END","SCORE"),sep="\t",convert=TRUE)
+    #subset using seqmineR::tabix.read.table
+    x <- tabix.read.table("Data/wgEncodeRegDnaseClustered/wgEncodeRegDnaseClusteredV3.txt.gz",tabixRegion)
+    colnames(x) <- c("CHR","START","END","SCORE")
     return(x)
-    })
-  
-  
-    
-  
-  
+  })
   
   # Define Zoom Start End ---------------------------------------------------
   zoomStart <- reactive({ input$BPrange[1] })
@@ -322,32 +317,46 @@ shinyServer(function(input, output, session) {
   
   #wgEncodeBroadHistone data 7 big wig data
   plotDatwgEncodeBroadHistone <- reactive({
-    #subset region 
-    wgEncodeBroadHistone <- 
-      rbind_all(
-        #seven bigwig files
-        lapply(1:nrow(wgEncodeBroadHistoneFileDesc), function(i){
-          #i=1  wgEncodeBroadHistoneFileDesc$File[1]
-          as.data.frame(
-            import(paste0("Data/wgEncodeBroadHistone/",wgEncodeBroadHistoneFileDesc$File[i]),
-                   which=RegionGR())) %>% 
-            filter(score >= 5) %>% 
-            transmute(BP=start,
-                      ENCODE=wgEncodeBroadHistoneFileDesc$Name[i],
-                      SCORE=round(ifelse(score >= 100, 100, score),0))
-          }))
+    #get file list matching Encode description file
+    bigWigFiles <- 
+      intersect(wgEncodeBroadHistoneFileDesc$File,
+                list.files("Data/wgEncodeBroadHistone/","*.bigWig"))
     
-    #merge on BP, to plot overlappling
-    res <- data.frame(BP=unique(wgEncodeBroadHistone$BP))
-    return( 
-      rbind_all(
-        lapply(unique(wgEncodeBroadHistone$ENCODE), function(i){
-          d <- merge(res,wgEncodeBroadHistone %>% filter(ENCODE==i),by="BP",all.x=TRUE)
-          d$ENCODE <- i
-          d$SCORE[ is.na(d$SCORE) ] <- 0
-          return(d)
+    #check if bigWig files are downloaded, if plot warning message.
+    if(length(bigWigFiles)>0){
+      #subset region 
+      wgEncodeBroadHistone <- 
+        rbind_all(
+          #seven bigwig files
+          lapply(bigWigFiles, function(i){
+            #i=1  wgEncodeBroadHistoneFileDesc$File[1]
+            as.data.frame(
+              import(paste0("Data/wgEncodeBroadHistone/",i),
+                     which=RegionGR())) %>% 
+              filter(score >= 5) %>% 
+              transmute(BP=start,
+                        ENCODE=wgEncodeBroadHistoneFileDesc[
+                          which(wgEncodeBroadHistoneFileDesc$File==i),
+                          "Name"],
+                        SCORE=round(ifelse(score >= 100, 100, score),0))
+          }))
+      
+      #merge on BP, to plot overlappling
+      res <- data.frame(BP=unique(wgEncodeBroadHistone$BP))
+      output <- 
+        rbind_all(
+          lapply(unique(wgEncodeBroadHistone$ENCODE), function(i){
+            d <- merge(res,wgEncodeBroadHistone %>% filter(ENCODE==i),by="BP",all.x=TRUE)
+            d$ENCODE <- i
+            d$SCORE[ is.na(d$SCORE) ] <- 0
+            return(d)
           })
-        ))
+        )
+      }else{
+      #if there are no bigwig files return blank data.frame
+      output <- data.frame()
+    }
+    return(output)
     })
   
   #output of ENCODE data
@@ -365,7 +374,7 @@ shinyServer(function(input, output, session) {
       #if SNP name has rs number then convert to a link to NCBI
       mutate(SNP=ifelse(substr(SNP,1,2)=="rs",
                         paste0('<a href="http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=',
-                               gsub("rs","",SNP),'">',SNP,'</a>'),
+                               gsub("rs","",SNP),'" target="_blank">',SNP,'</a>'),
                         SNP)),
     # FALSE to parse as a link
     escape=FALSE)
@@ -375,11 +384,11 @@ shinyServer(function(input, output, session) {
       arrange(BP_B) %>% 
       mutate(SNP_A=ifelse(substr(SNP_A,1,2)=="rs",
                           paste0('<a href="http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=',
-                                 gsub("rs","",SNP_A),'">',SNP_A,'</a>'),
+                                 gsub("rs","",SNP_A),'" target="_blank">',SNP_A,'</a>'),
                           SNP_A),
              SNP_B=ifelse(substr(SNP_B,1,2)=="rs",
                           paste0('<a href="http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=',
-                                 gsub("rs","",SNP_B),'">',SNP_B,'</a>'),
+                                 gsub("rs","",SNP_B),'" target="_blank">',SNP_B,'</a>'),
                           SNP_B))
     },escape=FALSE)
   
@@ -389,14 +398,14 @@ shinyServer(function(input, output, session) {
   output$SummaryRegion <- 
     renderUI(a(paste0(RegionChr(),':',RegionStart(),'-',RegionEnd()),
                href=paste0('http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=',
-                           RegionChr(),'%3A',RegionStart(),'-',RegionEnd())))
+                           RegionChr(),'%3A',RegionStart(),'-',RegionEnd()),target="_blank"))
   
   output$SummaryHits <- DT::renderDataTable( 
     data.table(SNP = RegionHits()) %>% 
       #if SNP name has rs number then convert to a link to NCBI
       mutate(SNP=ifelse(substr(SNP,1,2)=="rs",
                         paste0('<a href="http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=',
-                               gsub("rs","",SNP),'">',SNP,'</a>'),
+                               gsub("rs","",SNP),'" target="_blank">',SNP,'</a>'),
                         SNP)),
     escape=FALSE,options=list(paging=FALSE,searching=FALSE,searchable=FALSE))
 
@@ -415,11 +424,11 @@ shinyServer(function(input, output, session) {
         arrange(BP_B) %>% 
         mutate(SNP_A=ifelse(substr(SNP_A,1,2)=="rs",
                             paste0('<a href="http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=',
-                                   gsub("rs","",SNP_A),'">',SNP_A,'</a>'),
+                                   gsub("rs","",SNP_A),'" target="_blank">',SNP_A,'</a>'),
                             SNP_A),
                SNP_B=ifelse(substr(SNP_B,1,2)=="rs",
                             paste0('<a href="http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=',
-                                   gsub("rs","",SNP_B),'">',SNP_B,'</a>'),
+                                   gsub("rs","",SNP_B),'" target="_blank">',SNP_B,'</a>'),
                             SNP_B))
     },escape=FALSE)
   
@@ -428,7 +437,7 @@ shinyServer(function(input, output, session) {
   output$plotTitle <- 
      renderUI(a(paste0(RegionChr(),':',zoomStart(),'-',zoomEnd()),
                 href=paste0('http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=',
-                            RegionChr(),'%3A',zoomStart(),'-',zoomEnd())))
+                            RegionChr(),'%3A',zoomStart(),'-',zoomEnd()), target="_blank"))
 
   #Plot Chr ideogram
   plotObjChromosome <- reactive({source("source/Chromosome.R",local=TRUE)})

@@ -24,8 +24,16 @@ LD File is not mandatory but is recommended for more informative plots. If user 
  - **SNP_B -** ID of SNP in LD with Index SNP (SNP_A). e.g. `rs10786679`, `chr10:104329988:D` 
  - **R2 -** LD score between SNP_A and SNP_B (0 to 1). e.g. `1`, `0.740917`
 
+*Note:* Lead SNP must be defined relative to itself for plotting purposes, e.g.:
+```
+CHR_A	BP_A	SNP_A	CHR_B	BP_B	SNP_B	R2
+2	173309618	rs13410475	2	173309618	rs13410475	1
+2	173309618	rs13410475	2	172827293	rs148800555	0.0906124
+```
+When using plink or LDlink method this does not need to be manually added.
+
 **3. Gene Expression BED Track - _eQTL.txt_**  
-Gene expression File is not mandatory but can be used to display the positions of genes differentially regulated by variants within the plot region. Genes within the plot region for which no eQTL is odserved should be excluded from the input file. Visit xxxx for instructions of how to obtain eQTL data from the TCGA or GTEx datasets if custom data is unavailable
+Gene expression File is not mandatory but can be used to display the positions of genes differentially regulated by variants within the plot region. Genes within the plot region for which no eQTL is odserved should be excluded from the input file. 
  - **CHR -** Chromosome on which differentially expressed gene is located preceded by "chr". e.g `chr2` `chrX`
  - **START -** Transcript start position
  - **END -** Transcript end position
