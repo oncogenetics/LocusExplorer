@@ -30,9 +30,9 @@ if (length(setdiff(bioc, rownames(installed.packages()))) > 0) {
   biocLite(setdiff(bioc, rownames(installed.packages())))  
 } else { print("All required Bioconductor packages installed")}
 ```
-- In cases when user do not have admin rights, pop up window will prompt to set a personal library location for packages installation of packages, please click yes.
+- In cases when user do not have admin rights, pop up window will prompt to set a personal library location for installation of packages, please click yes.
 - If using R GUI then user might get prompted to choose CRAN mirror to use for package downloads, please choose the city nearer to your location.
-- If prompted to "Update packages all/some/none [a/s/n]", type "n" and hit Enter.
+- If prompted to "Update packages all/some/none [a/s/n]", type "n" and hit Return.
 
 
 ### Launching the Locus Explorer Application

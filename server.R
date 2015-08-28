@@ -200,7 +200,7 @@ shinyServer(function(input, output, session) {
                BP<=RegionEnd()) %>% 
       mutate(PLog=-log10(P)) })
   ROIdatLD <- reactive({ datLD() %>% 
-      filter(CHR_B==as.numeric(gsub("chr","",RegionChr())) &
+      filter(CHR_B==RegionChrN() &
                BP_B>=RegionStart() &
                BP_B<=RegionEnd()) })
   ROIdatLNCAP <- reactive({ datLNCAP() %>% 
@@ -219,8 +219,8 @@ shinyServer(function(input, output, session) {
   })
   
   ROIdatGeneticMap <- reactive({ 
-    
-    tabixRegion <- paste0(RegionChr(),":",
+    mychr <- ifelse(RegionChr()=="chrX","chr23",RegionChr())
+    tabixRegion <- paste0(mychr,":",
                           RegionStart(),"-",
                           RegionEnd())
     x <- tabix.read.table("Data/GeneticMap1KG/GeneticMap1KG.txt.gz",tabixRegion)
