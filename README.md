@@ -13,7 +13,7 @@ Locus Explorer is made available under the MIT license.
 ### Required Software
 Locus Explorer runs in the R environment but is designed to be an easy to use interface that does not require familiarity with R as a prerequisite. Locus explorer is platform agnostic and able to run on any operating system for which R is available.
 
-The latest version of R can be downloaded by following the instructions at [https://www.r-project.org/](https://www.r-project.org/])
+The latest version of R can be downloaded by following the instructions at [https://www.r-project.org/](https://www.r-project.org/]).
 
 After installation of  the R software, R packages used by Locus Explorer must be installed prior to use. This may take a few minutes, but is only required on the first occasion. To install packages, open the R program, copy the following code into the R console and hit Return:
 ```R
@@ -30,15 +30,19 @@ if (length(setdiff(bioc, rownames(installed.packages()))) > 0) {
   biocLite(setdiff(bioc, rownames(installed.packages())))  
 } else { print("All required Bioconductor packages installed")}
 ```
+- In cases when user do not have admin rights, pop up window will prompt to set a personal library location for packages installation of packages, please click yes.
+- If using R GUI then user might get prompted to choose CRAN mirror to use for package downloads, please choose the city nearer to your location.
+- If prompted to "Update packages all/some/none [a/s/n]", type "n" and hit Enter.
+
 
 ### Launching the Locus Explorer Application
-To start Locus Explorer, open R, copy the following code into the console and hit Return:
+To start Locus Explorer, open R (RStudio recommended), copy the following code into the console and hit Return:
 ```R
 library(shiny)  
 runGitHub("LocusExplorer", "oncogenetics")
 ```
 
-Locus Explorer runs through a web browser and uses an intuitive interface that does not require high level computational skills to operate
+Locus Explorer runs through a web browser and uses an intuitive interface that does not require high level computational skills to operate.
 
 #### Troubleshooting
 If you see the following error:
