@@ -1,5 +1,3 @@
-[![Issue Stats](http://issuestats.com/github/oncogenetics/LocusExplorer/badge/pr)](http://issuestats.com/github/oncogenetics/LocusExplorer)
-[![Issue Stats](http://issuestats.com/github/oncogenetics/LocusExplorer/badge/issue)](http://issuestats.com/github/oncogenetics/LocusExplorer)
 Locus Explorer v0.2
 =============
 ## An interactive graphical illustration of genetic associations and their biological context.
@@ -81,4 +79,6 @@ Questions, suggestions, and bug reports are welcome and appreciated.
 
 ### To-do list
 https://github.com/oncogenetics/LocusExplorer/issues
+[![Issue Stats](http://issuestats.com/github/oncogenetics/LocusExplorer/badge/pr)](http://issuestats.com/github/oncogenetics/LocusExplorer)
+[![Issue Stats](http://issuestats.com/github/oncogenetics/LocusExplorer/badge/issue)](http://issuestats.com/github/oncogenetics/LocusExplorer)
 
