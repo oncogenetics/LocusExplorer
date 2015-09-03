@@ -3,6 +3,7 @@ ggplot() +
   #ggbio
   geom_alignment(data = plotDatGene(),aes(group=gene_id,
                      fill=strand, col=strand)) +
+  #facet_grid(strand~.) +
   #general options
   ylab("xxx") + 
   #testing plot alignment
