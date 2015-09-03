@@ -76,27 +76,8 @@ shinyServer(function(input, output, session) {
   })
   
   datLNCAP <- reactive({
-    fread("Data/ProstateLNCAP/ProstateLNCAP.txt")
-#     switch(input$dataType,
-#            Prostate = {
-#              #input file check
-#              validate(need(input$RegionID != "", "Please select RegionID"))
-#              fread(paste0("Data/ProstateData/LE/",input$RegionID,"_LNCAP.txt"),
-#                    header=TRUE, data.table=FALSE)
-#              },
-#            Custom = {
-#              #input file check
-#              validate(need(input$FileLNCAP != "", "Please upload FileLNCAP file"))
-#              
-#              inFile <- input$FileLNCAP
-#              if(is.null(inFile)){return(NULL)}
-#              fread(inFile$datapath, header=TRUE, data.table=FALSE) 
-#            },
-#            Example = {
-#              fread("Data/CustomDataExample/LNCAP.txt",
-#                    header=TRUE, data.table=FALSE) 
-#            })
-  })
+    fread("Data/ProstateLNCAP/ProstateLNCAP.txt",
+          colClasses = c("character","numeric","character")) })
   
   datEQTL <- reactive({
     switch(input$dataType,
@@ -362,10 +343,12 @@ shinyServer(function(input, output, session) {
   #output of ENCODE data
   #wgEncodeBroadHistone data
   output$SummarywgEncodeBroadHistone <- 
-    renderDataTable({ plotDatwgEncodeBroadHistone() %>% arrange(BP) })
+    DT::renderDataTable(plotDatwgEncodeBroadHistone() %>% arrange(BP),
+                        options=list(searching=FALSE,searchable=FALSE))
   #wgEncodeRegDnaseClustered
   output$SummarywgEncodeRegDnaseClustered <-
-    renderDataTable({ ROIdatwgEncodeRegDnaseClustered() %>%  arrange(START) })
+    DT::renderDataTable(ROIdatwgEncodeRegDnaseClustered() %>% arrange(START),
+                        options=list(searching=FALSE,searchable=FALSE))
   
   # Output ------------------------------------------------------------------
   # Output Summary ----------------------------------------------------------
@@ -393,8 +376,13 @@ shinyServer(function(input, output, session) {
     },escape=FALSE)
   
   
-  output$SummaryLNCAP <- renderDataTable({ ROIdatLNCAP() %>% arrange(BP) })
-  output$SummaryEQTL <- renderDataTable({ datEQTL() %>% arrange(START) })
+  output$SummaryLNCAP <- 
+    DT::renderDataTable(ROIdatLNCAP() %>% arrange(BP),
+                        options=list(searching=FALSE,searchable=FALSE))
+  output$SummaryEQTL <- 
+    DT::renderDataTable(datEQTL() %>% arrange(START),
+                        options=list(searching=FALSE,searchable=FALSE))
+  
   output$SummaryRegion <- 
     renderUI(a(paste0(RegionChr(),':',RegionStart(),'-',RegionEnd()),
                href=paste0('http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=',

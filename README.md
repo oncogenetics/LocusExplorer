@@ -13,7 +13,7 @@ Locus Explorer is made available under the MIT license.
 ### Required Software
 Locus Explorer runs in the R environment but is designed to be an easy to use interface that does not require familiarity with R as a prerequisite. Locus explorer is platform agnostic and able to run on any operating system for which R is available.
 
-The latest version of R can be downloaded by following the instructions at [https://www.r-project.org/](https://www.r-project.org/]).
+Locus Explorer requires R version 3.2.2 to run and can be downloaded by following the instructions at [https://www.r-project.org/](https://www.r-project.org/). Some required packages are not available for earlier versions of R.
 
 After installation of  the R software, R packages used by Locus Explorer must be installed prior to use. This may take a few minutes, but is only required on the first occasion. To install packages, open the R program, copy the following code into the R console and hit Return:
 ```R
@@ -24,7 +24,7 @@ if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
 } else { print("All required CRAN packages installed")}
 
 #install Bioconductor packages if missing
-source("http://bioconductor.org/biocLite.R")
+source("https://bioconductor.org/biocLite.R")
 bioc <- c("ggbio","GenomicRanges","TxDb.Hsapiens.UCSC.hg19.knownGene","org.Hs.eg.db")
 if (length(setdiff(bioc, rownames(installed.packages()))) > 0) {
   biocLite(setdiff(bioc, rownames(installed.packages())))  
@@ -35,7 +35,7 @@ if (length(setdiff(bioc, rownames(installed.packages()))) > 0) {
 - If prompted to "Update packages all/some/none [a/s/n]", type "n" and hit Return.
 
 
-### Launching the Locus Explorer Application
+### Launching Locus Explorer Application
 To start Locus Explorer, open R (RStudio recommended), copy the following code into the console and hit Return:
 ```R
 library(shiny)  
@@ -65,7 +65,7 @@ setInternet2(TRUE)
 **Availability and implementation:** Locus Explorer is open source and runs through R and a web browser. It is available at https://github.com/oncogenetics/LocusExplorer, where user guides and example data are also provided.
 
 ### Example plot output
-![ExampleLocusExplorerPlot](/www/chr17_36020000_36140000.jpeg)
+<img src="www/chr17_36020000_36140000.jpeg" height="800px" width="600px" />
 
 
 ### Publications That Use Locus Explorer

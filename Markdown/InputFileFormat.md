@@ -45,12 +45,5 @@ Gene expression File is not mandatory but can be used to display the positions o
 Planned for next release...
 
 **X. Biofeature BED Track - ...**
-Custom track upload.
-
-Biofeature annotation file is not mandatory but can be used to display the positions of regulatory regions of interest from user supplied or publically available datasets. Visit xxxx for instructions of how to obtain data of interest from the ENCODE Project if custom data is unavailable  
- - **CHR -** Chromosome on which Biofeature is located preceded by "chr". e.g `chr2`, `chrX`
- - **BP	-** Position of Biofeature
- - **ANNOTATE -** Description of Biofeature. e.g. `exonic`, `intronic`, `UTR3`, etc.
-
-
+Custom track upload. Not currently available, will be added in future versions.
 

@@ -2,7 +2,7 @@
 
 ### DNaseI Hypersensitivity Clusters in 125 cell types from ENCODE (V3)
 
-Data file saved at `Data/wgEncodeRegDnaseClustered` as gzipped tabixed file.
+Data file saved at `LocusExplorer/Data/wgEncodeRegDnaseClustered` as gzipped tabixed file.
 Source data is downloaded from <a href="http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeRegDnaseClustered/" target="_blank">UCSC golden path</a>.
 
 
