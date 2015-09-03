@@ -1,11 +1,7 @@
----
-title: "Locus Explorer v0.3"
-output:
-  html_document:
-    toc: true
----
+Locus Explorer v0.3
+=========
 
-An interactive graphical illustration of genetic associations and their biological context.
+## An interactive graphical illustration of genetic associations and their biological context.
 
 ### Disclaimer
 Locus Explorer should be used for illustrative purposes only. Any results provided by Locus Explorer should be used with caution. 
