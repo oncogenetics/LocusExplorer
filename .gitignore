@@ -21,3 +21,6 @@ Data/wgEncodeBroadHistone/*.bigWig
 # DNASE bed file
 Data/wgEncodeRegDnaseClustered/*.bed
 Data/wgEncodeRegDnaseClustered/*.txt
+
+# Manuscript - ignore all until published
+Manuscript/*.*
