@@ -1,6 +1,3 @@
-LD Tutorial
-=============
-
 ### Make LD file from 1000 Genomes Data
 
 #### 1. Using LDlink website

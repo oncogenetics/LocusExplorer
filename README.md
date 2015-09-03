@@ -1,6 +1,11 @@
-Locus Explorer v0.2
-=============
-## An interactive graphical illustration of genetic associations and their biological context.
+---
+title: "Locus Explorer v0.3"
+output:
+  html_document:
+    toc: true
+---
+
+An interactive graphical illustration of genetic associations and their biological context.
 
 ### Disclaimer
 Locus Explorer should be used for illustrative purposes only. Any results provided by Locus Explorer should be used with caution. 
@@ -45,11 +50,11 @@ runGitHub("LocusExplorer", "oncogenetics")
 Locus Explorer runs through a web browser and uses an intuitive interface that does not require high level computational skills to operate.
 
 #### Troubleshooting
-If you see the following error:
-> Error in download.file(URL, destfile = ...) : 
+If you see the following error:   
+> Error in download.file(URL, destfile = ...) :    
 >   unsupported URL scheme
 
-Try running:
+Try running:   
 ```R
 setInternet2(TRUE)
 ```
@@ -69,13 +74,17 @@ setInternet2(TRUE)
 
 
 ### Publications That Use Locus Explorer
-[Multiple novel prostate cancer susceptibility signals identified by fine-mapping of known risk loci among Europeans.](http://www.ncbi.nlm.nih.gov/pubmed/26025378) Al Olama AA *et al.*
+[Multiple novel prostate cancer susceptibility signals identified by fine-mapping of known risk loci among Europeans.](http://www.ncbi.nlm.nih.gov/pubmed/26025378) Al Olama AA *et al.*   
+**Figure 1**  
+Locus Explorer plots of two simple and four complex regions. (A) Region 23_3 at ChrXq12, (B) Region 9_1 at Chr9q31, (C) Region 2_6 at Chr2q31, (D) Region 2_8 at Chr2q37, (E) Region 14_2 at Chr14q24 and (F) Region 17_2 at Chr17q12. For regions containing multiple independent association signals, the separate lead SNPs are indicated and colored red, blue, green, orange and purple, respectively. Original GWAS tag SNPs that were replaced during fine-mapping are marked in gray on the plot. Clusters of correlated variants for each signal are distinguished using different colors in the plot and on the panel below, including for the original GWAS SNPs. Stronger shading indicates greater correlation with the lead SNP, with variants not correlated at r2 > 0.5 with any lead SNP uncolored. Directly genotyped variants are denoted as triangles and imputed variants as circles. Log10 P-values are shown on the Y-axis of the plot. Colored arrows within the plot mark SNPs that overlap with regulatory elements in ENCODE; red for 3'UTRs, blue for coding variants, purple for promoters and orange for miRNA sites. The position of genes within the region and the genomic coordinates of the plot are shown on the lower panel, with genes on the positive strand in green and the negative strand in purple. The LNCaP track shows the density of annotated bio-features within the LNCaP cell-line (data from ENCODE).
+
+<img src="www/PMID_26025378_F1.large.jpg" height="800px" width="600px" />
 
 ### Contact  
-Questions, suggestions, and bug reports are welcome and appreciated. 
-- Submit [suggestions and bug-reports](https://github.com/oncogenetics/LocusExplorer/issues)
-- Send [pull request](https://github.com/oncogenetics/LocusExplorer/pulls)
-- Contact email [T Dadaev](mailto: tokhir.dadaev@icr.ac.uk)
+Questions, suggestions, and bug reports are welcome and appreciated.   
+- Submit [suggestions and bug-reports](https://github.com/oncogenetics/LocusExplorer/issues)   
+- Send [pull request](https://github.com/oncogenetics/LocusExplorer/pulls)   
+- Contact email [T Dadaev](mailto: tokhir.dadaev@icr.ac.uk)   
 
 ### To-do list
 https://github.com/oncogenetics/LocusExplorer/issues   

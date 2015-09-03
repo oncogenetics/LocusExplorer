@@ -36,7 +36,7 @@ library(rtracklayer) # bigwig
 shinyUI(
   navbarPage(
     # Application title
-    title = "Locus Explorer v0.2",
+    title = "Locus Explorer v0.3",
     windowTitle = "Locus Explorer",
     fluid = FALSE,
     position = "fixed-top",
@@ -273,7 +273,10 @@ shinyUI(
                tabPanel("R Session Info",
                         includeMarkdown("Markdown/RSessionInfo.md")),
                tabPanel("LD Tutorial",
-                        includeMarkdown("Markdown/LDTutorial.md"))
+                        includeMarkdown("Markdown/LDTutorial.md")),
+               tabPanel("Input File Format",
+                        h4("Input File Format"),
+                        includeMarkdown("Markdown/InputFileFormat.md"))
              )#tabsetPanel
            )#mainPanel
   )#tabPanel - Help
