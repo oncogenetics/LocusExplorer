@@ -76,7 +76,7 @@ shinyUI(
         tabsetPanel(
           tabPanel("Summary",
                    h4("Summary"),
-                   
+                   hr(),
                    #if Prostate data is selected then link to Ali finemapping paper
                    conditionalPanel("input.dataType == 'Prostate'",
                    hr(),
@@ -92,11 +92,15 @@ shinyUI(
                    hr()),
           tabPanel("Association",
                    h4("Association"),
+                   hr(),
                    dataTableOutput("SummaryStats")),
           tabPanel("LD",
                    h4("Linkage Disequilibrium"),
+                   hr(),
                    dataTableOutput("SummaryLD")),
           tabPanel("Cell lines",
+                   h4("Cell lines"),
+                   hr(),
                    includeMarkdown("Data/wgEncodeBroadHistone/README.md"),
                    helpText("Scores filtered at 5+, and rounded and set maximum value to 100."),
                    dataTableOutput("SummarywgEncodeBroadHistone"),
@@ -109,9 +113,11 @@ shinyUI(
                    ),
           tabPanel("eQTL",
                    h4("Expression Quantitative Trait Loci"),
+                   hr(),
                    dataTableOutput("SummaryEQTL")),
           tabPanel("Input File Format",
                    h4("Input File Format"),
+                   hr(),
                    includeMarkdown("Markdown/InputFileFormat.md"))
         )#tabsetPanel
       )#mainPanel
@@ -248,10 +254,16 @@ shinyUI(
            mainPanel(
              tabsetPanel(
                tabPanel("LDlink file",
+                        h4("LDlink file"),
+                        hr(),
                         dataTableOutput("SummaryLDlink")),
                tabPanel("Processed LDlink file",
+                        h4("Processed LDlink file"),
+                        hr(),
                         dataTableOutput("SummaryLDlinkProcess")),
                tabPanel("LD Tutorial",
+                        h4("LD Tutorial"),
+                        hr(),
                         includeMarkdown("Markdown/LDTutorial.md"))
              )#tabsetPanel
            )#mainPanel
@@ -263,19 +275,27 @@ shinyUI(
            mainPanel(
              tabsetPanel(
                tabPanel("About",
-                        #includeMarkdown("Markdown/HelpAbout.md")
+                        h4("About"),
+                        hr(),
                         includeMarkdown("README.md")),
                tabPanel("Example Plot",
+                        h4("Example Plot"),
+                        hr(),
                         h4("Sample JPEG output"),
                         h5("res = 100, hight = 1200px, width = 1000px"),
                         imageOutput("ExamplePlotJPEG")
                         ),
                tabPanel("R Session Info",
+                        h4("R Session Info"),
+                        hr(),
                         includeMarkdown("Markdown/RSessionInfo.md")),
                tabPanel("LD Tutorial",
+                        h4("LD Tutorial"),
+                        hr(),
                         includeMarkdown("Markdown/LDTutorial.md")),
                tabPanel("Input File Format",
                         h4("Input File Format"),
+                        hr(),
                         includeMarkdown("Markdown/InputFileFormat.md"))
              )#tabsetPanel
            )#mainPanel

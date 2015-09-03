@@ -1,5 +1,3 @@
-**Note -** The maximum region of interest that Locus Explorer can display is 2Mb  
-
 #### Input File Specifications and Format:  
 - Input files must be **tab-delimited** and saved as **.txt**
 - Headers are required and should use the exact column names described below and used in the example input files

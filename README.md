@@ -36,7 +36,7 @@ if (length(setdiff(bioc, rownames(installed.packages()))) > 0) {
 - If prompted to "Update packages all/some/none [a/s/n]", type "n" and hit Return.
 
 
-### Launching Locus Explorer Application
+### Launch Locus Explorer
 To start Locus Explorer, open R (RStudio recommended), copy the following code into the console and hit Return:
 ```R
 library(shiny)  
@@ -55,7 +55,7 @@ Try running:
 setInternet2(TRUE)
 ```
 
-### To Cite Locus Explorer
+### Cite Locus Explorer
 [Locus Explorer: a user-friendly tool for integrated visualisation of genetic association data and biological annotations](url to add) Tokhir Dadaev<sup>1</sup>, Daniel A Leongamornlert<sup>1</sup>, Edward J Saunders<sup>1</sup>, Rosalind Eeles<sup>1,2</sup> , Zsofia Kote-Jarai<sup>1</sup>   
 
 <sup>1</sup>Department of Genetics and Epidemiology, The Institute of Cancer Research, London, UK   
@@ -82,7 +82,7 @@ Questions, suggestions, and bug reports are welcome and appreciated.
 - Send [pull request](https://github.com/oncogenetics/LocusExplorer/pulls)   
 - Contact email [T Dadaev](mailto: tokhir.dadaev@icr.ac.uk)   
 
-### To-do list
+### To-do List
 https://github.com/oncogenetics/LocusExplorer/issues   
 
 [![Issue Stats](http://issuestats.com/github/oncogenetics/LocusExplorer/badge/pr)](http://issuestats.com/github/oncogenetics/LocusExplorer)
