@@ -34,6 +34,7 @@ library(rtracklayer) # bigwig
 
 #Map fonts to Windows
 windowsFonts(Courier=windowsFont("TT Courier New"))
+setInternet2(TRUE)
 
 # Define UI ---------------------------------------------------------------
 shinyUI(
@@ -191,15 +192,15 @@ shinyUI(
                conditionalPanel("input.ShowHideTracks.indexOf('eQTL')>-1",
                                 plotOutput("PlotEQTL",width=800,height=70)),
                conditionalPanel("input.ShowHideTracks.indexOf('Gene')>-1",
-                                plotOutput("PlotGene",width=800,height=350)),
+                                plotOutput("PlotGene",width=800,height=350)) #,
                
                #Legend Floating --------------------------------------------------------
-               absolutePanel(id = "Legend", class = "panel panel-default", fixed = TRUE,
-                             draggable = TRUE, top = 60, left = "auto", right = 20, bottom = "auto",
-                             width = 200, height = "auto",
-                             h4("Legend"),
-                             helpText("Coming soon..."),
-                             style = "opacity: 0.75")
+#                absolutePanel(id = "Legend", class = "panel panel-default", fixed = TRUE,
+#                              draggable = TRUE, top = 60, left = "auto", right = 20, bottom = "auto",
+#                              width = 200, height = "auto",
+#                              h4("Legend"),
+#                              helpText("Coming soon..."),
+#                              style = "opacity: 0.75")
                ) #mainPanel
     ), #tabPanel - "Plot"
     # Final Plot --------------------------------------------------------------  

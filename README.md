@@ -45,16 +45,6 @@ runGitHub("LocusExplorer", "oncogenetics")
 
 Locus Explorer runs through a web browser and uses an intuitive interface that does not require high level computational skills to operate.
 
-#### Troubleshooting
-If you see the following error:   
-> Error in download.file(URL, destfile = ...) :    
->   unsupported URL scheme
-
-Try running:   
-```R
-setInternet2(TRUE)
-```
-
 ### Cite Locus Explorer
 [Locus Explorer: a user-friendly tool for integrated visualisation of genetic association data and biological annotations](url to add) Tokhir Dadaev<sup>1</sup>, Daniel A Leongamornlert<sup>1</sup>, Edward J Saunders<sup>1</sup>, Rosalind Eeles<sup>1,2</sup> , Zsofia Kote-Jarai<sup>1</sup>   
 
