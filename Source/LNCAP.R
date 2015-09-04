@@ -1,3 +1,6 @@
+# Author: Tokhir Dadaev
+# License: MIT + file LICENSE.txt
+
 #subset region - heatmap style track - density of region.
 #make density range
 temp_bw <- (RegionEnd()-RegionStart())/100

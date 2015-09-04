@@ -1,3 +1,6 @@
+# Author: Tokhir Dadaev
+# License: MIT + file LICENSE.txt
+
 ggplot(data=ROIdatStats(),
        aes(x=BP, xend=BP, 
            y=TYPED-1,yend=TYPED, 

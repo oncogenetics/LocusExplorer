@@ -1,3 +1,6 @@
+# Author: Tokhir Dadaev
+# License: MIT + file LICENSE.txt
+
 # About -------------------------------------------------------------------
 # 14/08/2015
 # Process DnaseCluster bed file for tabixing

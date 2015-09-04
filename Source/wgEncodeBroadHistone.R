@@ -1,3 +1,6 @@
+# Author: Tokhir Dadaev
+# License: MIT + file LICENSE.txt
+
 # ENCODE bigwig data 
 # 7 bigwig filtered data, score > 5, similar to UCSC track, overlaying area plots
 

@@ -1,3 +1,6 @@
+# Author: Tokhir Dadaev
+# License: MIT + file LICENSE.txt
+
 #add barplot - Transcripts
 ggplot(ROIdatEQTL(),
        aes(xmin=START,xmax=END,ymin=0,ymax=DIRECTION)) +

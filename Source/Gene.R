@@ -1,3 +1,6 @@
+# Author: Tokhir Dadaev
+# License: MIT + file LICENSE.txt
+
 ggplot() + 
   geom_hline(yintercept=c(1:plotDatGeneN()),col="grey80",linetype="dashed") +
   #ggbio

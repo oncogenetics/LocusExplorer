@@ -1,3 +1,6 @@
+# Author: Tokhir Dadaev
+# License: MIT + file LICENSE.txt
+
 Ideogram(genome="hg19",
          subchr = RegionChr(), color="#F00034", fill="#F00034") +
   #highlight ROI - region

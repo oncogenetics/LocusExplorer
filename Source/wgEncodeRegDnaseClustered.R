@@ -1,3 +1,6 @@
+# Author: Tokhir Dadaev
+# License: MIT + file LICENSE.txt
+
 # ENCODE wgEncodeRegDnaseClustered
 
 ggplot(ROIdatwgEncodeRegDnaseClustered(),

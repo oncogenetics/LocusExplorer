@@ -1,3 +1,6 @@
+# Author: Tokhir Dadaev
+# License: MIT + file LICENSE.txt
+
 gg_out <-
   ggplot(plotDatStats(), aes(x=BP,y=PLog)) + 
   # all snps grey hollow shapes

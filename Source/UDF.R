@@ -1,3 +1,6 @@
+# Author: Tokhir Dadaev
+# License: MIT + file LICENSE.txt
+
 # General options for all plots -------------------------------------------
 # ggplot() + udf_theme()
 udf_theme <- function(){

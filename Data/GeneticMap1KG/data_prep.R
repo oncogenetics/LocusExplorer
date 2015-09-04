@@ -1,3 +1,6 @@
+# Author: Tokhir Dadaev
+# License: MIT + file LICENSE.txt
+
 # About -------------------------------------------------------------------
 # Genetic Map, recombination data
 # - download 1KG gemetic map files chr1:23

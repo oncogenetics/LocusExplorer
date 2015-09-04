@@ -1,3 +1,6 @@
+# Author: Tokhir Dadaev
+# License: MIT + file LICENSE.txt
+
 #make dynamic merge plot string
 
 # exclude LDSmooth - it is part of Manhattan.R

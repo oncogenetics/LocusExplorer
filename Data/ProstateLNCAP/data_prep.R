@@ -1,3 +1,6 @@
+# Author: Tokhir Dadaev
+# License: MIT + file LICENSE.txt
+
 # About -------------------------------------------------------------------
 # Date: 17/08/2015
 # prepare LNCAP data

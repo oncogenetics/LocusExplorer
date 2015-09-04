@@ -1,3 +1,6 @@
+# Author: Tokhir Dadaev
+# License: MIT + file LICENSE.txt
+
 # LD track
 # plot LD per hit SNPs on seperate Yaxis 1,2,3,etc
 
