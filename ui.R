@@ -32,6 +32,9 @@ library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 library(org.Hs.eg.db) # gene symobols
 library(rtracklayer) # bigwig
 
+#Map fonts to Windows
+windowsFonts(Courier=windowsFont("TT Courier New"))
+
 # Define UI ---------------------------------------------------------------
 shinyUI(
   navbarPage(
