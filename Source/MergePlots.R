@@ -1,7 +1,9 @@
 #make dynamic merge plot string
 
 # exclude LDSmooth - it is part of Manhattan.R
-plotList <- input$ShowHideTracks[input$ShowHideTracks != "LDSmooth"]
+plotList <- 
+  input$ShowHideTracks[ !input$ShowHideTracks %in% 
+                          c("LDSmooth","Recombination")]
 
 # character string to parse, plot only selected tracks
 trackString <-

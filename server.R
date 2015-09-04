@@ -504,12 +504,12 @@ shinyServer(function(input, output, session) {
   
   #Default size per track
   trackSize <- reactive({ 
-    data.frame(Track=c("Chromosome","Manhattan","LD","SNPType",
+    data.frame(Track=c("Chromosome","Manhattan","SNPType","LD",
                        "wgEncodeBroadHistone","wgEncodeRegDnaseClustered",
                        "LNCAP","eQTL","Gene"),
                Size=c(100,400,
-                      RegionHitsCount()*20,
                       RegionSNPTypeCount()*20,
+                      RegionHitsCount()*20,
                       60, # wgEncodeBroadHistone
                       20, # wgEncodeRegDnaseClustered
                       20, # lncap
@@ -734,17 +734,17 @@ shinyServer(function(input, output, session) {
     updateCheckboxGroupInput(session,"ShowHideTracks",
                              choices = c("Chromosome"="Chromosome",
                                          "Manhattan"="Manhattan",
+                                         "Recombination"="Recombination",
+                                         "SNPType"="SNPType",
                                          "LDSmooth"="LDSmooth",
                                          "LD"="LD",
-                                         "SNPType"="SNPType",
                                          "wgEncodeBroadHistone"="wgEncodeBroadHistone",
                                          "wgEncodeRegDnaseClustered"="wgEncodeRegDnaseClustered",
                                          "LNCaP Prostate"="LNCAP",
                                          "eQTL"="eQTL",
                                          "Gene"="Gene"),
-                             selected=c("Manhattan")
-                             #selected=c("Manhattan","LD","LDSmooth")
-                             )
+                             selected=c("Manhattan","Recombination")
+    )
     })) #END observeEvent resetInput
   
 })#END shinyServer

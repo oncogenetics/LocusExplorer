@@ -11,7 +11,7 @@ ggplot(data=temp,
   scale_color_continuous(low="white",high="#A71930") +
   scale_y_continuous(limits=c(0,1),breaks=c(0.5), 
                      labels=udf_pad("LNCAP"),
-                     name="xxx") +
+                     name="") +
   #testing plot alignment
   #geom_vline(xintercept=173000000,col="red") +
   xlim(c(zoomStart(),zoomEnd())) +

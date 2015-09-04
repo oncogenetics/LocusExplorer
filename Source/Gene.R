@@ -5,7 +5,7 @@ ggplot() +
                      fill=strand, col=strand)) +
   #facet_grid(strand~.) +
   #general options
-  ylab("xxx") + 
+  ylab("") + 
   #testing plot alignment
   #geom_vline(xintercept=173000000,col="red")
   xlim(c(zoomStart(),zoomEnd())) +

@@ -6,7 +6,7 @@ ggplot(data=ROIdatStats(),
   scale_color_identity() +
   scale_y_continuous(breaks=c(0.5,1.5),
                      labels=udf_pad(c("Imputed","Typed")),
-                     name="xxx") +  
+                     name="SNP") +  
   #testing plot alignment
   #geom_vline(xintercept=173000000,col="red") +
   xlim(c(zoomStart(),zoomEnd())) +

@@ -4,14 +4,16 @@
 ggplot(data=plotDatLD(),
        aes(x=BP,xend=BP,
            y=as.numeric(as.factor(LDSNP)), yend=as.numeric(as.factor(LDSNP))+1,
-           colour=LDSmoothCol)) +
+           colour=LDCol)) +
   geom_hline(yintercept=1:length(RegionHitsSelected())+0.5,
              linetype="dashed",col="grey80") +
   geom_segment() +
   scale_colour_identity() +
   scale_y_continuous(breaks=(1:length(RegionHitsSelected()))+0.5,
                      labels=udf_pad(RegionHitsSelected()),
-                    name="xxx") +
+                    #name="xxx"
+                    name=expression(R^2)
+                    ) +
   #testing plot alignment
   #geom_vline(xintercept=173000000,col="red") +
   #general options

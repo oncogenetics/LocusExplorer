@@ -1,16 +1,15 @@
 gg_out <-
   ggplot(plotDatStats(), aes(x=BP,y=PLog)) + 
   # all snps grey hollow shapes
-  geom_point(size=4,colour="grey80",shape=plotDatStats()$TYPED) +
-  #Recomb lines in background
-  geom_area(data=plotDatGeneticMap(),
-            aes(BP,RecombAdj),
-            fill="#11d0ff",colour="#11d0ff",alpha=0.2)
+  geom_point(size=4,colour="grey80",shape=plotDatStats()$TYPED)
 
-#if("LD" %in% input$ShowHideTracks) {
-#if(!is.null(input$FileLD)){
-#if(exists(plotDatLD())){
-#if(!is.null(datLD())){
+
+if("Recombination" %in% input$ShowHideTracks){ 
+  #Recomb lines
+  gg_out <- gg_out +
+    geom_area(data=plotDatGeneticMap(),
+              aes(BP,RecombAdj),
+              fill="#11d0ff",colour="#11d0ff",alpha=0.2)}
 
 if("LD" %in% input$ShowHideTracks){ 
     # LD colours - add R2 filled shapes
@@ -29,13 +28,20 @@ if("LDSmooth" %in% input$ShowHideTracks) {
 
 # add other plots
 gg_out <- gg_out +
-  #mark hit SNPs
+  #mark hit SNPs - outline shapes
+  geom_point(data=plotDatStats() %>% 
+               filter(SNP %in% input$HitSNPs),
+             aes(x=BP,y=PLog),size=4,colour="black",
+             shape=plotDatStats() %>% 
+               filter(SNP %in% input$HitSNPs) %>% 
+               .$TYPED) +
+  #mark hit SNPs - vertical lines
   geom_segment(data=plotDatLD() %>% 
                  filter(SNP==LDSNP),
                aes(x=BP, y=0, xend=BP, yend=PLog),
                colour="black",
                linetype = "dashed") +
-  #Label hits
+  #mark hit SNPs - Label hits
   geom_text(data=plotDatLD() %>% 
               filter(SNP==LDSNP),
             aes(BP,PLog,label=LDSNP),
@@ -46,12 +52,12 @@ gg_out <- gg_out +
     limits=c(0,ROIPLogMax()),
     breaks=seq(0,ROIPLogMax(),5),
     labels=udf_pad(seq(0,ROIPLogMax(),5)),
-    name="xxx"
-    #name=expression(-log[10](italic(p)))
+    #name="xxx"
+    name=expression(-log[10](italic(p)))
   ) +
   scale_colour_identity() +
   theme(
-    axis.title=element_blank(),
+    #axis.title=element_blank(),
     #Y Axis font
     axis.text.y=element_text(family="Courier"),
     panel.background = element_rect(fill="white")

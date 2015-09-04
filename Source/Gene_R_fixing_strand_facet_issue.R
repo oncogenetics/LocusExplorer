@@ -1,25 +1,6 @@
 library(ggplot2)
-library(ggbio)
 library(Rcpp)
-
-install.packages(c("shiny", "data.table", "dplyr", "tidyr", "ggplot2",
-                                       "knitr", "markdown", "stringr","DT","seqminer",
-                                       "lattice","cluster"),
-                                     dependencies = TRUE)
-
-
-install.packages("Rcpp")
-install.packages("ggplot2")
-
-source("http://bioconductor.org/biocLite.R")
-biocLite(c("ggbio","GenomicRanges","TxDb.Hsapiens.UCSC.hg19.knownGene",
-            "org.Hs.eg.db","rtracklayer"))
-
-biocLite("GenomicRanges")
-library("GenomicRanges")
-
-source("https://bioconductor.org/biocLite.R")
-biocLite("GenomicRanges")
+library(ggbio)
 
 
 plotDatGene <- 

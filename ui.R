@@ -83,7 +83,6 @@ shinyUI(
                    includeMarkdown("Data/ProstateData/README.md"),
                    hr()
                    ),
-                   
                    helpText("UCSC link to selected region:"),
                    htmlOutput("SummaryRegion"),
                    hr(),
@@ -151,16 +150,16 @@ shinyUI(
                checkboxGroupInput("ShowHideTracks", h4("Tracks:"),
                                   c("Chromosome"="Chromosome",
                                     "Manhattan"="Manhattan",
+                                    "Recombination"="Recombination",
+                                    "SNPType"="SNPType",
                                     "LDSmooth"="LDSmooth",
                                     "LD"="LD",
-                                    "SNPType"="SNPType",
                                     "wgEncodeBroadHistone"="wgEncodeBroadHistone",
                                     "wgEncodeRegDnaseClustered"="wgEncodeRegDnaseClustered",
                                     "LNCaP Prostate"="LNCAP",
                                     "eQTL"="eQTL",
                                     "Gene"="Gene"),
-                                  selected=c("Manhattan")
-                                  #selected=c("Manhattan","LD","LDSmooth")
+                                  selected=c("Manhattan","Recombination")
                                   ),
                
                h6("Recommneded to hide tracks until final zoom region is decided."),
@@ -176,10 +175,10 @@ shinyUI(
                                 plotOutput("PlotChromosome",width=800,height=70)),
                conditionalPanel("input.ShowHideTracks.indexOf('Manhattan')>-1",
                                 plotOutput("PlotManhattan",width=800,height=500)),
-               conditionalPanel("input.ShowHideTracks.indexOf('LD')>-1",
-                                plotOutput("PlotSNPLD",width=800,height=110)),
                conditionalPanel("input.ShowHideTracks.indexOf('SNPType')>-1",
                                 plotOutput("PlotSNPType",width=800,height=90)),
+               conditionalPanel("input.ShowHideTracks.indexOf('LD')>-1",
+                                plotOutput("PlotSNPLD",width=800,height=110)),
                conditionalPanel("input.ShowHideTracks.indexOf('wgEncodeBroadHistone')>-1",
                                 plotOutput("PlotwgEncodeBroadHistone",width=800,height=90)),
                conditionalPanel("input.ShowHideTracks.indexOf('wgEncodeRegDnaseClustered')>-1",
@@ -189,16 +188,16 @@ shinyUI(
                conditionalPanel("input.ShowHideTracks.indexOf('eQTL')>-1",
                                 plotOutput("PlotEQTL",width=800,height=70)),
                conditionalPanel("input.ShowHideTracks.indexOf('Gene')>-1",
-                                plotOutput("PlotGene",width=800,height=350))
-             ) #mainPanel
-             #  Legend Floating --------------------------------------------------------
-             #              absolutePanel(id = "Legend", right = 20, bottom = 20, 
-             #                            class = "modal", fixed = FALSE, draggable = TRUE,
-             #                            wellPanel(
-             #                            h5("Legend")),
-             #                            style = "opacity: 0.92")
-             
-             
+                                plotOutput("PlotGene",width=800,height=350)),
+               
+               #Legend Floating --------------------------------------------------------
+               absolutePanel(id = "Legend", class = "panel panel-default", fixed = TRUE,
+                             draggable = TRUE, top = 60, left = "auto", right = 20, bottom = "auto",
+                             width = 200, height = "auto",
+                             h4("Legend"),
+                             helpText("Coming soon..."),
+                             style = "opacity: 0.75")
+               ) #mainPanel
     ), #tabPanel - "Plot"
     # Final Plot --------------------------------------------------------------  
     tabPanel("Final Plot",
