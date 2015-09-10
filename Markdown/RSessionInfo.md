@@ -27,7 +27,7 @@ library(org.Hs.eg.db) # gene symobols
 library(rtracklayer) # bigwig
 ```
 ### Session info
-Application tested on 03/09/2015 12:33
+Application tested on 10/09/2015 16:24
 
 ```R
 > sessionInfo()
@@ -49,7 +49,7 @@ other attached packages:
 [10] GenomeInfoDb_1.5.12                     IRanges_2.3.18                          S4Vectors_0.7.13                       
 [13] ggbio_1.16.1                            BiocGenerics_0.15.6                     seqminer_4.7                           
 [16] DT_0.1                                  stringr_1.0.0                           markdown_0.7.7                         
-[19] knitr_1.11                              ggplot2_1.0.1                           tidyr_0.2.0                            
+[19] knitr_1.11                              ggplot2_1.0.1                           tidyr_0.3.1                            
 [22] dplyr_0.4.3                             data.table_1.9.4                        shiny_0.12.2                           
 
 loaded via a namespace (and not attached):
@@ -60,12 +60,12 @@ loaded via a namespace (and not attached):
 [17] plyr_1.8.3                 OrganismDbi_1.11.42        XML_3.98-1.3               biomaRt_2.25.1            
 [21] zlibbioc_1.15.0            xtable_1.7-4               scales_0.3.0               BiocParallel_1.3.48       
 [25] SummarizedExperiment_0.3.3 nnet_7.3-11                proto_0.3-10               survival_2.38-3           
-[29] magrittr_1.5               mime_0.3                   GGally_0.5.0               MASS_7.3-43               
+[29] magrittr_1.5               mime_0.4                   GGally_0.5.0               MASS_7.3-43               
 [33] foreign_0.8-66             graph_1.47.2               BiocInstaller_1.18.4       tools_3.2.2               
 [37] munsell_0.4.2              cluster_2.0.3              lambda.r_1.1.7             Biostrings_2.36.4         
 [41] futile.logger_1.4.1        grid_3.2.2                 RCurl_1.95-4.7             dichromat_2.0-0           
 [45] VariantAnnotation_1.15.26  htmlwidgets_0.5            bitops_1.0-6               gtable_0.1.2              
 [49] reshape_0.8.5              reshape2_1.4.1             R6_2.1.1                   GenomicAlignments_1.4.1   
 [53] gridExtra_2.0.0            Hmisc_3.16-0               futile.options_1.0.0       stringi_0.5-5             
-[57] Rcpp_0.12.0                rpart_4.1-10               acepack_1.3-3.3
+[57] Rcpp_0.12.0                rpart_4.1-10               acepack_1.3-3.3  
 ```
