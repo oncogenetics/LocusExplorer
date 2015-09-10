@@ -529,10 +529,10 @@ shinyServer(function(input, output, session) {
                Size=c(100,400,
                       RegionSNPTypeCount()*20,
                       RegionHitsCount()*20,
+                      30, # BED
                       60, # wgEncodeBroadHistone
                       20, # wgEncodeRegDnaseClustered
                       20, # lncap
-                      30, # BED
                       RegionGeneCount()*30)) })
 
   #Create subset based on selected tracks
