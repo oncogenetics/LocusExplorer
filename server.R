@@ -79,27 +79,37 @@ shinyServer(function(input, output, session) {
     fread("Data/ProstateLNCAP/ProstateLNCAP.txt",
           colClasses = c("character","numeric","character")) })
   
-  datEQTL <- reactive({
+  datBED <- reactive({
     switch(input$dataType,
            Prostate = {
              #input file check
              validate(need(input$RegionID != "", "Please select RegionID"))
              fread(paste0("Data/ProstateData/LE/",input$RegionID,"_EQTL.txt"),
-                   header=TRUE, data.table=FALSE)
+                   header=FALSE, data.table=FALSE)
              },
            Custom = {
              #input file check
-             validate(need(input$FileEQTL != "", "Please upload eQTL file"))
+             validate(need(input$FileBED != "", "Please upload BED file"))
              
-             inFile <- input$FileEQTL
+             inFile <- input$FileBED
              if(is.null(inFile)){return(NULL)}
-             fread(inFile$datapath, header=TRUE, data.table=FALSE)
+             fread(inFile$datapath, header=FALSE, data.table=FALSE)
            },
            Example = {
-             fread("Data/CustomDataExample/eQTL.txt",
-                   header=TRUE, data.table=FALSE) 
+             fread("Data/CustomDataExample/BED.txt",
+                   header=FALSE, data.table=FALSE) 
            })
   })
+  
+  #Y label for BED.R ggplot
+  datBED_PlotLabel <- reactive({
+    inFile <- input$FileBED
+    
+    if(input$dataType=="Prostate"){"eQTL"}else {
+      if(is.null(inFile)){"Custom BED"}else{
+        substr(basename(sub("([^.]+)\\.[[:alnum:]]+$", "\\1", 
+                            inFile$name)),1,15)}}
+    })
 
   datLDlink <- reactive({
     #input file check
@@ -188,10 +198,19 @@ shinyServer(function(input, output, session) {
       filter(CHR==RegionChr() &
                BP>=RegionStart() &
                BP<=RegionEnd()) })
-  ROIdatEQTL <- reactive({ datEQTL() %>% 
+  ROIdatBED <- reactive({ 
+    d <- datBED()[,1:4]
+    colnames(d) <- c("CHR","START","END","SCORE")
+    
+    res <- d %>% 
       filter(CHR==RegionChr() &
                START>=RegionStart() &
-               END<=RegionEnd()) })
+               END<=RegionEnd()) %>% 
+      #scale to -1 and 1, 
+      mutate(SCORE=SCORE/max(abs(SCORE),na.rm = TRUE))
+    
+    return(res)
+     })
   
   ROIPLogMax <- reactive({
     #ylim Max for plotting Manhattan
@@ -379,8 +398,8 @@ shinyServer(function(input, output, session) {
   output$SummaryLNCAP <- 
     DT::renderDataTable(ROIdatLNCAP() %>% arrange(BP),
                         options=list(searching=FALSE,searchable=FALSE))
-  output$SummaryEQTL <- 
-    DT::renderDataTable(datEQTL() %>% arrange(START),
+  output$SummaryBED <- 
+    DT::renderDataTable(datBED() %>% arrange(START),
                         options=list(searching=FALSE,searchable=FALSE))
   
   output$SummaryRegion <- 
@@ -398,11 +417,11 @@ shinyServer(function(input, output, session) {
     escape=FALSE,options=list(paging=FALSE,searching=FALSE,searchable=FALSE))
 
 #   output$SummaryFileNrowNcol <- DT::renderDataTable( 
-#     data.table(InputFile=c("Association","LD","LNCAP","eQTL"),
+#     data.table(InputFile=c("Association","LD","LNCAP","BED"),
 #                RowCount=c(nrow(datStats()),nrow(datLD()),
-#                       nrow(datLNCAP()),nrow(datEQTL())),
+#                       nrow(datLNCAP()),nrow(datBED())),
 #                ColumnCount=c(ncol(datStats()),ncol(datLD()),
-#                       ncol(datLNCAP()),ncol(datEQTL()))),
+#                       ncol(datLNCAP()),ncol(datBED()))),
 #     options=list(paging=FALSE,searching=FALSE,searchable=FALSE))
   
   output$SummaryLDlink <- DT::renderDataTable(datLDlink())
@@ -467,9 +486,9 @@ shinyServer(function(input, output, session) {
   #LNCAP Smooth track
   plotObjLNCAP <- reactive({source("source/LNCAP.R",local=TRUE)})
   output$PlotLNCAP <- renderPlot({print(plotObjLNCAP())})
-  #eQTL bar track
-  plotObjEQTL <- reactive({source("source/eQTL.R",local=TRUE)})
-  output$PlotEQTL <- renderPlot({print(plotObjEQTL())})
+  #BED bar track
+  plotObjBED <- reactive({source("source/BED.R",local=TRUE)})
+  output$PlotBED <- renderPlot({print(plotObjBED())})
   
   #Gene track
   plotObjGene <- reactive({
@@ -506,14 +525,14 @@ shinyServer(function(input, output, session) {
   trackSize <- reactive({ 
     data.frame(Track=c("Chromosome","Manhattan","SNPType","LD",
                        "wgEncodeBroadHistone","wgEncodeRegDnaseClustered",
-                       "LNCAP","eQTL","Gene"),
+                       "LNCAP","BED","Gene"),
                Size=c(100,400,
                       RegionSNPTypeCount()*20,
                       RegionHitsCount()*20,
                       60, # wgEncodeBroadHistone
                       20, # wgEncodeRegDnaseClustered
                       20, # lncap
-                      30, # eqtl
+                      30, # BED
                       RegionGeneCount()*30)) })
 
   #Create subset based on selected tracks
@@ -738,10 +757,10 @@ shinyServer(function(input, output, session) {
                                          "SNPType"="SNPType",
                                          "LDSmooth"="LDSmooth",
                                          "LD"="LD",
+                                         "BED"="BED",
                                          "wgEncodeBroadHistone"="wgEncodeBroadHistone",
                                          "wgEncodeRegDnaseClustered"="wgEncodeRegDnaseClustered",
                                          "LNCaP Prostate"="LNCAP",
-                                         "eQTL"="eQTL",
                                          "Gene"="Gene"),
                              selected=c("Manhattan","Recombination")
     )

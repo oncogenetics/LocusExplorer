@@ -30,9 +30,13 @@ CHR_A	BP_A	SNP_A	CHR_B	BP_B	SNP_B	R2
 ```
 When using plink or LDlink method this does not need to be manually added.
 
-**3. Gene Expression BED Track - _eQTL.txt_**  
-Gene expression File is not mandatory but can be used to display the positions of genes differentially regulated by variants within the plot region. Genes within the plot region for which no eQTL is odserved should be excluded from the input file. 
- - **CHR -** Chromosome on which differentially expressed gene is located preceded by "chr". e.g `chr2` `chrX`
- - **START -** Transcript start position
- - **END -** Transcript end position
- - **DIRECTION -** Use `1` for Upregulated genes and `-1` for Downregulated genes
+**3. Custom BED Track - _*.BED_**  
+The first four required BED fields are:
+
+`chrom` - The name of the chromosome (e.g. chr3, chrY).  
+`chromStart` - The starting position of the feature in the chromosome.    
+`chromEnd` - The ending position of the feature in the chromosome.  
+`score` - A score, any number.    
+
+File is tab separated and has no header. This BED file will be used to create a bar chart. Score is the height.
+

@@ -69,7 +69,7 @@ shinyUI(
                          fileInput("FileStats", "Association File (required)"),
                          fileInput("FileLD", "LD File (recommended)"),
                          #fileInput("FileLNCAP", "LNCAP File"),
-                         fileInput("FileEQTL", "eQTL File")
+                         fileInput("FileBED", "BED File")
         ),#conditionalPanel- Custom
         
         conditionalPanel("input.dataType == 'Example'"
@@ -101,6 +101,10 @@ shinyUI(
                    h4("Linkage Disequilibrium"),
                    hr(),
                    dataTableOutput("SummaryLD")),
+          tabPanel("BED File",
+                   h4("BED File"),
+                   hr(),
+                   dataTableOutput("SummaryBED")),
           tabPanel("Cell lines",
                    h4("Cell lines"),
                    hr(),
@@ -114,10 +118,6 @@ shinyUI(
                    includeMarkdown("Data/ProstateLNCAP/README.md"),
                    dataTableOutput("SummaryLNCAP")
                    ),
-          tabPanel("eQTL",
-                   h4("Expression Quantitative Trait Loci"),
-                   hr(),
-                   dataTableOutput("SummaryEQTL")),
           tabPanel("Input File Format",
                    h4("Input File Format"),
                    hr(),
@@ -158,10 +158,10 @@ shinyUI(
                                     "SNPType"="SNPType",
                                     "LDSmooth"="LDSmooth",
                                     "LD"="LD",
+                                    "BED"="BED",
                                     "wgEncodeBroadHistone"="wgEncodeBroadHistone",
                                     "wgEncodeRegDnaseClustered"="wgEncodeRegDnaseClustered",
                                     "LNCaP Prostate"="LNCAP",
-                                    "eQTL"="eQTL",
                                     "Gene"="Gene"),
                                   selected=c("Manhattan","Recombination")
                                   ),
@@ -183,14 +183,14 @@ shinyUI(
                                 plotOutput("PlotSNPType",width=800,height=90)),
                conditionalPanel("input.ShowHideTracks.indexOf('LD')>-1",
                                 plotOutput("PlotSNPLD",width=800,height=110)),
+               conditionalPanel("input.ShowHideTracks.indexOf('BED')>-1",
+                                plotOutput("PlotBED",width=800,height=70)),
                conditionalPanel("input.ShowHideTracks.indexOf('wgEncodeBroadHistone')>-1",
                                 plotOutput("PlotwgEncodeBroadHistone",width=800,height=90)),
                conditionalPanel("input.ShowHideTracks.indexOf('wgEncodeRegDnaseClustered')>-1",
                                 plotOutput("PlotwgEncodeRegDnaseClustered",width=800,height=90)),
                conditionalPanel("input.ShowHideTracks.indexOf('LNCAP')>-1",
                                 plotOutput("PlotLNCAP",width=800,height=70)),
-               conditionalPanel("input.ShowHideTracks.indexOf('eQTL')>-1",
-                                plotOutput("PlotEQTL",width=800,height=70)),
                conditionalPanel("input.ShowHideTracks.indexOf('Gene')>-1",
                                 plotOutput("PlotGene",width=800,height=350)) #,
                
