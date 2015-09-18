@@ -84,22 +84,33 @@ shinyServer(function(input, output, session) {
            Prostate = {
              #input file check
              validate(need(input$RegionID != "", "Please select RegionID"))
-             fread(paste0("Data/ProstateData/LE/",input$RegionID,"_EQTL.txt"),
-                   header=FALSE, data.table=FALSE)
+             res <- 
+               fread(paste0("Data/ProstateData/LE/",input$RegionID,"_EQTL.txt"),
+                     header=FALSE, data.table=FALSE)
+             res <- res[,1:4]
+             colnames(res) <- c("CHR","START","END","SCORE")
+             return(res)
              },
            Custom = {
              #input file check
              validate(need(input$FileBED != "", "Please upload BED file"))
              
              inFile <- input$FileBED
-             if(is.null(inFile)){return(NULL)}
-             fread(inFile$datapath, header=FALSE, data.table=FALSE)
-           },
+             if(is.null(inFile)){return(NULL)}else{
+               res <- fread(inFile$datapath, header=FALSE, data.table=FALSE)
+               res <- res[,1:4]
+               colnames(res) <- c("CHR","START","END","SCORE")
+               return(res)
+               }
+             },
            Example = {
-             fread("Data/CustomDataExample/BED.txt",
-                   header=FALSE, data.table=FALSE) 
-           })
-  })
+             res <- fread("Data/CustomDataExample/BED.txt",
+                          header=FALSE, data.table=FALSE) 
+             res <- res[,1:4]
+               colnames(res) <- c("CHR","START","END","SCORE")
+               return(res)
+               })
+    })
   
   #Y label for BED.R ggplot
   datBED_PlotLabel <- reactive({
@@ -199,17 +210,12 @@ shinyServer(function(input, output, session) {
                BP>=RegionStart() &
                BP<=RegionEnd()) })
   ROIdatBED <- reactive({ 
-    d <- datBED()[,1:4]
-    colnames(d) <- c("CHR","START","END","SCORE")
-    
-    res <- d %>% 
+    datBED() %>% 
       filter(CHR==RegionChr() &
                START>=RegionStart() &
                END<=RegionEnd()) %>% 
       #scale to -1 and 1, 
       mutate(SCORE=SCORE/max(abs(SCORE),na.rm = TRUE))
-    
-    return(res)
      })
   
   ROIPLogMax <- reactive({
@@ -530,7 +536,7 @@ shinyServer(function(input, output, session) {
                        "wgEncodeBroadHistone","wgEncodeRegDnaseClustered",
                        "LNCAP","BED","Gene"),
                Size=c(100,400,
-                      RegionSNPTypeCount()*20,
+                      max(30,RegionSNPTypeCount()*20),
                       RegionHitsCount()*20,
                       30, # BED
                       60, # wgEncodeBroadHistone
