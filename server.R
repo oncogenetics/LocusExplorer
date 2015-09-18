@@ -67,7 +67,7 @@ shinyServer(function(input, output, session) {
                            BP_B=BP,
                            SNP_B=SNP,
                            R2=0.01)
-               }else {fread(inFile$datapath, header=TRUE, data.table=FALSE) }
+               }else{fread(inFile$datapath, header=TRUE, data.table=FALSE) }
            },
            Example = {
              fread("Data/CustomDataExample/LD.txt",
@@ -423,6 +423,9 @@ shinyServer(function(input, output, session) {
 #                ColumnCount=c(ncol(datStats()),ncol(datLD()),
 #                       ncol(datLNCAP()),ncol(datBED()))),
 #     options=list(paging=FALSE,searching=FALSE,searchable=FALSE))
+  
+  #output$tempPlotDatLD <- DT::renderDataTable(ROIdatLD())
+  
   
   output$SummaryLDlink <- DT::renderDataTable(datLDlink())
   output$SummaryLDlinkProcess <- 
