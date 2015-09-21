@@ -532,18 +532,26 @@ shinyServer(function(input, output, session) {
   
   #Default size per track
   trackSize <- reactive({ 
-    data.frame(Track=c("Chromosome","Manhattan","SNPType","LD",
-                       "wgEncodeBroadHistone","wgEncodeRegDnaseClustered",
-                       "LNCAP","BED","Gene"),
-               Size=c(100,400,
-                      max(30,RegionSNPTypeCount()*20),
-                      RegionHitsCount()*20,
+    data.frame(Track=c("Chromosome",
+                       "Manhattan",
+                       "SNPType",
+                       "LD",
+                       "BED",
+                       "wgEncodeBroadHistone",
+                       "wgEncodeRegDnaseClustered",
+                       "LNCAP",
+                       "Gene"),
+               Size=c(100, #Chromosome
+                      400, #Manhattan
+                      max(30,RegionSNPTypeCount()*20), #SNPType
+                      RegionHitsCount()*20, #LD R^2
                       30, # BED
                       60, # wgEncodeBroadHistone
                       20, # wgEncodeRegDnaseClustered
                       20, # lncap
-                      RegionGeneCount()*30)) })
-
+                      RegionGeneCount()*30) #Gene
+               )})
+  
   #Create subset based on selected tracks
   trackHeights <- reactive({
     trackSize() %>% filter(Track %in% input$ShowHideTracks) %>% .$Size })
