@@ -68,9 +68,9 @@ shinyUI(
         conditionalPanel("input.dataType == 'Custom'",
                          fileInput("FileStats", "Association File (required)"),
                          fileInput("FileLD", "LD File (recommended)"),
-                         #fileInput("FileLNCAP", "LNCAP File"),
-                         fileInput("FileBED", "BED File")
-        ),#conditionalPanel- Custom
+                         fileInput("FileBED", "BED File"),
+                         uiOutput("FileBEDName")
+                         ),#conditionalPanel- Custom
         
         conditionalPanel("input.dataType == 'Example'"
         )#conditionalPanel- CustomExample

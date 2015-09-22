@@ -8,7 +8,7 @@ ggplot(ROIdatBED(),
   geom_rect(col="#A71930",fill="#A71930") +
   scale_y_continuous(limits=c(-1,1),
                      breaks=c(0),
-                     labels=udf_pad(datBED_PlotLabel()),
+                     labels=udf_pad(input$FileBEDName),
                      name="") +
   xlim(c(zoomStart(),zoomEnd())) +
   udf_theme()

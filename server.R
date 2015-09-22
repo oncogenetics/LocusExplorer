@@ -112,16 +112,6 @@ shinyServer(function(input, output, session) {
                })
     })
   
-  #Y label for BED.R ggplot
-  datBED_PlotLabel <- reactive({
-    inFile <- input$FileBED
-    
-    if(input$dataType=="Prostate"){"eQTL"}else {
-      if(is.null(inFile)){"Custom BED"}else{
-        substr(basename(sub("([^.]+)\\.[[:alnum:]]+$", "\\1", 
-                            inFile$name)),1,15)}}
-    })
-
   datLDlink <- reactive({
     #input file check
     validate(need(input$FileLDlink != "", "Please upload LDlink file"))
@@ -704,6 +694,20 @@ shinyServer(function(input, output, session) {
       label = h4("Plot title"),
       value = paste(RegionChr(),zoomStart(),zoomEnd(),sep="_"))})
   
+  #Custom BED file track name, default is filename
+  output$FileBEDName <- renderUI({
+    textInput(inputId = "FileBEDName",
+              label = "BED File track name",
+              value = {
+                inFile <- input$FileBED
+                if(input$dataType=="Prostate"){"eQTL"}else {
+                  if(is.null(inFile)){"Custom BED"}else{
+                    substr(basename(sub("([^.]+)\\.[[:alnum:]]+$", "\\1", 
+                                        inFile$name)),1,15)}}
+                })#textInput
+    })
+
+
   # Merged Final plot -------------------------------------------------------  
   #merged plot with dynamic plot height
   plotObjMerge <- reactive({
