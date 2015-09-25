@@ -281,6 +281,16 @@ shinyUI(
                         h4("About"),
                         hr(),
                         includeMarkdown("README.md")),
+               tabPanel("Publication",
+                        h4("Publication"),
+                        hr(),
+                        h4("Submitted to Oxford University Press: Bioinformatics"),
+                        h4("Status: Awaiting Reviewer Assignment"),
+                        img(src="BioinformaticsPaper.PNG")),
+               tabPanel("Input File Format",
+                        h4("Input File Format"),
+                        hr(),
+                        includeMarkdown("Markdown/InputFileFormat.md")),
                tabPanel("Example Plot",
                         h4("Example Plot"),
                         hr(),
@@ -295,11 +305,8 @@ shinyUI(
                tabPanel("LD Tutorial",
                         h4("LD Tutorial"),
                         hr(),
-                        includeMarkdown("Markdown/LDTutorial.md")),
-               tabPanel("Input File Format",
-                        h4("Input File Format"),
-                        hr(),
-                        includeMarkdown("Markdown/InputFileFormat.md"))
+                        includeMarkdown("Markdown/LDTutorial.md"))
+               
              )#tabsetPanel
            )#mainPanel
   )#tabPanel - Help
