@@ -33,21 +33,21 @@ if("LDSmooth" %in% input$ShowHideTracks) {
 gg_out <- gg_out +
   #mark hit SNPs - outline shapes
   geom_point(data=plotDatStats() %>% 
-               filter(SNP %in% input$HitSNPs),
+               filter(SNP %in% RegionHits()),
              aes(x=BP,y=PLog),size=4,colour="black",
              shape=plotDatStats() %>% 
                filter(SNP %in% input$HitSNPs) %>% 
                .$TYPED) +
   #mark hit SNPs - vertical lines
-  geom_segment(data=plotDatLD() %>% 
-                 filter(SNP==LDSNP),
+  geom_segment(data=plotDatStats() %>% 
+                 filter(SNP %in% RegionHits()),
                aes(x=BP, y=0, xend=BP, yend=PLog),
                colour="black",
                linetype = "dashed") +
   #mark hit SNPs - Label hits
-  geom_text(data=plotDatLD() %>% 
-              filter(SNP==LDSNP),
-            aes(BP,PLog,label=LDSNP),
+  geom_text(data=plotDatStats() %>% 
+              filter(SNP %in% RegionHits()),
+            aes(BP,PLog,label=SNP),
             vjust=1.1,hjust=-0.1,colour="black") +
   #zoom
   xlim(c(zoomStart(),zoomEnd())) +

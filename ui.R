@@ -92,7 +92,9 @@ shinyUI(
                    hr(),
                    helpText("NCBI link to hit SNPs:"),
                    dataTableOutput("SummaryHits"),
-                   hr()),
+                   hr()
+                   #dataTableOutput("tempSummaryplotDatLD")
+                   ),
           tabPanel("Association",
                    h4("Association"),
                    hr(),
