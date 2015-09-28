@@ -15,7 +15,7 @@ udf_theme <- function(){
           axis.line=element_blank(),
           panel.border=element_blank(),
           #Y Axis font
-          axis.text.y=element_text(family="Courier")
+          axis.text.y=element_text(family="Courier",colour = "grey20")
     )
 }
 
