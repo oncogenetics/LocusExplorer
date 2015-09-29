@@ -283,7 +283,7 @@ shinyServer(function(input, output, session) {
       base::merge.data.frame(
         plotDatStats(),
         d_LD[,c("BP_B","R2","LDSNP","LDSmoothCol","LDCol")],
-        by.x="BP",by.y="BP_B",all.x=TRUE) %>% 
+        by.x="BP",by.y="BP_B",all=TRUE) %>% 
       mutate(R2_Adj=ROIPLogMax()*R2)
     
     return(d_LD)
