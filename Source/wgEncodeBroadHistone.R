@@ -24,5 +24,8 @@ gg_out +
                      name="") +
   #general options
   xlim(c(zoomStart(),zoomEnd())) +
-  udf_theme() 
+  udf_theme()  +
+  theme(
+    axis.text.x=element_blank(),
+    axis.ticks.x=element_blank())
 

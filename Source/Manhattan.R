@@ -67,8 +67,7 @@ gg_out <- gg_out +
   ) +
   #testing plot alignment
   #geom_vline(xintercept=173000000,col="red") +
-  udf_theme() 
-
+  udf_theme()
 
 #result
 gg_out

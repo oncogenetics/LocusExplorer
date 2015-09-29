@@ -13,4 +13,7 @@ ggplot(data=ROIdatStats(),
   #testing plot alignment
   #geom_vline(xintercept=173000000,col="red") +
   xlim(c(zoomStart(),zoomEnd())) +
-  udf_theme()
+  udf_theme() +
+  theme(
+    axis.text.x=element_blank(),
+    axis.ticks.x=element_blank())
