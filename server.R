@@ -545,7 +545,17 @@ shinyServer(function(input, output, session) {
   trackHeights <- reactive({
     trackSize() %>% filter(Track %in% input$ShowHideTracks) %>% .$Size })
   trackColours <- reactive({ 
-    res <- cbind(trackHeights(),c('grey90','grey80'))[,2][1:length(trackHeights())] 
+    
+    myCols <- 
+      if(input$PlotTheme=="1"){
+        #grey
+        c('#C2C2C2','#E5E5E5') } else if(input$PlotTheme=="2"){
+          #yellow
+          c("#FFD602","#FFE45C") } else if(input$PlotTheme=="3"){
+            #green
+            c("#C9DD03","#EDFD5E") } else {c("#FFFFFF","#FFFFFF")}
+    
+    res <- cbind(trackHeights(),myCols)[,2][1:length(trackHeights())] 
     #chromosome background must be white
     if("Chromosome" %in% input$ShowHideTracks){res[1] <- "white"}
     return(res)
@@ -733,9 +743,10 @@ shinyServer(function(input, output, session) {
   #plot merge height is dynamic, based on seleceted tracks
   output$plotMergeUI <- renderUI({
     plotOutput("plotMerge",width=800,height=sum(trackHeights()))
-    })
+  })
+    
   
-  # Observe update ----------------------------------------------------------
+    # Observe update ----------------------------------------------------------
   # maximum of 5 SNPs can be selected to display LD, minimum 1 must be ticked.
   observe({
     if(length(input$HitSNPs) > 5){

@@ -6,7 +6,7 @@ ggplot() +
   #mark hit SNPs
   geom_vline(xintercept=plotDatStats() %>% 
                filter(SNP %in% RegionHitsSelected()) %>% .$BP,
-             col="grey80",linetype="dashed") +
+             col="black",linetype="dashed") +
   #ggbio plot genes
   geom_alignment(data = plotDatGene(),aes(group=gene_id,
                      fill=strand, col=strand)) +

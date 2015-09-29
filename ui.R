@@ -210,6 +210,13 @@ shinyUI(
              sidebarPanel(
                # Choose Title for merged plot
                uiOutput("downloadPlotTitle"),
+               radioButtons("PlotTheme","Plot theme",
+                            choices = list("Gray" = 1,
+                                           "Yellow" = 2,
+                                           "Green" = 3,
+                                           "Classic" = 4,
+                                           "None" = 5),
+                            selected = 1),
                # Choose download filename.
                uiOutput("downloadPlotFileName"),
                h6("Use PDF or SVG format for further image editing."),
@@ -236,7 +243,7 @@ shinyUI(
                                 input.downloadPlotType == 'tiff')",
                                 sliderInput("downloadPlotResolution",
                                             h4("Resolution"),
-                                            min = 100, max = 600, value = 100,
+                                            min = 100, max = 600, value = 120,
                                             step = 20)),
                # File downloads when this button is clicked.
                downloadButton(outputId = "downloadPlot", label = "Download Plot")
