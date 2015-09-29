@@ -33,7 +33,10 @@ library(org.Hs.eg.db) # gene symobols
 library(rtracklayer) # bigwig
 
 #Map fonts to Windows
-windowsFonts(Courier=windowsFont("TT Courier New"))
+if(Sys.info()['sysname'] == "Windows") {
+  windowsFonts(Courier=windowsFont("TT Courier New"))
+  }
+
 setInternet2(TRUE)
 
 # Define UI ---------------------------------------------------------------
