@@ -26,11 +26,10 @@ library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 library(org.Hs.eg.db) # gene symobols
 library(rtracklayer) # bigwig
 ```
-### Session info
-Application tested on 10/09/2015 16:24
+### Session info Windows
+Application tested on 30/09/2015 16:24
 
 ```R
-> sessionInfo()
 R version 3.2.2 (2015-08-14)
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 Running under: Windows 7 x64 (build 7601) Service Pack 1
@@ -60,12 +59,52 @@ loaded via a namespace (and not attached):
 [17] plyr_1.8.3                 OrganismDbi_1.11.42        XML_3.98-1.3               biomaRt_2.25.1            
 [21] zlibbioc_1.15.0            xtable_1.7-4               scales_0.3.0               BiocParallel_1.3.48       
 [25] SummarizedExperiment_0.3.3 nnet_7.3-11                proto_0.3-10               survival_2.38-3           
-[29] magrittr_1.5               mime_0.4                   GGally_0.5.0               MASS_7.3-43               
+[29] magrittr_1.5               mime_0.4                   GGally_0.5.0               MASS_7.3-44               
 [33] foreign_0.8-66             graph_1.47.2               BiocInstaller_1.18.4       tools_3.2.2               
 [37] munsell_0.4.2              cluster_2.0.3              lambda.r_1.1.7             Biostrings_2.36.4         
 [41] futile.logger_1.4.1        grid_3.2.2                 RCurl_1.95-4.7             dichromat_2.0-0           
 [45] VariantAnnotation_1.15.26  htmlwidgets_0.5            bitops_1.0-6               gtable_0.1.2              
 [49] reshape_0.8.5              reshape2_1.4.1             R6_2.1.1                   GenomicAlignments_1.4.1   
 [53] gridExtra_2.0.0            Hmisc_3.16-0               futile.options_1.0.0       stringi_0.5-5             
-[57] Rcpp_0.12.0                rpart_4.1-10               acepack_1.3-3.3  
+[57] Rcpp_0.12.1                rpart_4.1-10               acepack_1.3-3.3 
+```
+
+
+### Session info OS X
+Application tested on 30/09/2015 16:24
+
+```R
+R version 3.2.2 (2015-08-14)
+Platform: x86_64-apple-darwin13.4.0 (64-bit)
+Running under: OS X 10.10.5 (Yosemite)
+
+locale:
+[1] en_GB.UTF-8/en_GB.UTF-8/en_GB.UTF-8/C/en_GB.UTF-8/en_GB.UTF-8
+
+attached base packages:
+[1] stats4    parallel  stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+ [1] rtracklayer_1.28.10                     org.Hs.eg.db_3.1.2                      RSQLite_1.0.0                          
+ [4] DBI_0.3.1                               TxDb.Hsapiens.UCSC.hg19.knownGene_3.1.2 GenomicFeatures_1.20.5                 
+ [7] AnnotationDbi_1.30.1                    Biobase_2.28.0                          GenomicRanges_1.20.8                   
+[10] GenomeInfoDb_1.4.3                      IRanges_2.2.7                           S4Vectors_0.6.6                        
+[13] ggbio_1.16.1                            BiocGenerics_0.14.0                     seqminer_4.9                           
+[16] DT_0.1                                  stringr_1.0.0                           markdown_0.7.7                         
+[19] knitr_1.11                              ggplot2_1.0.1                           tidyr_0.3.1                            
+[22] dplyr_0.4.3                             data.table_1.9.6                        shiny_0.12.2                           
+
+loaded via a namespace (and not attached):
+ [1] splines_3.2.2             Formula_1.2-1             assertthat_0.1            latticeExtra_0.6-26       RBGL_1.44.0              
+ [6] BSgenome_1.36.3           Rsamtools_1.20.4          lattice_0.20-33           biovizBase_1.16.0         chron_2.3-47             
+[11] digest_0.6.8              RColorBrewer_1.1-2        XVector_0.8.0             colorspace_1.2-6          htmltools_0.2.6          
+[16] httpuv_1.3.3              plyr_1.8.3                OrganismDbi_1.10.0        XML_3.98-1.3              biomaRt_2.24.1           
+[21] zlibbioc_1.14.0           xtable_1.7-4              scales_0.3.0              BiocParallel_1.2.21       nnet_7.3-10              
+[26] proto_0.3-10              survival_2.38-3           magrittr_1.5              mime_0.4                  GGally_0.5.0             
+[31] MASS_7.3-43               foreign_0.8-65            graph_1.46.0              tools_3.2.2               munsell_0.4.2            
+[36] cluster_2.0.3             lambda.r_1.1.7            Biostrings_2.36.4         futile.logger_1.4.1       grid_3.2.2               
+[41] RCurl_1.95-4.7            dichromat_2.0-0           VariantAnnotation_1.14.13 htmlwidgets_0.5           bitops_1.0-6             
+[46] gtable_0.1.2              reshape_0.8.5             reshape2_1.4.1            R6_2.1.1                  GenomicAlignments_1.4.1  
+[51] gridExtra_2.0.0           Hmisc_3.17-0              futile.options_1.0.0      stringi_0.5-5             Rcpp_0.12.1              
+[56] rpart_4.1-10              acepack_1.3-3.3      
 ```
