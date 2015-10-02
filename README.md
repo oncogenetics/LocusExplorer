@@ -66,6 +66,9 @@ Locus Explorer plots of two simple and four complex regions. (A) Region 23_3 at 
 
 <img src="www/PMID_26025378_F1.large.jpg" height="800px" width="600px" />
 
+### Frequently asked questions  
+See [FAQ](https://github.com/oncogenetics/LocusExplorer/wiki/FAQ)
+
 ### Contact  
 Questions, suggestions, and bug reports are welcome and appreciated.   
 - Submit [suggestions and bug-reports](https://github.com/oncogenetics/LocusExplorer/issues)   
