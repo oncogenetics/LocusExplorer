@@ -25,3 +25,6 @@ Data/wgEncodeRegDnaseClustered/*.txt
 
 # Manuscript - ignore all until published
 Manuscript/*.*
+
+# MAC thumbs
+*.db
