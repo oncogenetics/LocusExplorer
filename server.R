@@ -244,9 +244,7 @@ shinyServer(function(input, output, session) {
   # Data level 3 - Plot data ------------------------------------------------
   plotDatStats <- reactive({
     ROIdatStats() %>% 
-      filter(BP>=zoomStart() &
-               BP<=zoomEnd() &
-               PLog >= input$FilterMinPlog)})
+      filter(PLog >= input$FilterMinPlog)})
   
   plotDatLD <- reactive({
     #subset LD based on ui input
@@ -758,12 +756,15 @@ shinyServer(function(input, output, session) {
     if(length(input$ShowHideTracks) < 1){
       updateCheckboxGroupInput(session, "ShowHideTracks", selected= "Manhattan")}
   })
+  
+  #manual chr:start-end zoom values
   observeEvent(input$RegionZoom,({
     if(!input$RegionZoom %in% c("chr:start-end","")){
       newStartEnd <- as.numeric(unlist(strsplit(input$RegionZoom,":|-"))[2:3])
       updateSliderInput(session, "BPrange",
                         value = newStartEnd)}
     }))
+  
   #Reset plot options
   observeEvent(input$resetInput,({
     updateSliderInput(session,"FilterMinPlog", value=0)
@@ -784,9 +785,9 @@ shinyServer(function(input, output, session) {
     updateCheckboxGroupInput(session,"ShowHideTracks",
                              choices = c("Chromosome"="Chromosome",
                                          "Manhattan"="Manhattan",
-                                         "Recombination"="Recombination",
+                                         "Manhattan: Recombination"="Recombination",
+                                         "Manhattan: LDSmooth"="LDSmooth",
                                          "SNPType"="SNPType",
-                                         "LDSmooth"="LDSmooth",
                                          "LD"="LD",
                                          "BED"="BED",
                                          "wgEncodeBroadHistone"="wgEncodeBroadHistone",
@@ -796,6 +797,28 @@ shinyServer(function(input, output, session) {
                              selected=c("Manhattan","Recombination")
     )
     })) #END observeEvent resetInput
+  
+  #If manhattan track is not selected then Recomb and LDSmooth track unticked.
+  observeEvent(input$ShowHideTracks,({
+    selectedTracks <- input$ShowHideTracks
+    if(!"Manhattan"%in% selectedTracks){
+      selectedTracks <- setdiff(selectedTracks,c("Recombination","LDSmooth"))
+      
+      updateCheckboxGroupInput(session,"ShowHideTracks",
+                               choices = c("Chromosome"="Chromosome",
+                                           "Manhattan"="Manhattan",
+                                           "Manhattan: Recombination"="Recombination",
+                                           "Manhattan: LDSmooth"="LDSmooth",
+                                           "SNPType"="SNPType",
+                                           "LD"="LD",
+                                           "BED"="BED",
+                                           "wgEncodeBroadHistone"="wgEncodeBroadHistone",
+                                           "wgEncodeRegDnaseClustered"="wgEncodeRegDnaseClustered",
+                                           "LNCaP Prostate"="LNCAP",
+                                           "Gene"="Gene"),
+                               selected=c(selectedTracks))
+      } #END if
+    })) #END observeEvent ShowHideTracks
   
 })#END shinyServer
 

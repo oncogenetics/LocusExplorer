@@ -160,9 +160,9 @@ shinyUI(
                checkboxGroupInput("ShowHideTracks", h4("Tracks:"),
                                   c("Chromosome"="Chromosome",
                                     "Manhattan"="Manhattan",
-                                    "Recombination"="Recombination",
+                                    "Manhattan: Recombination"="Recombination",
+                                    "Manhattan: LDSmooth"="LDSmooth",
                                     "SNPType"="SNPType",
-                                    "LDSmooth"="LDSmooth",
                                     "LD"="LD",
                                     "BED"="BED",
                                     "wgEncodeBroadHistone"="wgEncodeBroadHistone",
@@ -318,9 +318,12 @@ shinyUI(
                tabPanel("LD Tutorial",
                         h4("LD Tutorial"),
                         hr(),
-                        includeMarkdown("Markdown/LDTutorial.md"))
-               
-             )#tabsetPanel
+                        includeMarkdown("Markdown/LDTutorial.md")),
+               tabPanel("FAQ",
+                        h4("Frequently Asked Quesitons"),
+                        hr(),
+                        includeMarkdown("Markdown/FAQ.md"))
+               )#tabsetPanel
            )#mainPanel
   )#tabPanel - Help
   )#navbarPage

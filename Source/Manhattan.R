@@ -2,19 +2,23 @@
 # License: MIT + file LICENSE.txt
 
 gg_out <-
-  ggplot(plotDatStats(), aes(x=BP,y=PLog)) + 
-  # all snps grey hollow shapes
-  geom_point(size=4,colour="grey80",shape=plotDatStats()$TYPED)
+  if(!is.null(plotDatStats())){
+    ggplot(plotDatStats(), aes(x=BP,y=PLog)) + 
+      # all snps grey hollow shapes
+      geom_point(size=4,colour="grey80",shape=plotDatStats()$TYPED)
+    } else {NULL}
 
 
-if("Recombination" %in% input$ShowHideTracks){ 
+if("Recombination" %in% input$ShowHideTracks &
+   nrow(plotDatGeneticMap()) > 2 ){ 
   #Recomb lines
   gg_out <- gg_out +
     geom_area(data=plotDatGeneticMap(),
               aes(BP,RecombAdj),
               fill="#11d0ff",colour="#11d0ff",alpha=0.2)}
 
-if("LD" %in% input$ShowHideTracks){ 
+if("LD" %in% input$ShowHideTracks &
+   nrow(plotDatLD()) > 0){ 
     # LD colours - add R2 filled shapes
     gg_out <- gg_out +
       geom_point(data=plotDatLD(),aes(x=BP,y=PLog),
@@ -24,7 +28,8 @@ if("LD" %in% input$ShowHideTracks){
                  alpha=0.8)}
 
 # LD smooth per hit SNP - optional
-if("LDSmooth" %in% input$ShowHideTracks) {
+if("LDSmooth" %in% input$ShowHideTracks &
+   nrow(plotDatLD()) > 0) {
   gg_out <- gg_out +
     geom_smooth(data=plotDatLD(),aes(x=BP,y=R2_Adj,col=LDSmoothCol),
                 method="loess",se=FALSE)}
@@ -55,18 +60,14 @@ gg_out <- gg_out +
     limits=c(0,ROIPLogMax()),
     breaks=seq(0,ROIPLogMax(),5),
     labels=udf_pad(seq(0,ROIPLogMax(),5)),
-    #name="xxx"
     name=expression(-log[10](italic(p)))
   ) +
   scale_colour_identity() +
   theme(
-    #axis.title=element_blank(),
     #Y Axis font
     axis.text.y=element_text(family="Courier"),
     panel.background = element_rect(fill="white")
   ) +
-  #testing plot alignment
-  #geom_vline(xintercept=173000000,col="red") +
   udf_theme()
 
 #result

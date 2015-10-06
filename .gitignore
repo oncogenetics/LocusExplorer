@@ -10,8 +10,7 @@
 .Rproj.user/
 
 # produced vignettes
-vignettes/*.html
-vignettes/*.pdf
+*.html
 
 # Genetic Map files
 Data/GeneticMap1KG/*.txt

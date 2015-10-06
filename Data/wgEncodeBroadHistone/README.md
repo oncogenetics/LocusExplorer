@@ -2,12 +2,11 @@
 
 ### H3K27Ac Mark (Often Found Near Active Regulatory Elements) on 7 cell lines from ENCODE
 
-**Note**: Histone BigWig files are not included in this app, to display this track please download below
-files into `LocusExplorer/Data/EncodeBigWig/` from 
-<a href="http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeRegMarkH3k27ac/" target="_blank">UCSC golden path</a>.
+### Note
 
-This directory contains the downloadable files associated with this ENCODE
-composite track.
+As GitHub has limitations on size of the [repisotories and files](https://help.github.com/articles/what-is-my-disk-quota/), Histone BigWig files not included in `LocusExplorer/Data/EncodeBigWig/`. These files are public and can be downloaded from <a href="http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeRegMarkH3k27ac/" target="_blank">UCSC golden path</a> - total ~2.5GB. Downloaded bigWig files must be saved in `LocusExplorer/Data/EncodeBigWig/` folder.
+
+<a href="http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeRegMarkH3k27ac/" target="_blank">UCSC golden path</a> contains the public downloadable files associated with ENCODE track.
 
 ```
 wgEncodeBroadHistoneGm12878H3k27acStdSig.bigWig 27-Jan-2011 10:33  250M  
@@ -18,6 +17,7 @@ wgEncodeBroadHistoneK562H3k27acStdSig.bigWig    27-Jan-2011 21:18  292M
 wgEncodeBroadHistoneNhekH3k27acStdSig.bigWig    28-Jan-2011 00:47  280M  
 wgEncodeBroadHistoneNhlfH3k27acStdSig.bigWig    28-Jan-2011 01:51  258M
 ```
+
 
 ### Description
 
