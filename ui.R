@@ -72,7 +72,7 @@ shinyUI(
         conditionalPanel("input.dataType == 'Custom'",
                          fileInput("FileStats", "Association File (required)"),
                          fileInput("FileLD", "LD File (recommended)"),
-                         fileInput("FileBED", "BED File"),
+                         fileInput("FileBED", "bedGraph File"),
                          uiOutput("FileBEDName")
                          ),#conditionalPanel- Custom
         

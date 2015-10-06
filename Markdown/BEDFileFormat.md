@@ -1,10 +1,16 @@
-The first four required BED fields are:
+*bedGraph* fields are:
 
 `chrom` - The name of the chromosome (e.g. chr3, chrY).  
-`chromStart` - The starting position of the feature in the chromosome.  
+`chromStart` - The starting position of the feature in the chromosome.    
 `chromEnd` - The ending position of the feature in the chromosome.  
-`score` - A score, can be any number, it will be scaled down to 0 and 1.  
+`score` - A score, any number.    
 
-File is tab separated and has no header.
+See [BedGraph Track Format](http://genome.ucsc.edu/goldenpath/help/bedgraph.html) for more details.
 
-This BED file will be used to create a bar chart. Score is the height.
+File is tab separated and has no header. This file will be used to create a bar chart. Score is the height, e.g.:
+
+```
+chr2	173292313	173371181	-100
+chr2	173500000	173520000	1000
+```
+

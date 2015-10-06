@@ -704,11 +704,11 @@ shinyServer(function(input, output, session) {
   #Custom BED file track name, default is filename
   output$FileBEDName <- renderUI({
     textInput(inputId = "FileBEDName",
-              label = "BED File track name",
+              label = "bedGraph File track name",
               value = {
                 inFile <- input$FileBED
                 if(input$dataType=="Prostate"){"eQTL"}else {
-                  if(is.null(inFile)){"Custom BED"}else{
+                  if(is.null(inFile)){"bedGraph"}else{
                     substr(basename(sub("([^.]+)\\.[[:alnum:]]+$", "\\1", 
                                         inFile$name)),1,15)}}
                 })#textInput

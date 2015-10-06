@@ -30,13 +30,20 @@ CHR_A	BP_A	SNP_A	CHR_B	BP_B	SNP_B	R2
 ```
 When using plink or LDlink method this does not need to be manually added.
 
-**3. Custom BED Track - _*.BED_**  
-The first four required BED fields are:
+**3. Custom bedGraph Track - _*.BED_**  
+The first four required bedGraph fields are:
 
 `chrom` - The name of the chromosome (e.g. chr3, chrY).  
 `chromStart` - The starting position of the feature in the chromosome.    
 `chromEnd` - The ending position of the feature in the chromosome.  
 `score` - A score, any number.    
 
-File is tab separated and has no header. This BED file will be used to create a bar chart. Score is the height.
+See [BedGraph Track Format](http://genome.ucsc.edu/goldenpath/help/bedgraph.html) for more details.
+
+File is tab separated and has no header. This file will be used to create a bar chart. Score is the height, e.g.:
+
+```
+chr2	173292313	173371181	-100
+chr2	173500000	173520000	1000
+```
 

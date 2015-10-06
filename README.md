@@ -37,13 +37,19 @@ if (length(setdiff(bioc, rownames(installed.packages()))) > 0) {
 
 
 ### Launch Locus Explorer
-To start Locus Explorer, open R (RStudio recommended), copy the following code into the console and hit Return:
+Locus Explorer runs through a web browser and uses an intuitive interface that does not require high level computational skills to operate.
+
+#### Run using *runGitHub()* within RStudio.
+
+Open RStudio recommended, copy the following code into the console and hit Return:
 ```R
 library(shiny)  
 runGitHub("LocusExplorer", "oncogenetics")
 ```
 
-Locus Explorer runs through a web browser and uses an intuitive interface that does not require high level computational skills to operate.
+#### Using *Download as Zip*
+Click on *Download as ZIP* button, this will download the repisotory locally as a zip file *LocusExplorer-master.zip*. Unzip the folder. Open *ui.R* file in RStudio and click on *Run App* button at top right corner.
+
 
 ### Cite Locus Explorer
 [Locus Explorer: a user-friendly tool for integrated visualisation of genetic association data and biological annotations](url to add) Tokhir Dadaev<sup>1</sup>, Daniel A Leongamornlert<sup>1</sup>, Edward J Saunders<sup>1</sup>, Rosalind Eeles<sup>1,2</sup> , Zsofia Kote-Jarai<sup>1</sup>   
