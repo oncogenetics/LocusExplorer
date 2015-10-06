@@ -35,7 +35,7 @@ What the colour interpretation is for the histone panel?
 
 
 #### Q5: "Please download Histone bigWig files" message on the plot?
-As GitHub has limitations on size of the [repisotories and files](https://help.github.com/articles/what-is-my-disk-quota/), Histone BigWig files are not included in `LocusExplorer/Data/EncodeBigWig/`. These files are public and can be downloaded from <a href="http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeRegMarkH3k27ac/" target="_blank">UCSC golden path</a> - total ~2.5GB. Downloaded bigWig files must be saved in `LocusExplorer/Data/EncodeBigWig/` folder.
+As GitHub has limitations on size of the [repositories and files](https://help.github.com/articles/what-is-my-disk-quota/), Histone BigWig files are not included in `LocusExplorer/Data/EncodeBigWig/`. These files are public and can be downloaded from <a href="http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeRegMarkH3k27ac/" target="_blank">UCSC golden path</a> - total ~2.5GB. Downloaded bigWig files must be saved in `LocusExplorer/Data/EncodeBigWig/` folder.
 
 We are working on server version of LocusExplorer, expected to be **live by December 2015**. Keep an eye on https://github.com/oncogenetics/LocusExplorer page. This will resolve the issues of different R versions. R packages, and no limits on anntation data - such as bigWig files.
 
