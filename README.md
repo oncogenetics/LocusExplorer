@@ -39,7 +39,7 @@ if (length(setdiff(bioc, rownames(installed.packages()))) > 0) {
 ### Launch Locus Explorer
 Locus Explorer runs through a web browser and uses an intuitive interface that does not require high level computational skills to operate.
 
-#### Run using *runGitHub()* within RStudio.
+#### 1. Using *runGitHub()* within RStudio
 
 Open RStudio recommended, copy the following code into the console and hit Return:
 ```R
@@ -47,7 +47,7 @@ library(shiny)
 runGitHub("LocusExplorer", "oncogenetics")
 ```
 
-#### Using *Download as Zip*
+#### 2. Using *Download as Zip*
 Click on *Download as ZIP* button, this will download the repisotory locally as a zip file *LocusExplorer-master.zip*. Unzip the folder. Open *ui.R* file in RStudio and click on *Run App* button at top right corner.
 
 
