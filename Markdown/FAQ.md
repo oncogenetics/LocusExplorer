@@ -26,9 +26,12 @@ What the colour interpretation is for the histone panel?
 
 **A:** Data from ENCODE project, see links for more info.
 
- - Histone - [LocusExplorer README.md](https://github.com/oncogenetics/LocusExplorer/tree/master/Data/wgEncodeBroadHistone), [UCSC tables](http://genome-euro.ucsc.edu/cgi-bin/hgTrackUi?hgsid=209730420_hvKa8YLni4ekR6rt9w1cSuGABF1Y&c=chr7&g=wgEncodeRegMarkH3k27ac)
+ - Histone - [LocusExplorer README.md](https://github.com/oncogenetics/LocusExplorer/tree/master/Data/wgEncodeBroadHistone), [UCSC tables](http://genome-euro.ucsc.edu/cgi-bin/hgTrackUi?org=human&db=hg19&g=wgEncodeRegMarkH3k27ac)
 
- - DNaseI - [LocusExplorer README.md](https://github.com/oncogenetics/LocusExplorer/tree/master/Data/wgEncodeRegDnaseClustered), [UCSC tables](http://genome-euro.ucsc.edu/cgi-bin/hgTrackUi?hgsid=209730420_hvKa8YLni4ekR6rt9w1cSuGABF1Y&c=chr7&g=wgEncodeRegDnaseClustered)
+
+ - DNaseI - [LocusExplorer README.md](https://github.com/oncogenetics/LocusExplorer/tree/master/Data/wgEncodeRegDnaseClustered), [UCSC tables](http://genome-euro.ucsc.edu/cgi-bin/hgTrackUi?org=human&db=hg19&g=wgEncodeRegDnaseClustered)
+
+
 
 #### Q4: Which operating system it is tested on?
 **A:** See [RSessionInfo.md](https://github.com/oncogenetics/LocusExplorer/blob/master/Markdown/RSessionInfo.md)
