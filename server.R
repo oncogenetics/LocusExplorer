@@ -10,7 +10,8 @@
 # Define Server -----------------------------------------------------------
 shinyServer(function(input, output, session) {  
   
-  source("source/UDF.R",local = TRUE)
+  #Custom functions
+  source("Source/UDF.R",local = TRUE)
   
   #prostate region names
   regions <- read.csv("Data/ProstateData/regions.csv") %>% 
@@ -79,7 +80,7 @@ shinyServer(function(input, output, session) {
     fread("Data/ProstateLNCAP/ProstateLNCAP.txt",
           colClasses = c("character","numeric","character")) })
   
-  datBED <- reactive({
+  datBedGraph <- reactive({
     switch(input$dataType,
            Prostate = {
              #input file check
@@ -93,9 +94,9 @@ shinyServer(function(input, output, session) {
              },
            Custom = {
              #input file check
-             validate(need(input$FileBED != "", "Please upload BED file"))
+             validate(need(input$FileBedGraph != "", "Please upload BedGraph file"))
              
-             inFile <- input$FileBED
+             inFile <- input$FileBedGraph
              if(is.null(inFile)){return(NULL)}else{
                res <- fread(inFile$datapath, header=FALSE, data.table=FALSE)
                res <- res[,1:4]
@@ -104,7 +105,7 @@ shinyServer(function(input, output, session) {
                }
              },
            Example = {
-             res <- fread("Data/CustomDataExample/BED.txt",
+             res <- fread("Data/CustomDataExample/bedGraph.txt",
                           header=FALSE, data.table=FALSE) 
              res <- res[,1:4]
                colnames(res) <- c("CHR","START","END","SCORE")
@@ -196,8 +197,8 @@ shinyServer(function(input, output, session) {
       filter(CHR==RegionChr() &
                BP>=RegionStart() &
                BP<=RegionEnd()) })
-  ROIdatBED <- reactive({ 
-    datBED() %>% 
+  ROIdatBedGraph <- reactive({ 
+    datBedGraph() %>% 
       filter(CHR==RegionChr() &
                START>=RegionStart() &
                END<=RegionEnd()) %>% 
@@ -391,8 +392,8 @@ shinyServer(function(input, output, session) {
   output$SummaryLNCAP <- 
     DT::renderDataTable(ROIdatLNCAP() %>% arrange(BP),
                         options=list(searching=FALSE,searchable=FALSE))
-  output$SummaryBED <- 
-    DT::renderDataTable(datBED() %>% arrange(START),
+  output$SummaryBedGraph <- 
+    DT::renderDataTable(datBedGraph() %>% arrange(START),
                         options=list(searching=FALSE,searchable=FALSE))
   
   output$SummaryRegion <- 
@@ -443,7 +444,7 @@ shinyServer(function(input, output, session) {
                             RegionChr(),'%3A',zoomStart(),'-',zoomEnd()), target="_blank"))
 
   #Plot Chr ideogram
-  plotObjChromosome <- reactive({source("source/Chromosome.R",local=TRUE)})
+  plotObjChromosome <- reactive({source("Source/Chromosome.R",local=TRUE)})
   output$PlotChromosome <- renderPlot({print(plotObjChromosome())})
   #Manhattan track
   plotObjManhattan <- reactive({
@@ -453,7 +454,7 @@ shinyServer(function(input, output, session) {
     # Close the progress when this reactive exits (even if there's an error)
     on.exit(progress$close())
     
-    source("source/Manhattan.R",local=TRUE)})
+    source("Source/Manhattan.R",local=TRUE)})
   output$PlotManhattan <- renderPlot({
     # Create a Progress object
     progress <- shiny::Progress$new()
@@ -464,27 +465,27 @@ shinyServer(function(input, output, session) {
     print(plotObjManhattan())})
   
   #SNPType track
-  plotObjSNPType <- reactive({source("source/SNPType.R",local=TRUE)})
+  plotObjSNPType <- reactive({source("Source/SNPType.R",local=TRUE)})
   output$PlotSNPType <- renderPlot({print(plotObjSNPType())})
   #SNP LD track
-  plotObjSNPLD <- reactive({source("source/LD.R",local=TRUE)})
+  plotObjSNPLD <- reactive({source("Source/LD.R",local=TRUE)})
   output$PlotSNPLD <- renderPlot({print(plotObjSNPLD())})
   
   #wgEncodeBroadHistone 7 bigwig data track
-  plotObjwgEncodeBroadHistone <- reactive({source("source/wgEncodeBroadHistone.R",local=TRUE)})
+  plotObjwgEncodeBroadHistone <- reactive({source("Source/wgEncodeBroadHistone.R",local=TRUE)})
   output$PlotwgEncodeBroadHistone <- renderPlot({print(plotObjwgEncodeBroadHistone())})
   
   #wgEncodeRegDnaseClustered 1 bed file
-  plotObjwgEncodeRegDnaseClustered <- reactive({source("source/wgEncodeRegDnaseClustered.R",local=TRUE)})
+  plotObjwgEncodeRegDnaseClustered <- reactive({source("Source/wgEncodeRegDnaseClustered.R",local=TRUE)})
   output$PlotwgEncodeRegDnaseClustered <- renderPlot({print(plotObjwgEncodeRegDnaseClustered())})
   
   
   #LNCAP Smooth track
-  plotObjLNCAP <- reactive({source("source/LNCAP.R",local=TRUE)})
+  plotObjLNCAP <- reactive({source("Source/LNCAP.R",local=TRUE)})
   output$PlotLNCAP <- renderPlot({print(plotObjLNCAP())})
-  #BED bar track
-  plotObjBED <- reactive({source("source/BED.R",local=TRUE)})
-  output$PlotBED <- renderPlot({print(plotObjBED())})
+  #BedGraph bar track
+  plotObjBedGraph <- reactive({source("Source/BedGraph.R",local=TRUE)})
+  output$PlotBedGraph <- renderPlot({print(plotObjBedGraph())})
   
   #Gene track
   plotObjGene <- reactive({
@@ -494,7 +495,7 @@ shinyServer(function(input, output, session) {
     # Close the progress when this reactive exits (even if there's an error)
     on.exit(progress$close())
     
-    source("source/Gene.R",local=TRUE)})
+    source("Source/Gene.R",local=TRUE)})
   output$PlotGene <- renderPlot({
     # Create a Progress object
     progress <- shiny::Progress$new()
@@ -523,7 +524,7 @@ shinyServer(function(input, output, session) {
                        "Manhattan",
                        "SNPType",
                        "LD",
-                       "BED",
+                       "BedGraph",
                        "wgEncodeBroadHistone",
                        "wgEncodeRegDnaseClustered",
                        "LNCAP",
@@ -532,7 +533,7 @@ shinyServer(function(input, output, session) {
                       400, #Manhattan
                       max(30,RegionSNPTypeCount()*20), #SNPType
                       RegionHitsCount()*20, #LD R^2
-                      30, # BED
+                      30, # BedGraph
                       60, # wgEncodeBroadHistone
                       20, # wgEncodeRegDnaseClustered
                       20, # lncap
@@ -701,12 +702,12 @@ shinyServer(function(input, output, session) {
       label = h4("Plot title"),
       value = paste(RegionChr(),zoomStart(),zoomEnd(),sep="_"))})
   
-  #Custom BED file track name, default is filename
-  output$FileBEDName <- renderUI({
-    textInput(inputId = "FileBEDName",
+  #Custom BedGraph file track name, default is filename
+  output$FileBedGraphName <- renderUI({
+    textInput(inputId = "FileBedGraphName",
               label = "bedGraph File track name",
               value = {
-                inFile <- input$FileBED
+                inFile <- input$FileBedGraph
                 if(input$dataType=="Prostate"){"eQTL"}else {
                   if(is.null(inFile)){"bedGraph"}else{
                     substr(basename(sub("([^.]+)\\.[[:alnum:]]+$", "\\1", 
@@ -789,7 +790,7 @@ shinyServer(function(input, output, session) {
                                          "Manhattan: LDSmooth"="LDSmooth",
                                          "SNPType"="SNPType",
                                          "LD"="LD",
-                                         "BED"="BED",
+                                         "BedGraph"="BedGraph",
                                          "wgEncodeBroadHistone"="wgEncodeBroadHistone",
                                          "wgEncodeRegDnaseClustered"="wgEncodeRegDnaseClustered",
                                          "LNCaP Prostate"="LNCAP",
@@ -811,7 +812,7 @@ shinyServer(function(input, output, session) {
                                            "Manhattan: LDSmooth"="LDSmooth",
                                            "SNPType"="SNPType",
                                            "LD"="LD",
-                                           "BED"="BED",
+                                           "BedGraph"="BedGraph",
                                            "wgEncodeBroadHistone"="wgEncodeBroadHistone",
                                            "wgEncodeRegDnaseClustered"="wgEncodeRegDnaseClustered",
                                            "LNCaP Prostate"="LNCAP",

@@ -5,7 +5,7 @@ gg_out <-
   if(!is.null(plotDatStats())){
     ggplot(plotDatStats(), aes(x=BP,y=PLog)) + 
       # all snps grey hollow shapes
-      geom_point(size=4,colour="grey80",shape=plotDatStats()$TYPED)
+      geom_point(size=4,colour="#B8B8B8",shape=plotDatStats()$TYPED)
     } else {NULL}
 
 
@@ -15,7 +15,7 @@ if("Recombination" %in% input$ShowHideTracks &
   gg_out <- gg_out +
     geom_area(data=plotDatGeneticMap(),
               aes(BP,RecombAdj),
-              fill="#11d0ff",colour="#11d0ff",alpha=0.2)}
+              fill="#11d0ff",colour="#00B4E0",alpha=0.3)}
 
 if("LD" %in% input$ShowHideTracks &
    nrow(plotDatLD()) > 0){ 
@@ -33,6 +33,20 @@ if("LDSmooth" %in% input$ShowHideTracks &
   gg_out <- gg_out +
     geom_smooth(data=plotDatLD(),aes(x=BP,y=R2_Adj,col=LDSmoothCol),
                 method="loess",se=FALSE)}
+
+#Add suggestiveline and genomewideline
+# suggestiveLine
+if(input$suggestiveLine != 0) {
+  gg_out <- gg_out +
+    geom_hline(aes(yintercept = y), data = data.frame(y=input$suggestiveLine),
+               linetype = "dashed", colour = "#003D4C")}
+
+# genomewideLine
+if(input$genomewideLine != 0) {
+  gg_out <- gg_out +
+    geom_hline(aes(yintercept = y), data = data.frame(y=input$genomewideLine),
+               linetype = "dashed", colour = "#A71930")}
+
 
 # add other plots
 gg_out <- gg_out +

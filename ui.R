@@ -6,6 +6,18 @@
 # User interface file for shiny
 
 # Workspace ---------------------------------------------------------------
+# #Start with clean workspace
+# issue #48 - R3.1 ERROR: Pre-loaded bio packages cannot be unloaded 
+# updated README, run the app with new session.
+# rm(list = ls())
+# #detach bioconductor packages
+# lapply(
+#   intersect(search(),
+#   paste0("package:",c("ggbio","TxDb.Hsapiens.UCSC.hg19.knownGene",
+#                       "rtracklayer","GenomicFeatures","GenomicRanges",
+#                       "org.Hs.eg.db"))),
+#   detach, character.only = TRUE)
+
 #CRAN
 # install.packages(c("shiny", "data.table", "dplyr", "tidyr", "ggplot2",
 #                    "knitr", "markdown", "stringr","DT","seqminer",
@@ -55,6 +67,10 @@ shinyUI(
       sidebarPanel(
         #push it down 70px to avoid going under navbar
         tags$style(type="text/css", "body {padding-top: 70px;}"),
+        #hide red error messages
+        tags$style(type="text/css",
+                   ".shiny-output-error { visibility: hidden; }",
+                   ".shiny-output-error:before { visibility: hidden; }"),
         #Choose data type
         radioButtons("dataType", h4("Input Data:"),
                      c("Prostate"="Prostate",
@@ -72,8 +88,8 @@ shinyUI(
         conditionalPanel("input.dataType == 'Custom'",
                          fileInput("FileStats", "Association File (required)"),
                          fileInput("FileLD", "LD File (recommended)"),
-                         fileInput("FileBED", "bedGraph File"),
-                         uiOutput("FileBEDName")
+                         fileInput("FileBedGraph", "bedGraph File"),
+                         uiOutput("FileBedGraphName")
                          ),#conditionalPanel- Custom
         
         conditionalPanel("input.dataType == 'Example'"
@@ -107,10 +123,13 @@ shinyUI(
                    h4("Linkage Disequilibrium"),
                    hr(),
                    dataTableOutput("SummaryLD")),
-          tabPanel("BED File",
-                   h4("BED File"),
+          tabPanel("BedGraph",
+                   h4("BedGraph"),
                    hr(),
-                   dataTableOutput("SummaryBED")),
+                   includeMarkdown("Markdown/bedGraphFileFormat.md"),
+                   hr(),
+                   helpText("bedGraph input data summary"),
+                   dataTableOutput("SummaryBedGraph")),
           tabPanel("ENCODE",
                    h4("ENCODE"),
                    hr(),
@@ -140,6 +159,11 @@ shinyUI(
                            min = 0, max = 5, value = 0, step = 0.5),
                sliderInput("FilterMinLD", h5("LD"),
                            min = 0, max = 0.9, value = 0.2, step = 0.05),
+               #Add suggestiveline and genomewideline
+               numericInput("suggestiveLine",h5("Suggestive Line"),
+                            value = 5, min = 0, max = 15, step = 0.1),
+               numericInput("genomewideLine",h5("Genomewide Line"),
+                            value = 8, min = 0, max = 15, step = 0.1),
                hr(),
                h4("Zoom region:"),
                h6("Use sliders to zoom in to required region, or enter region as text, e.g.: chr1:36020000-36140000"),
@@ -164,7 +188,7 @@ shinyUI(
                                     "Manhattan: LDSmooth"="LDSmooth",
                                     "SNPType"="SNPType",
                                     "LD"="LD",
-                                    "BED"="BED",
+                                    "BedGraph"="BedGraph",
                                     "wgEncodeBroadHistone"="wgEncodeBroadHistone",
                                     "wgEncodeRegDnaseClustered"="wgEncodeRegDnaseClustered",
                                     "LNCaP Prostate"="LNCAP",
@@ -189,8 +213,8 @@ shinyUI(
                                 plotOutput("PlotSNPType",width=800,height=70)),
                conditionalPanel("input.ShowHideTracks.indexOf('LD')>-1",
                                 plotOutput("PlotSNPLD",width=800,height=110)),
-               conditionalPanel("input.ShowHideTracks.indexOf('BED')>-1",
-                                plotOutput("PlotBED",width=800,height=60)),
+               conditionalPanel("input.ShowHideTracks.indexOf('BedGraph')>-1",
+                                plotOutput("PlotBedGraph",width=800,height=60)),
                conditionalPanel("input.ShowHideTracks.indexOf('wgEncodeBroadHistone')>-1",
                                 plotOutput("PlotwgEncodeBroadHistone",width=800,height=90)),
                conditionalPanel("input.ShowHideTracks.indexOf('wgEncodeRegDnaseClustered')>-1",
