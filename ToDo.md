@@ -13,7 +13,7 @@
 - [x] R3.2 ERROR filename encoding - Source vs source? | TD: typo "source/" renamed to "Source/"  
 - [x] R3.3 ERROR bug duplicate | TD: hide red error messages dupe #11  
 - [x] R3.4 Zoom region range with NA? bug | TD: hide red error messages dupe #11  
-- [ ] R3.5 “Please download Histone bigWig files” message reword. enhancement  
+- [ ] R3.5 "Please download Histone bigWig files" message reword. enhancement  
 - [ ] R3.6 Final plots: Cannot open the connection bug duplicate  
 - [ ] R3.7 Suggested filenames with invalid characters bug  
 - [ ] R3.8 No (Plot) file is produced after saving question  
