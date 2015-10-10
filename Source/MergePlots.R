@@ -24,8 +24,8 @@ trackString <-
     ", title = input$downloadPlotTitle)",
     
     # Clear theme
-    ifelse(input$PlotTheme == "4",
-           "+theme(panel.border = element_rect(fill = NA, color = 'grey80'))",
+    ifelse(input$PlotTheme == "2",
+           "+ theme(panel.border = element_rect(fill = NA, color = 'grey80'))",
            "")
     )
 

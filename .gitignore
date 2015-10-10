@@ -27,3 +27,6 @@ Manuscript/*.*
 
 # MAC thumbs
 *.db
+
+# Note files
+*.note

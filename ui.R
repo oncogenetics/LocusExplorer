@@ -6,12 +6,25 @@
 # User interface file for shiny
 
 # Workspace ---------------------------------------------------------------
+# #Start with clean workspace
+# issue #48 - R3.1 ERROR: Pre-loaded bio packages cannot be unloaded 
+# updated README, run the app with new session.
+# rm(list = ls())
+# #detach bioconductor packages
+# lapply(
+#   intersect(search(),
+#   paste0("package:",c("ggbio","TxDb.Hsapiens.UCSC.hg19.knownGene",
+#                       "rtracklayer","GenomicFeatures","GenomicRanges",
+#                       "org.Hs.eg.db"))),
+#   detach, character.only = TRUE)
+
 #CRAN
-# install.packages(c("shiny", "data.table", "dplyr", "tidyr", "ggplot2",
-#                    "knitr", "markdown", "stringr","DT","seqminer",
+# install.packages(c("shiny", "shinyjs", "data.table", "dplyr", "tidyr", 
+#                    "ggplot2", "knitr", "markdown", "stringr","DT","seqminer",
 #                    "lattice","cluster"),
 #                  dependencies = TRUE)
 library(shiny)
+library(shinyjs)
 library(data.table)
 library(dplyr)
 library(tidyr)
@@ -36,7 +49,7 @@ library(rtracklayer) # bigwig
 if(Sys.info()['sysname'] == "Windows") {
   windowsFonts(Courier=windowsFont("TT Courier New"))
   setInternet2(TRUE)
-  }
+}
 
 
 
@@ -55,6 +68,14 @@ shinyUI(
       sidebarPanel(
         #push it down 70px to avoid going under navbar
         tags$style(type="text/css", "body {padding-top: 70px;}"),
+        
+        #hide red error messages
+         tags$style(type="text/css",
+                    ".shiny-output-error { visibility: hidden; }",
+                    ".shiny-output-error:before { visibility: hidden; }"),
+        
+        
+        
         #Choose data type
         radioButtons("dataType", h4("Input Data:"),
                      c("Prostate"="Prostate",
@@ -72,9 +93,9 @@ shinyUI(
         conditionalPanel("input.dataType == 'Custom'",
                          fileInput("FileStats", "Association File (required)"),
                          fileInput("FileLD", "LD File (recommended)"),
-                         fileInput("FileBED", "bedGraph File"),
-                         uiOutput("FileBEDName")
-                         ),#conditionalPanel- Custom
+                         fileInput("FileBedGraph", "bedGraph File"),
+                         uiOutput("FileBedGraphName")
+        ),#conditionalPanel- Custom
         
         conditionalPanel("input.dataType == 'Example'"
         )#conditionalPanel- CustomExample
@@ -87,18 +108,16 @@ shinyUI(
                    hr(),
                    #if Prostate data is selected then link to Ali finemapping paper
                    conditionalPanel("input.dataType == 'Prostate'",
-                   hr(),
-                   includeMarkdown("Data/ProstateData/README.md"),
-                   hr()
+                                    hr(),
+                                    includeMarkdown("Data/ProstateData/README.md"),
+                                    hr()
                    ),
                    helpText("UCSC link to selected region:"),
                    htmlOutput("SummaryRegion"),
                    hr(),
                    helpText("NCBI link to hit SNPs:"),
-                   dataTableOutput("SummaryHits"),
-                   hr()
-                   #dataTableOutput("tempSummaryplotDatLD")
-                   ),
+                   dataTableOutput("SummaryHits")),
+          #hr() #dataTableOutput("tempSummaryplotDatLD")
           tabPanel("Association",
                    h4("Association"),
                    hr(),
@@ -107,10 +126,13 @@ shinyUI(
                    h4("Linkage Disequilibrium"),
                    hr(),
                    dataTableOutput("SummaryLD")),
-          tabPanel("BED File",
-                   h4("BED File"),
+          tabPanel("BedGraph",
+                   h4("BedGraph"),
                    hr(),
-                   dataTableOutput("SummaryBED")),
+                   includeMarkdown("Markdown/bedGraphFileFormat.md"),
+                   hr(),
+                   helpText("bedGraph input data summary"),
+                   dataTableOutput("SummaryBedGraph")),
           tabPanel("ENCODE",
                    h4("ENCODE"),
                    hr(),
@@ -123,7 +145,7 @@ shinyUI(
                    hr(),
                    includeMarkdown("Data/ProstateLNCAP/README.md"),
                    dataTableOutput("SummaryLNCAP")
-                   ),
+          ),
           tabPanel("Input File Format",
                    h4("Input File Format"),
                    hr(),
@@ -140,6 +162,11 @@ shinyUI(
                            min = 0, max = 5, value = 0, step = 0.5),
                sliderInput("FilterMinLD", h5("LD"),
                            min = 0, max = 0.9, value = 0.2, step = 0.05),
+               #Add suggestiveline and genomewideline
+               numericInput("suggestiveLine",h5("Suggestive Line"),
+                            value = 5, min = 0, max = 15, step = 0.1),
+               numericInput("genomewideLine",h5("Genomewide Line"),
+                            value = 8, min = 0, max = 15, step = 0.1),
                hr(),
                h4("Zoom region:"),
                h6("Use sliders to zoom in to required region, or enter region as text, e.g.: chr1:36020000-36140000"),
@@ -164,13 +191,13 @@ shinyUI(
                                     "Manhattan: LDSmooth"="LDSmooth",
                                     "SNPType"="SNPType",
                                     "LD"="LD",
-                                    "BED"="BED",
+                                    "BedGraph"="BedGraph",
                                     "wgEncodeBroadHistone"="wgEncodeBroadHistone",
                                     "wgEncodeRegDnaseClustered"="wgEncodeRegDnaseClustered",
                                     "LNCaP Prostate"="LNCAP",
                                     "Gene"="Gene"),
                                   selected=c("Manhattan","Recombination")
-                                  ),
+               ),
                
                h6("Recommneded to hide tracks until final zoom region is decided."),
                #actionButton("resetInput", "Reset inputs",icon = icon("undo"))
@@ -189,8 +216,8 @@ shinyUI(
                                 plotOutput("PlotSNPType",width=800,height=70)),
                conditionalPanel("input.ShowHideTracks.indexOf('LD')>-1",
                                 plotOutput("PlotSNPLD",width=800,height=110)),
-               conditionalPanel("input.ShowHideTracks.indexOf('BED')>-1",
-                                plotOutput("PlotBED",width=800,height=60)),
+               conditionalPanel("input.ShowHideTracks.indexOf('BedGraph')>-1",
+                                plotOutput("PlotBedGraph",width=800,height=60)),
                conditionalPanel("input.ShowHideTracks.indexOf('wgEncodeBroadHistone')>-1",
                                 plotOutput("PlotwgEncodeBroadHistone",width=800,height=90)),
                conditionalPanel("input.ShowHideTracks.indexOf('wgEncodeRegDnaseClustered')>-1",
@@ -201,26 +228,42 @@ shinyUI(
                                 plotOutput("PlotGene",width=800,height=350)) #,
                
                #Legend Floating --------------------------------------------------------
-#                absolutePanel(id = "Legend", class = "panel panel-default", fixed = TRUE,
-#                              draggable = TRUE, top = 60, left = "auto", right = 20, bottom = "auto",
-#                              width = 200, height = "auto",
-#                              h4("Legend"),
-#                              helpText("Coming soon..."),
-#                              style = "opacity: 0.75")
-               ) #mainPanel
+               #                absolutePanel(id = "Legend", class = "panel panel-default", fixed = TRUE,
+               #                              draggable = TRUE, top = 60, left = "auto", right = 20, bottom = "auto",
+               #                              width = 200, height = "auto",
+               #                              h4("Legend"),
+               #                              helpText("Coming soon..."),
+               #                              style = "opacity: 0.75")
+             ) #mainPanel
     ), #tabPanel - "Plot"
     # Final Plot --------------------------------------------------------------  
     tabPanel("Final Plot",
              sidebarPanel(
                # Choose Title for merged plot
                uiOutput("downloadPlotTitle"),
+               
+               
                radioButtons("PlotTheme","Plot theme",
-                            choices = list("Gray" = 1,
-                                           "Yellow" = 2,
-                                           "Green" = 3,
-                                           "Classic" = 4,
-                                           "None" = 5),
+                            choices = list("Shaded - Colour picker" = 1,
+                                           "Classic - Borders only" = 2,
+                                           "None - No colours no borders" = 3),
                             selected = 1),
+               
+               conditionalPanel("input.PlotTheme == 1",
+                                colourInput("PlotThemeColour1","Plot theme Colour 1", "#C2C2C2"),
+                                colourInput("PlotThemeColour2","Plot theme Colour 2", "#E5E5E5")
+                                ),
+               
+#                radioButtons("PlotTheme","Plot theme",
+#                             choices = list("Gray" = 1,
+#                                            "Yellow" = 2,
+#                                            "Green" = 3,
+#                                            "Classic" = 4,
+#                                            "None" = 5),
+#                             selected = 1),
+               
+               
+               
                # Choose download filename.
                uiOutput("downloadPlotFileName"),
                h6("Use PDF or SVG format for further image editing."),
@@ -259,37 +302,7 @@ shinyUI(
     
   ), #tabPanel - "Final Plot"
   
-  tabPanel("Make LD file",
-           sidebarPanel(
-             fileInput("FileLDlink", "Unprocessed LDlink output file"),
-             
-             # File downloads when this button is clicked.
-             downloadButton(outputId = "downloadLDFile", label = "Download LD file")
-             
-           ),
-           mainPanel(
-             tabsetPanel(
-               tabPanel("LDlink file",
-                        h4("LDlink file"),
-                        hr(),
-                        dataTableOutput("SummaryLDlink")),
-               tabPanel("Processed LDlink file",
-                        h4("Processed LDlink file"),
-                        hr(),
-                        dataTableOutput("SummaryLDlinkProcess")),
-               tabPanel("LD Tutorial",
-                        h4("LD Tutorial"),
-                        hr(),
-                        includeMarkdown("Markdown/LDTutorial.md"))
-             )#tabsetPanel
-           )#mainPanel
-  ),#tabPanel - Make LD file
-  
-  
-  
-  tabPanel("Help",
-           mainPanel(
-             tabsetPanel(
+  navbarMenu("Help",
                tabPanel("About",
                         h4("About"),
                         hr(),
@@ -298,7 +311,7 @@ shinyUI(
                         h4("Publication"),
                         hr(),
                         h4("Submitted to Oxford University Press: Bioinformatics"),
-                        h4("Status: Awaiting Reviewer Assignment"),
+                        h4("Status: Accepted with minor revisions"),
                         img(src="BioinformaticsPaper.PNG")),
                tabPanel("Input File Format",
                         h4("Input File Format"),
@@ -309,22 +322,41 @@ shinyUI(
                         hr(),
                         h4("Sample JPEG output"),
                         h5("res = 100, hight = 1200px, width = 1000px"),
-                        imageOutput("ExamplePlotJPEG")
-                        ),
+                        imageOutput("ExamplePlotJPEG")),
                tabPanel("R Session Info",
                         h4("R Session Info"),
                         hr(),
                         includeMarkdown("Markdown/RSessionInfo.md")),
-               tabPanel("LD Tutorial",
-                        h4("LD Tutorial"),
-                        hr(),
-                        includeMarkdown("Markdown/LDTutorial.md")),
+               tabPanel("Make LD file",
+                        sidebarPanel(
+                          fileInput("FileLDlink", "Unprocessed LDlink output file"),
+                          
+                          # File downloads when this button is clicked.
+                          downloadButton(outputId = "downloadLDFile", label = "Download LD file")
+                          
+                        ),
+                        mainPanel(
+                          tabsetPanel(
+                            tabPanel("LDlink file",
+                                     h4("LDlink file"),
+                                     hr(),
+                                     dataTableOutput("SummaryLDlink")),
+                            tabPanel("Processed LDlink file",
+                                     h4("Processed LDlink file"),
+                                     hr(),
+                                     dataTableOutput("SummaryLDlinkProcess")),
+                            tabPanel("LD Tutorial",
+                                     h4("LD Tutorial"),
+                                     hr(),
+                                     includeMarkdown("Markdown/LDTutorial.md"))
+                          )#tabsetPanel
+                        )#mainPanel
+               ),#tabPanel - Make LD file
+               
                tabPanel("FAQ",
                         h4("Frequently Asked Quesitons"),
                         hr(),
                         includeMarkdown("Markdown/FAQ.md"))
-               )#tabsetPanel
-           )#mainPanel
-  )#tabPanel - Help
+  )#navbarMenu - Help
   )#navbarPage
 )#shinyUI
