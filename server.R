@@ -545,14 +545,22 @@ shinyServer(function(input, output, session) {
     trackSize() %>% filter(Track %in% input$ShowHideTracks) %>% .$Size })
   trackColours <- reactive({ 
     
+    
     myCols <- 
       if(input$PlotTheme=="1"){
-        #grey
-        c('#C2C2C2','#E5E5E5') } else if(input$PlotTheme=="2"){
-          #yellow
-          c("#FFD602","#FFE45C") } else if(input$PlotTheme=="3"){
-            #green
-            c("#C9DD03","#EDFD5E") } else {c("#FFFFFF","#FFFFFF")}
+        c(input$PlotThemeColour1,
+          input$PlotThemeColour2) } else { c("#FFFFFF","#FFFFFF") }
+    
+#     myCols <- c("#C2C2C2","#E5E5E5")
+    
+#     myCols <- 
+#       if(input$PlotTheme=="1"){
+#         #grey
+#         c('#C2C2C2','#E5E5E5') } else if(input$PlotTheme=="2"){
+#           #yellow
+#           c("#FFD602","#FFE45C") } else if(input$PlotTheme=="3"){
+#             #green
+#             c("#C9DD03","#EDFD5E") } else {c("#FFFFFF","#FFFFFF")}
     
     res <- cbind(trackHeights(),myCols)[,2][1:length(trackHeights())] 
     #chromosome background must be white

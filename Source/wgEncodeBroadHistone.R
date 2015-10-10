@@ -10,7 +10,7 @@ if(nrow(plotDatwgEncodeBroadHistone())==0){
     geom_blank() +
     annotate("text",
              x=zoomStart()+(zoomEnd()-zoomStart())/2,
-             y=50,label="Please download Histone bigWig files!")
+             y=50,label="Please download Histone bigWig files! See FAQ: Q5.")
 } else {
   gg_out <- ggplot(data=plotDatwgEncodeBroadHistone(),
                    aes(BP,SCORE,fill=ENCODE)) +
