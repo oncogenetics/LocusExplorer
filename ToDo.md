@@ -2,7 +2,7 @@
 - [x] R1.1 Add suggestiveline and genomewideline | TD: Added sliderInput, red and blue lines.  
 - [x] R1.2 Color of dots and recomb line is not bright. | TD: Recomb and SNP outline 3 shades darker.  
 - [x] R1.3 Is it suitable for other species than human? | TD/ES: Human only   
-- [ ] R1.4 Text on plot not clear, overlapping SNP names duplicate enhancement  
+- [x] R1.4 Text on plot not clear, overlapping SNP names duplicate enhancement  
 - [ ] R1.5 Some mistakes when the format of JPEG changed to TIFF? question  
 
 ### Milestone 2
