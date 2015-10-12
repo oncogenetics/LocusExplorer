@@ -57,7 +57,7 @@ if(Sys.info()['sysname'] == "Windows") {
 shinyUI(
   navbarPage(
     # Application title
-    title = "Locus Explorer v0.3",
+    title = "Locus Explorer v0.4",
     windowTitle = "Locus Explorer",
     fluid = FALSE,
     position = "fixed-top",
@@ -167,7 +167,15 @@ shinyUI(
                             value = 5, min = 0, max = 15, step = 0.1),
                numericInput("genomewideLine",h5("Genomewide Line"),
                             value = 8, min = 0, max = 15, step = 0.1),
-               hr(),
+               
+               #if SNP labels are overlapping then adjust using repulsion force.
+               checkboxInput("adjustLabels","Adjust SNP Lables",TRUE),
+               conditionalPanel("input.adjustLabels",
+                                sliderInput("repFact",
+                                            h5("Repulsion force factor"),
+                                            min = 0, max = 50, 
+                                            value = 5, step = 0.5)),
+               
                h4("Zoom region:"),
                h6("Use sliders to zoom in to required region, or enter region as text, e.g.: chr1:36020000-36140000"),
                uiOutput("BPrange"),
@@ -317,12 +325,12 @@ shinyUI(
                         h4("Input File Format"),
                         hr(),
                         includeMarkdown("Markdown/InputFileFormat.md")),
-               tabPanel("Example Plot",
-                        h4("Example Plot"),
-                        hr(),
-                        h4("Sample JPEG output"),
-                        h5("res = 100, hight = 1200px, width = 1000px"),
-                        imageOutput("ExamplePlotJPEG")),
+#                tabPanel("Example Plot",
+#                         h4("Example Plot"),
+#                         hr(),
+#                         h4("Sample JPEG output"),
+#                         h5("res = 100, hight = 1200px, width = 1000px"),
+#                         imageOutput("ExamplePlotJPEG")),
                tabPanel("R Session Info",
                         h4("R Session Info"),
                         hr(),

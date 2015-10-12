@@ -1,4 +1,4 @@
-Locus Explorer v0.3
+Locus Explorer v0.4
 =========
 
 ## An interactive graphical illustration of genetic associations and their biological context.
@@ -19,7 +19,7 @@ Locus Explorer requires R version 3.2.2 to run and can be downloaded by followin
 After installation of  the R software, R packages used by Locus Explorer must be installed prior to use. This may take a few minutes, but is only required on the first occasion. To install packages, open the R program, copy the following code into the R console and hit Return:
 ```R
 #install CRAN packages, if missing
-packages <- c("shiny", "data.table", "dplyr", "tidyr", "ggplot2", "knitr", "markdown", "stringr","DT","seqminer")
+packages <- c("shiny", "shinyjs", "data.table", "dplyr", "tidyr", "ggplot2", "knitr", "markdown", "stringr","DT","seqminer")
 if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
   install.packages(setdiff(packages, rownames(installed.packages())), dependencies = TRUE)  
 } else { print("All required CRAN packages installed")}

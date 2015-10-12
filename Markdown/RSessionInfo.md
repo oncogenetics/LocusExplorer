@@ -1,11 +1,12 @@
 ### Required libraries
 ```R
 #CRAN
-# install.packages(c("shiny", "data.table", "dplyr", "tidyr", "ggplot2",
-#                    "knitr", "markdown", "stringr","DT","seqminer",
+# install.packages(c("shiny", "shinyjs", "data.table", "dplyr", "tidyr", 
+#                    "ggplot2", "knitr", "markdown", "stringr","DT","seqminer",
 #                    "lattice","cluster"),
 #                  dependencies = TRUE)
 library(shiny)
+library(shinyjs)
 library(data.table)
 library(dplyr)
 library(tidyr)
@@ -27,7 +28,7 @@ library(org.Hs.eg.db) # gene symobols
 library(rtracklayer) # bigwig
 ```
 ### Session info Windows
-Application tested on 30/09/2015 16:24
+Application tested on 12/10/2015 14:58
 
 ```R
 R version 3.2.2 (2015-08-14)
@@ -49,7 +50,8 @@ other attached packages:
 [13] ggbio_1.16.1                            BiocGenerics_0.15.6                     seqminer_4.7                           
 [16] DT_0.1                                  stringr_1.0.0                           markdown_0.7.7                         
 [19] knitr_1.11                              ggplot2_1.0.1                           tidyr_0.3.1                            
-[22] dplyr_0.4.3                             data.table_1.9.4                        shiny_0.12.2                           
+[22] dplyr_0.4.3                             data.table_1.9.4                        shinyjs_0.2.0                          
+[25] shiny_0.12.2                           
 
 loaded via a namespace (and not attached):
  [1] splines_3.2.2              Formula_1.2-1              assertthat_0.1             latticeExtra_0.6-26       
@@ -66,8 +68,7 @@ loaded via a namespace (and not attached):
 [45] VariantAnnotation_1.15.26  htmlwidgets_0.5            bitops_1.0-6               gtable_0.1.2              
 [49] reshape_0.8.5              reshape2_1.4.1             R6_2.1.1                   GenomicAlignments_1.4.1   
 [53] gridExtra_2.0.0            Hmisc_3.16-0               futile.options_1.0.0       stringi_0.5-5             
-[57] Rcpp_0.12.1                rpart_4.1-10               acepack_1.3-3.3 
-```
+[57] Rcpp_0.12.1                rpart_4.1-10               acepack_1.3-3.3  ```
 
 
 ### Session info OS X
