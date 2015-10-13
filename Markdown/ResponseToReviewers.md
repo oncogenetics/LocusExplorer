@@ -1,6 +1,3 @@
----
-output: html_document
----
 ## Response to Reviewers
 
 ### Reviewer: 1 
