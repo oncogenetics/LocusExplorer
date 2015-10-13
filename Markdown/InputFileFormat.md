@@ -1,10 +1,10 @@
 #### Input File Specifications and Format:  
-- Input files must be **tab-delimited** and saved as **.txt**
-- Headers are required and should use the exact column names described below and used in the example input files
-- Example files are available at: *oncogenetics//LocusExplorer//Data//CustomDataExample*  
+- Input files must be delimited flat text files  
+- Headers are required and should use the exact column names described below and used in the example input files   
+- Example files are available at: `LocusExplorer/Data/CustomDataExample`  
 
 
-**1. Association File - _Association.txt_**  
+**1. Association File**  
 Association File is mandatory for plot generation. All other files are optional but enhance plot aesthetics and interpretation  
  - **CHR -** Chromosome on which variant is located preceded by "chr". e.g `chr2`, `chrX`
  - **SNP -** Variant ID. e.g. `rs12345`, `chr10:104329988:D` 
@@ -12,7 +12,7 @@ Association File is mandatory for plot generation. All other files are optional 
  - **P -** *P*-value for specified variant
  - **TYPED -** Use code `2` for typed and `1` for imputed variants
 
-**2. LD File - _LD.txt_**  
+**2. LD File**  
 LD File is not mandatory but is recommended for more informative plots. If user supplied LD data is not available, see **Make LD file** tab for instructions of how LD data relative to the index SNP(s) can be obtained from the 1000 Genomes Project Phase 3 Dataset.  
  - **CHR_A -** Chromosome on which Index SNP is located (n.b. do not include "chr"). e.g. `2`, `23`
  - **BP_A	-** Index SNP start coordinate (Hg19, do not include chromosome or end coordinate for in/del variants). e.g. `104356185`
@@ -30,7 +30,7 @@ CHR_A	BP_A	SNP_A	CHR_B	BP_B	SNP_B	R2
 ```
 When using plink or LDlink method this does not need to be manually added.
 
-**3. Custom bedGraph Track - _*.BED_**  
+**3. Custom bedGraph Track**  
 The first four required bedGraph fields are:
 
 `chrom` - The name of the chromosome (e.g. chr3, chrY).  

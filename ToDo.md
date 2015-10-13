@@ -22,7 +22,7 @@
 - [ ] R3.m1 Plot settings, SNP filter, -log10 p-value enhancement  
 - [ ] R3.m2 Additional custom tracks duplicate enhancement  
 - [x] R3.m3 Move make LD tab unter Help tab enhancement  | TD: moved under Help
-- [ ] R3.m4 Input data, accept any extension, not only *.txt. - OSX issue enhancement  
+- [x] R3.m4 Input data, accept any extension, not only *.txt. - OSX issue enhancement  
 - [x] R3.m5 Width of menu in the help section | TD: changed to dropdown  
 - [x] R3.m6 BED bedGraph typo error | TD: changed bed to bedGraph  
 - [x] R3.m7 Colour picker in final plot enhancement  
