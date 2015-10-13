@@ -28,5 +28,5 @@ Manuscript/*.*
 # MAC thumbs
 *.db
 
-# Note files
-*.note
+# test scripts
+testing_*.*

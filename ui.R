@@ -34,6 +34,8 @@ library(markdown)
 library(stringr)
 library(DT)
 library(seqminer)
+library(lattice) #ggbio
+library(cluster)
 
 #Bioconductor
 # source("http://bioconductor.org/biocLite.R")
