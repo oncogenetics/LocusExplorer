@@ -1,20 +1,31 @@
-## Response to Reviewers
+---
+title: "Response to Reviewers"
+author: "T.Dadaev"
+date: "13 October 2015"
+output: word_document
+---
 
 ### Reviewer: 1 
 
 1. I would like to suggest adding lines in the manhattan plot to show the key significant value, such as 0.01 or 0.05. This could be useful for understanding the significant associated markers.   
-  - [#42](https://github.com/oncogenetics/LocusExplorer/issues/42) - Added `sliderInput()` for suggestive line and genomewide line, red and blue lines, with default values of 5 and 8. Set to zero, to hide suggestive lines.
 
-2. The color of the dots in the manhattan plot was not very bright. Also, the recombination ratio curve was not very bright.    - [#43](https://github.com/oncogenetics/LocusExplorer/issues/43) - Changed recombination and SNP outline colours to 3 shades darker.
+- [#42](https://github.com/oncogenetics/LocusExplorer/issues/42) - Added `sliderInput()` for suggestive line and genomewide line, red and blue lines, with default values of 5 and 8. Set to zero, to hide suggestive lines.
 
-3. I would suggest the authors figuring out what species the tool was suitable.  
-  - [#44](https://github.com/oncogenetics/LocusExplorer/issues/44) - We are willing to provide help to anyone who wishes to adapt this application for non-human use, but we can't develop that aspect ourselves at the moment.
+2. The color of the dots in the manhattan plot was not very bright. Also, the recombination ratio curve was not very bright.   
+
+- [#43](https://github.com/oncogenetics/LocusExplorer/issues/43) - Changed recombination and SNP outline colours to 3 shades darker.
+
+3. I would suggest the authors figuring out what species the tool was suitable.   
+
+- [#44](https://github.com/oncogenetics/LocusExplorer/issues/44) - We are willing to provide help to anyone who wishes to adapt this application for non-human use, but we can't develop that aspect ourselves at the moment.
 
 4. The Letters in the figure was not very clear. Also, it may overlap when the detail information of some significant markers was displayed together.   
-  - [#45](https://github.com/oncogenetics/LocusExplorer/issues/45) - Added SNP adjust option `sliderInput()`, using repulsion factor input value.
+
+- [#45](https://github.com/oncogenetics/LocusExplorer/issues/45) - Added SNP adjust option `sliderInput()`, using repulsion factor input value.
 
 5. There were some mistakes when the format of JPEG changed to TIFF.   
-  - [#46](https://github.com/oncogenetics/LocusExplorer/issues/46) - XXX
+
+- [#46](https://github.com/oncogenetics/LocusExplorer/issues/46) - XXX
 
 ### Reviewer: 2 
 
@@ -110,7 +121,7 @@ The " should be removed because not all file systems may handle this appropriate
 
 - [#57](https://github.com/oncogenetics/LocusExplorer/issues/57) - XXX known issue, need to have file validation.....
 
-#### 2.2.Minor comments regarding the software: 
+#### 2.2.Minor comments regarding the software:  
   
 2.2.1. Plot settings, SNP filter, -log10 p-value. For the -log10 p value scale, it might make sense to display which p-value the transformed values correspond to. 
 
