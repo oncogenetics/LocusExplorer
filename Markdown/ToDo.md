@@ -18,12 +18,12 @@
 - [ ] R3.7 Suggested filenames with invalid characters bug  
 - [ ] R3.8 No (Plot) file is produced after saving question  
 - [x] R3.9 Error in nrow(plotDatGeneticMap()) duplicate error | TD: hide red error messages dupe #11  
-- [x] R3.10 Check if custom data is supplied bug duplicate enhancement | TD: hide red error messages dupe #11  
-- [x] R3.m1 Plot settings, SNP filter, -log10 p-value enhancement  
+- [ ] R3.10 Check if custom data is supplied bug duplicate enhancement | TD: hide red error messages dupe #11  
+- [x] R3.m1 Plot settings, SNP filter, -log10 p-value enhancement | TD: will not fix, it is standard in Manhatan plots 
 - [ ] R3.m2 Additional custom tracks duplicate enhancement  
 - [x] R3.m3 Move make LD tab unter Help tab enhancement  | TD: moved under Help
-- [x] R3.m4 Input data, accept any extension, not only *.txt. - OSX issue enhancement  
+- [x] R3.m4 Input data, accept any extension, not only *.txt. - | TD: fixed, any file extension, any delimiter    
 - [x] R3.m5 Width of menu in the help section | TD: changed to dropdown  
 - [x] R3.m6 BED bedGraph typo error | TD: changed bed to bedGraph  
-- [x] R3.m7 Colour picker in final plot enhancement  
+- [x] R3.m7 Colour picker in final plot enhancement | TD: colour picker added  
 - [x] R3.m8 Minor comments regarding the paper error TD/ES: manuscript updated  
