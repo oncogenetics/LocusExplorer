@@ -2,24 +2,30 @@
 
 ### Reviewer: 1 
 
-1. I would like to suggest adding lines in the manhattan plot to show the key significant value, such as 0.01 or 0.05. This could be useful for understanding the significant associated markers. 
+1. I would like to suggest adding lines in the manhattan plot to show the key significant value, such as 0.01 or 0.05. This could be useful for understanding the significant associated markers.   
+
 - [#42](https://github.com/oncogenetics/LocusExplorer/issues/42) - Added `sliderInput()` for suggestive line and genomewide line, red and blue lines, with default values of 5 and 8. Set to zero, to hide suggestive lines.
 
-2. The color of the dots in the manhattan plot was not very bright. Also, the recombination ratio curve was not very bright. 
+2. The color of the dots in the manhattan plot was not very bright. Also, the recombination ratio curve was not very bright.   
+
 - [#43](https://github.com/oncogenetics/LocusExplorer/issues/43) - Changed recombination and SNP outline colours to 3 shades darker.
 
-3. I would suggest the authors figuring out what species the tool was suitable. 
+3. I would suggest the authors figuring out what species the tool was suitable.   
+
 - [#44](https://github.com/oncogenetics/LocusExplorer/issues/44) - We are willing to provide help to anyone who wishes to adapt this application for non-human use, but we can't develop that aspect ourselves at the moment.
 
-4. The Letters in the figure was not very clear. Also, it may overlap when the detail information of some significant markers was displayed together. 
+4. The Letters in the figure was not very clear. Also, it may overlap when the detail information of some significant markers was displayed together.   
+
 - [#45](https://github.com/oncogenetics/LocusExplorer/issues/45) - Added SNP adjust option `sliderInput()`, using repulsion factor input value.
 
-5. There were some mistakes when the format of JPEG changed to TIFF. 
+5. There were some mistakes when the format of JPEG changed to TIFF.   
+
 - [#46](https://github.com/oncogenetics/LocusExplorer/issues/46) - XXX
 
 ### Reviewer: 2 
 
-1. Minor revisions: "supplied BED file": "BED" --> "bedGraph", since the 4th column is numeric.    
+1. Minor revisions: "supplied BED file": "BED" --> "bedGraph", since the 4th column is numeric.      
+
 - [#40](https://github.com/oncogenetics/LocusExplorer/issues/40) - BED file format definition is changed to bedGraph
 
 2. Replicate Figure 1 in manuscript   
@@ -77,7 +83,8 @@ Error in file(filename, "r", encoding = encoding) : cannot open the connection
 
 - [#51](https://github.com/oncogenetics/LocusExplorer/issues/51) - Solution covered by **2.1.3**.
 
-2.1.5. Message "Please download Histone bigWig files" appears 
+2.1.5. Message "Please download Histone bigWig files" appears    
+
 - [#52](https://github.com/oncogenetics/LocusExplorer/issues/52) - Added FAQ, see FAQ-Q5.   
 
 2.1.6. Final plots warning   
@@ -107,7 +114,7 @@ The " should be removed because not all file systems may handle this appropriate
 
 > Error in evaluating the argument 'data' in selecting a method for function 'ggplot': Error: Please upload Association file 
 
-- [#57](https://github.com/oncogenetics/LocusExplorer/issues/51) - XXX known issue, need to have file validation.....
+- [#57](https://github.com/oncogenetics/LocusExplorer/issues/57) - XXX known issue, need to have file validation.....
 
 #### 2.2.Minor comments regarding the software: 
   
