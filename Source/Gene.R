@@ -2,7 +2,7 @@
 # License: MIT + file LICENSE.txt
 
 ggplot() + 
-  geom_hline(yintercept=c(1:plotDatGeneN()),col="grey80",linetype="dashed") +
+  geom_hline(yintercept=c(1:plotDatGeneN()),col="grey60",linetype="dotted") +
   #mark hit SNPs
   geom_vline(xintercept=plotDatStats() %>% 
                filter(SNP %in% RegionHitsSelected()) %>% .$BP,

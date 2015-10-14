@@ -38,8 +38,63 @@ What the colour interpretation is for the histone panel?
 
 
 #### Q5: "Please download Histone bigWig files" message on the plot?
-As GitHub has limitations on size of the [repositories and files](https://help.github.com/articles/what-is-my-disk-quota/), Histone BigWig files are not included in `LocusExplorer/Data/EncodeBigWig/`. These files are public and can be downloaded from <a href="http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeRegMarkH3k27ac/" target="_blank">UCSC golden path</a> - total ~2.5GB. Downloaded bigWig files must be saved in `LocusExplorer/Data/EncodeBigWig/` folder.
+**A:** As GitHub has limitations on size of the [repositories and files](https://help.github.com/articles/what-is-my-disk-quota/), Histone BigWig files are not included in `LocusExplorer/Data/EncodeBigWig/`. These files are public and can be downloaded from <a href="http://hgdownload.cse.ucsc.edu/goldenPath/hg19/encodeDCC/wgEncodeRegMarkH3k27ac/" target="_blank">UCSC golden path</a> - total ~2.5GB. Downloaded bigWig files must be saved in `LocusExplorer/Data/EncodeBigWig/` folder.
 
 We are working on server version of LocusExplorer, expected to be **live by December 2015**. Keep an eye on https://github.com/oncogenetics/LocusExplorer page. This will resolve the issues of different R versions. R packages, and no limits on anntation data - such as bigWig files.
+
+
+#### Q6: RStudio crashes when clicked on *Plot Settings*
+After succesfully uploading data using *Input Data* tab, when clicked on *Plot Settings* RStudio crashes. This happens even when we run RGUI.
+
+**A:** It is hard to guess the cause of the crash, it could be package dependencies with different versions. We can try to re-install packages.
+
+#### !!! WARNING: Below steps will remove all of your installed packages !!!
+
+Try below steps:
+
+1. Run `.libPaths()` and get library path, choose the one where the user has a write access. e.g.: On my machine I will choose the first of those two listed folders.   
+
+```R
+> .libPaths()
+[1] "C:/Users/tdadaev/Documents/R/win-library/3.2" "C:/Program Files/R/R-3.2.2/library"  
+
+myLibraryLocation <- .libPaths()[1]
+```
+
+2. Make list of installed and required packages.
+
+```R
+# all packages excluding base
+allPackages <- installed.packages()
+allPackages <- allPackages[ is.na(allPackages[,4]), 1]
+
+# CRAN packages required by this Application.
+cranPackages <- c("shiny", "shinyjs", "data.table", "dplyr", "tidyr", 
+                  "ggplot2", "knitr", "markdown", "stringr","DT","seqminer",
+                  "lattice","cluster",)
+# Bioconductor packages required by this Application.
+bioPackages <-  c("ggbio","GenomicRanges","TxDb.Hsapiens.UCSC.hg19.knownGene",
+                  "org.Hs.eg.db","rtracklayer")
+```
+
+3. Remove all packages, excluding base.
+
+```R
+# remove all packages
+sapply(allPackages, remove.packages)
+```
+
+4. Reinstall **only** required packages in `myLibraryLocation` folder.
+
+```R
+#reinstall CRAN packages
+sapply(cranPackages, install.packages, lib = myLibraryLocation)
+
+#reinstall Bioconductor packages
+source("http://bioconductor.org/biocLite.R")
+biocLite("BiocInstaller")
+biocLite(bioPackages)
+```
+
 
 

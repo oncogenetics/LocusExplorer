@@ -9,7 +9,7 @@ ggplot(data=plotDatLD(),
            y=as.numeric(as.factor(LDSNP)), yend=as.numeric(as.factor(LDSNP))+1,
            colour=LDCol)) +
   geom_hline(yintercept=1:length(RegionHitsSelected())+0.5,
-             linetype="dashed",col="grey80") +
+             linetype="dotted",col="grey60") +
   geom_segment() +
   scale_colour_identity() +
   scale_y_continuous(breaks=(1:length(RegionHitsSelected()))+0.5,

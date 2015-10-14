@@ -5,6 +5,17 @@ date: "13 October 2015"
 output: word_document
 ---
 
+## Note
+
+We have created a GitHub issue for each of the reviewer's comment, see the status of them using below links:   
+- [Reviewer: 1 | status: 100% fixed](https://github.com/oncogenetics/LocusExplorer/issues?utf8=%E2%9C%93&q=milestone%3A%22Reviewer+1%22+)   
+- [Reviewer: 2 | status: 100% fixed](https://github.com/oncogenetics/LocusExplorer/issues?utf8=%E2%9C%93&q=milestone%3A%22Reviewer+2%22+)   
+- [Reviewer: 3 | status: 88% fixed](https://github.com/oncogenetics/LocusExplorer/issues?utf8=%E2%9C%93&q=milestone%3A%22Reviewer+3%22+) - Two issues are known and under development, will be fixed in future releases.   
+
+If the provided solutions are not satisfactory, please suggest re-open using GitHub interface, [Re-open](https://github.com/oncogenetics/LocusExplorer/issues) existing issues or submit as a [New issue](https://github.com/oncogenetics/LocusExplorer/issues/new).
+
+## Reviewer issues in detail
+
 ### Reviewer: 1 
 
 1. I would like to suggest adding lines in the manhattan plot to show the key significant value, such as 0.01 or 0.05. This could be useful for understanding the significant associated markers.   
@@ -25,7 +36,23 @@ output: word_document
 
 5. There were some mistakes when the format of JPEG changed to TIFF.   
 
-- [#46](https://github.com/oncogenetics/LocusExplorer/issues/46) - XXX
+- [#46](https://github.com/oncogenetics/LocusExplorer/issues/46) - We could not replicate this error. Tested on:
+
+**Windows**
+```R
+R version 3.2.2 (2015-08-14)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 7 x64 (build 7601) Service Pack 1
+```
+
+**Mac OS**
+```R
+R version 3.2.2 (2015-08-14)
+Platform: x86_64-apple-darwin13.4.0 (64-bit)
+Running under: OS X 10.10.3 (Yosemite)
+```
+
+Please, suggest re-open this issue with your `sessionInfo()`.
 
 ### Reviewer: 2 
 
@@ -70,7 +97,7 @@ to start the tool:
 > Warning in file(filename, "r", encoding = encoding) :cannot open file 'source/UDF.R': No such file or directory 
 Error in file(filename, "r", encoding = encoding) : cannot open the connection 
 
-- [#49](https://github.com/oncogenetics/LocusExplorer/issues/49) - Typo in the code fixed - *sorce* to *Source*.
+- [#49](https://github.com/oncogenetics/LocusExplorer/issues/49) - Typo in the code fixed - *source* to *Source*.
 
 2.1.3. When I click on plotSettings directly after loading the app, I receive the following message:    
 
@@ -102,7 +129,24 @@ Error in file(filename, "r", encoding = encoding) : cannot open the connection
 2.1.7. The suggested filenames when saving a plot contains " characters at the beginning and end 
 The " should be removed because not all file systems may handle this appropriately.     
 
-- [#54](https://github.com/oncogenetics/LocusExplorer/issues/54) - XXX   
+- [#54](https://github.com/oncogenetics/LocusExplorer/issues/54) - We could not replicate this error. Tested on:
+
+**Windows**
+```R
+R version 3.2.2 (2015-08-14)
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+Running under: Windows 7 x64 (build 7601) Service Pack 1
+```
+
+**Mac OS**
+```R
+R version 3.2.2 (2015-08-14)
+Platform: x86_64-apple-darwin13.4.0 (64-bit)
+Running under: OS X 10.10.3 (Yosemite)
+```
+
+Please, suggest re-open this issue with your `sessionInfo()`.
+   
 
 2.1.8. No file is produced after saving: On my machine, after saving the file to a specific folder, there is no output file being produced. I tried with in multiple folders with multiple different file names.   
 
@@ -119,13 +163,13 @@ The " should be removed because not all file systems may handle this appropriate
 
 > Error in evaluating the argument 'data' in selecting a method for function 'ggplot': Error: Please upload Association file 
 
-- [#57](https://github.com/oncogenetics/LocusExplorer/issues/57) - XXX known issue, need to have file validation.....
+- [#57](https://github.com/oncogenetics/LocusExplorer/issues/57) - This is a known issue, will be addressed in future releases.   
 
 #### 2.2.Minor comments regarding the software:  
   
 2.2.1. Plot settings, SNP filter, -log10 p-value. For the -log10 p value scale, it might make sense to display which p-value the transformed values correspond to. 
 
-- [#58](https://github.com/oncogenetics/LocusExplorer/issues/58) - For *Manhattan plots* it is a common practice to show p-values on Y axis as `-log10()` scale.
+- [#58](https://github.com/oncogenetics/LocusExplorer/issues/58) - For *Manhattan plots* it is a common practice to show p-values on Y axis as `-log10(pvalue)` scale.
 
 [Manhattan plots (wikipedia)](https://en.wikipedia.org/wiki/Manhattan_plot)   
 
@@ -133,7 +177,7 @@ The " should be removed because not all file systems may handle this appropriate
 
 2.2.2. Custom tracks: Would it be possible and user-friendly to add the option to display custom tracks instead of the preselected ones? Maybe the functionality of the rtracklayer package can help?   
 
-- [#59](https://github.com/oncogenetics/LocusExplorer/issues/59) - XXXXX  
+- [#59](https://github.com/oncogenetics/LocusExplorer/issues/59) - This is a known feature request, currently in development.     
 
 2.2.3. *Make LD file* section: Initially I thought that the "Make LD file" section is needed after the final plot in addition somehow (following the menu from left to right: input data -> Plot settings -> final plot -> make LD file?). Now, after navigating through the app, it seems that this section is more suited for the help section to explain how one can obtain or generate a LD file if not readily available. I therefore suggest to move this to the help section because it seems to belong there and not next to the final plot. 
 

@@ -39,8 +39,10 @@ library(cluster)
 
 #Bioconductor
 # source("http://bioconductor.org/biocLite.R")
+# biocLite("BiocInstaller")
 # biocLite(c("ggbio","GenomicRanges","TxDb.Hsapiens.UCSC.hg19.knownGene",
 #            "org.Hs.eg.db","rtracklayer"))
+
 library(ggbio)
 library(GenomicRanges)
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
@@ -165,9 +167,9 @@ shinyUI(
                sliderInput("FilterMinLD", h5("LD"),
                            min = 0, max = 0.9, value = 0.2, step = 0.05),
                #Add suggestiveline and genomewideline
-               numericInput("suggestiveLine",h5("Suggestive Line"),
+               numericInput("suggestiveLine",h5("Suggestive Line -Log10(Pvalue)"),
                             value = 5, min = 0, max = 15, step = 0.1),
-               numericInput("genomewideLine",h5("Genomewide Line"),
+               numericInput("genomewideLine",h5("Genomewide Line -Log10(Pvalue)"),
                             value = 8, min = 0, max = 15, step = 0.1),
                
                #if SNP labels are overlapping then adjust using repulsion force.

@@ -44,12 +44,16 @@ if("LDSmooth" %in% input$ShowHideTracks &
 if(input$suggestiveLine != 0) {
   gg_out <- gg_out +
     geom_hline(aes(yintercept = y), data = data.frame(y=input$suggestiveLine),
-               linetype = "dashed", colour = "#003D4C")}
+               #linetype = "dashed",
+               size = 0.5,
+               colour = "#1a9641")}
 # genomewideLine
 if(input$genomewideLine != 0) {
   gg_out <- gg_out +
     geom_hline(aes(yintercept = y), data = data.frame(y=input$genomewideLine),
-               linetype = "dashed", colour = "#A71930")}
+               #linetype = "dashed",
+               size = 0.5,
+               colour = "#ca0020")}
 
 # Mark Hits, shape and vline ----------------------------------------------
 gg_out <- gg_out +
@@ -93,13 +97,12 @@ if(input$adjustLabels & nrow(hitLabels) > 1) {
     geom_text(data=hitLabels,
               aes(x.t,y.t,label=SNP),
               vjust=-1, colour="black") +
-    geom_segment(data=hitLabels,aes(xend = x.t, yend = y.t),
-                 col="grey30",lty="dashed") 
+    geom_segment(data=hitLabels,aes(xend = x.t, yend = y.t)) 
   } else {
   gg_out <- gg_out +
        geom_text(data=hitLabels,
                  aes(BP,PLog,label=SNP),
-                 vjust=1.1,hjust=-0.1,colour="black") 
+                 vjust=1.1,hjust=-0.1) 
     }
 
 # General options ---------------------------------------------------------

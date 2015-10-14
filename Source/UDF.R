@@ -8,7 +8,7 @@ udf_theme <- function(){
           panel.background = element_rect(fill="white"),
           panel.grid.minor=element_blank(),
           panel.grid.major.x = element_blank(),
-          panel.grid.major.y = element_line(colour = "grey80",linetype = "dashed"),
+          panel.grid.major.y = element_line(colour = "grey60", linetype = "dotted"),
           axis.title.x=element_blank(),
           #axis.text.x=element_blank(),
           #axis.ticks.x=element_blank(),
