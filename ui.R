@@ -302,7 +302,7 @@ shinyUI(
                                 input.downloadPlotType == 'tiff')",
                                 sliderInput("downloadPlotResolution",
                                             h4("Resolution"),
-                                            min = 100, max = 600, value = 120,
+                                            min = 100, max = 600, value = 100,
                                             step = 20)),
                # File downloads when this button is clicked.
                downloadButton(outputId = "downloadPlot", label = "Download Plot")

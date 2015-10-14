@@ -71,7 +71,7 @@ allPackages <- allPackages[ is.na(allPackages[,4]), 1]
 # CRAN packages required by this Application.
 cranPackages <- c("shiny", "shinyjs", "data.table", "dplyr", "tidyr", 
                   "ggplot2", "knitr", "markdown", "stringr","DT","seqminer",
-                  "lattice","cluster",)
+                  "lattice","cluster")
 # Bioconductor packages required by this Application.
 bioPackages <-  c("ggbio","GenomicRanges","TxDb.Hsapiens.UCSC.hg19.knownGene",
                   "org.Hs.eg.db","rtracklayer")
