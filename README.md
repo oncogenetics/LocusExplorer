@@ -84,6 +84,6 @@ Questions, suggestions, and bug reports are welcome and appreciated.
 ### To-do List
 https://github.com/oncogenetics/LocusExplorer/issues   
 
-[![Issue Stats](http://issuestats.com/github/oncogenetics/LocusExplorer/badge/pr)](http://issuestats.com/github/oncogenetics/LocusExplorer)
 [![Issue Stats](http://issuestats.com/github/oncogenetics/LocusExplorer/badge/issue)](http://issuestats.com/github/oncogenetics/LocusExplorer)
+[![Issue Stats](http://issuestats.com/github/oncogenetics/LocusExplorer/badge/pr)](http://issuestats.com/github/oncogenetics/LocusExplorer)
 
