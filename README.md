@@ -3,6 +3,8 @@ Locus Explorer v0.4
 
 ## An interactive graphical illustration of genetic associations and their biological context.
 
+<img src="www/Figure1.jpeg" height="1200px" width="1000px" />
+
 ### Disclaimer
 Locus Explorer should be used for illustrative purposes only. Any results provided by Locus Explorer should be used with caution. 
 
@@ -60,10 +62,6 @@ Click on *Download as ZIP* button, this will download the repisotory locally as 
 #### Abstract
 **Summary:** In this article we present Locus Explorer, a data visualisation and exploration tool for genetic association data. Locus Explorer is written in R using the Shiny library, providing access to powerful R-based functions through a simple user interface. Locus Explorer allows users to simultaneously display genetic, statistical and biological data in a single image and allows dynamic zooming and customisation of the plot features. Publication quality plots may be downloaded in a variety of file formats.   
 **Availability and implementation:** Locus Explorer is open source and runs through R and a web browser. It is available at https://github.com/oncogenetics/LocusExplorer, where user guides and example data are also provided.
-
-### Example plot output
-<img src="www/chr17_36020000_36140000.jpeg" height="800px" width="600px" />
-
 
 ### Publications That Use Locus Explorer
 [Multiple novel prostate cancer susceptibility signals identified by fine-mapping of known risk loci among Europeans.](http://www.ncbi.nlm.nih.gov/pubmed/26025378) Al Olama AA *et al.*   

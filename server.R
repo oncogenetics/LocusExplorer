@@ -507,7 +507,7 @@ shinyServer(function(input, output, session) {
   # Example plot ------------------------------------------------------------
   output$ExamplePlotJPEG <- renderImage({
     return(list(
-        src = "www/chr17_36020000_36140000.jpeg",
+        src = "www/Figure1.jpe",
         contentType = "image/jpeg",
         alt = "ExamplePlotOutput"
       ))
