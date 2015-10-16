@@ -43,13 +43,13 @@ Locus Explorer runs through a web browser and uses an intuitive interface that d
 
 #### 1. Using *runGitHub()* within RStudio
 
-Open RStudio recommended (start a new R session) copy the following code into the console and hit Return:
+Open RStudio (start a new R session) copy the following code into the console and hit Return:
 ```R
 library(shiny)  
 runGitHub("LocusExplorer", "oncogenetics")
 ```
 
-#### 2. Using *Download as Zip*
+#### 2. Using *Download as Zip* (Recommended)
 Click on *Download as ZIP* button, this will download the repisotory locally as a zip file *LocusExplorer-master.zip*. Unzip the folder. Open *ui.R* file in RStudio (start a new R session) and click on *Run App* button at top right corner.
 
 
@@ -63,15 +63,12 @@ Click on *Download as ZIP* button, this will download the repisotory locally as 
 **Summary:** In this article we present Locus Explorer, a data visualisation and exploration tool for genetic association data. Locus Explorer is written in R using the Shiny library, providing access to powerful R-based functions through a simple user interface. Locus Explorer allows users to simultaneously display genetic, statistical and biological data in a single image and allows dynamic zooming and customisation of the plot features. Publication quality plots may be downloaded in a variety of file formats.   
 **Availability and implementation:** Locus Explorer is open source and runs through R and a web browser. It is available at https://github.com/oncogenetics/LocusExplorer, where user guides and example data are also provided.
 
-### Publications That Use Locus Explorer
-[Multiple novel prostate cancer susceptibility signals identified by fine-mapping of known risk loci among Europeans.](http://www.ncbi.nlm.nih.gov/pubmed/26025378) Al Olama AA *et al.*   
-**Figure 1**  
-Locus Explorer plots of two simple and four complex regions. (A) Region 23_3 at ChrXq12, (B) Region 9_1 at Chr9q31, (C) Region 2_6 at Chr2q31, (D) Region 2_8 at Chr2q37, (E) Region 14_2 at Chr14q24 and (F) Region 17_2 at Chr17q12. For regions containing multiple independent association signals, the separate lead SNPs are indicated and colored red, blue, green, orange and purple, respectively. Original GWAS tag SNPs that were replaced during fine-mapping are marked in gray on the plot. Clusters of correlated variants for each signal are distinguished using different colors in the plot and on the panel below, including for the original GWAS SNPs. Stronger shading indicates greater correlation with the lead SNP, with variants not correlated at r2 > 0.5 with any lead SNP uncolored. Directly genotyped variants are denoted as triangles and imputed variants as circles. Log10 P-values are shown on the Y-axis of the plot. Colored arrows within the plot mark SNPs that overlap with regulatory elements in ENCODE; red for 3'UTRs, blue for coding variants, purple for promoters and orange for miRNA sites. The position of genes within the region and the genomic coordinates of the plot are shown on the lower panel, with genes on the positive strand in green and the negative strand in purple. The LNCaP track shows the density of annotated bio-features within the LNCaP cell-line (data from ENCODE).
-
-<img src="www/PMID_26025378_F1.large.jpg" height="800px" width="600px" />
+### Publications: Locus Explorer plots
+* [Multiple novel prostate cancer susceptibility signals identified by fine-mapping of known risk loci among Europeans.](http://www.ncbi.nlm.nih.gov/pubmed/26025378) Al Olama AA *et al.*   
+    + [Figure 1](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4572072/figure/DDV203F1/)
 
 ### Frequently asked questions  
-See [FAQ](https://github.com/oncogenetics/LocusExplorer/wiki/FAQ)
+See [FAQ](https://github.com/oncogenetics/LocusExplorer/blob/master/Markdown/FAQ.md).
 
 ### Contact  
 Questions, suggestions, and bug reports are welcome and appreciated.   
