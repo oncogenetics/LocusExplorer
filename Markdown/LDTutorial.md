@@ -7,8 +7,8 @@
 3. Enter SNP rs number (must be in 1000 Genomes phase 3 dataset / dbSNP 142).
 4. Select population(s) for LD calculation and hit **Calculate**.
 5. Scroll down and right click **Download all proxy SNPs** and click **Save link as...** to save as a text file.
-6. Return to the **Make LD file** tab of Locus Explorer and upload unprocessed LDlink file as input.
-7. Download processed LD File for use at **Input Data** tab in Locus Explorer.
+6. Return to the **Make LD file** tab of LocusExplorer and upload unprocessed LDlink file as input.
+7. Download processed LD File for use at **Input Data** tab in LocusExplorer.
 
 **Note:**
 

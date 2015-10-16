@@ -61,9 +61,9 @@ Please, suggest re-open this issue with your `sessionInfo()`.
 * [#40](https://github.com/oncogenetics/LocusExplorer/issues/40) - BED file format definition is changed to bedGraph
 
 2. Replicate Figure 1 in manuscript   
-2.1. I tried to reproduce Figure 1 using Locus Explorer and noted a few differences. I suggest regenerating the image for Figure 1 using the latest version.   
-In Figure 1, while the genomic region is labeled 36020000 - 36140000 along the bottom, it seems that the Manhattan plot covers that range while other plots such as SNPType see to extend beyond that range. In Locus Explorer, the SNPType track covers a smaller range (contains fewer elements) than in Figure 1, but now matches the range of the Manhattan plot.   
-2.2. The LDSmooth curve shapes for rs718961 and rs11649743 are different -- in Figure 1 they have one peak and the pink curve is split at the top, while in Locus Explorer, they have a large peak plus a smaller peak to the right (depending on LD). I tried adjusting LD but none of the values (0, 0.05, 0.10, 0.15, and the default 0.20) seemed to duplicate the shapes in Figure 1. 
+2.1. I tried to reproduce Figure 1 using LocusExplorerExplorer and noted a few differences. I suggest regenerating the image for Figure 1 using the latest version.   
+In Figure 1, while the genomic region is labeled 36020000 - 36140000 along the bottom, it seems that the Manhattan plot covers that range while other plots such as SNPType see to extend beyond that range. In LocusExplorerExplorer, the SNPType track covers a smaller range (contains fewer elements) than in Figure 1, but now matches the range of the Manhattan plot.   
+2.2. The LDSmooth curve shapes for rs718961 and rs11649743 are different -- in Figure 1 they have one peak and the pink curve is split at the top, while in LocusExplorerExplorer, they have a large peak plus a smaller peak to the right (depending on LD). I tried adjusting LD but none of the values (0, 0.05, 0.10, 0.15, and the default 0.20) seemed to duplicate the shapes in Figure 1. 
 
 * [#47](https://github.com/oncogenetics/LocusExplorer/issues/47) - Updated manuscript has the latest, reproducible Figure 1.   
 Applied settings: 
