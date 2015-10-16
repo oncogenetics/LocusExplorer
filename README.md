@@ -3,7 +3,7 @@ Locus Explorer v0.4
 
 ## An interactive graphical illustration of genetic associations and their biological context.
 
-<img src="www/Figure1.jpeg" height="1200px" width="1000px" />
+<img src="www/Figure1.jpeg" height="840px" width="700px" />
 
 ### Disclaimer
 Locus Explorer should be used for illustrative purposes only. Any results provided by Locus Explorer should be used with caution. 
