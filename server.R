@@ -35,8 +35,19 @@ shinyServer(function(input, output, session) {
              validate(need(input$FileStats != "", "Please upload Association file"))
              
              inFile <- input$FileStats
-             if(is.null(inFile)){return(NULL)}
-             fread(inFile$datapath, header=TRUE, data.table=FALSE) 
+             
+             if(is.null(inFile)){return(NULL)} else {
+               fread(inFile$datapath, header=TRUE, data.table=FALSE) 
+             }
+             
+#              TESTING validation...
+#                customData <- fread(inFile$datapath, header=TRUE, data.table=FALSE) 
+#                #check if the input has required columns
+#                if(isTRUE(all.equal(colnames(customData),
+#                                    c("CHR","SNP","BP","P","TYPED")))
+#                   ){return(NULL)} else {
+#                     return(customData) }
+
            },
            Example = {
              fread("Data/CustomDataExample/Association.txt",

@@ -6,23 +6,10 @@
 # User interface file for shiny
 
 # Workspace ---------------------------------------------------------------
-# #Start with clean workspace
-# issue #48 - R3.1 ERROR: Pre-loaded bio packages cannot be unloaded 
-# updated README, run the app with new session.
-# rm(list = ls())
-# #detach bioconductor packages
-# lapply(
-#   intersect(search(),
-#   paste0("package:",c("ggbio","TxDb.Hsapiens.UCSC.hg19.knownGene",
-#                       "rtracklayer","GenomicFeatures","GenomicRanges",
-#                       "org.Hs.eg.db"))),
-#   detach, character.only = TRUE)
-
 #CRAN
 # install.packages(c("shiny", "shinyjs", "data.table", "dplyr", "tidyr", 
 #                    "ggplot2", "knitr", "markdown", "stringr","DT","seqminer",
-#                    "lattice","cluster"),
-#                  dependencies = TRUE)
+#                    "lattice","cluster"))
 library(shiny)
 library(shinyjs)
 library(data.table)
@@ -42,7 +29,6 @@ library(cluster)
 # biocLite("BiocInstaller")
 # biocLite(c("ggbio","GenomicRanges","TxDb.Hsapiens.UCSC.hg19.knownGene",
 #            "org.Hs.eg.db","rtracklayer"))
-
 library(ggbio)
 library(GenomicRanges)
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
