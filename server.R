@@ -714,12 +714,12 @@ shinyServer(function(input, output, session) {
       inputId = "downloadPlotFileName",
       label = h4("Download file name"),
       value = paste(RegionChr(),zoomStart(),zoomEnd(),sep="_"))})
-  #download plot title - default: chr_start_end
+  #download plot title - default: chr:start-end
   output$downloadPlotTitle <- renderUI({
     textInput(
       inputId = "downloadPlotTitle",
       label = h4("Plot title"),
-      value = paste(RegionChr(),zoomStart(),zoomEnd(),sep="_"))})
+      value = paste0(RegionChr(), ':', zoomStart(), '-', zoomEnd(),sep=""))})
   
   #Custom BedGraph file track name, default is filename
   output$FileBedGraphName <- renderUI({
