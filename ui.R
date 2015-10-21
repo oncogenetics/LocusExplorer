@@ -164,7 +164,7 @@ shinyUI(
                                 sliderInput("repFact",
                                             h5("Repulsion force factor"),
                                             min = 0, max = 50, 
-                                            value = 5, step = 0.5)),
+                                            value = 20, step = 0.5)),
                
                h4("Zoom region:"),
                h6("Use sliders to zoom in to required region, or enter region as text, e.g.: chr1:36020000-36140000"),
