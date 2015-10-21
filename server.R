@@ -788,14 +788,17 @@ shinyServer(function(input, output, session) {
   #Reset plot options
   observeEvent(input$resetInput,({
     updateSliderInput(session,"FilterMinPlog", value=0)
-    updateSliderInput(session,"FilterMinLD", value=0)
+    updateSliderInput(session,"FilterMinLD", value=0.2)
+    
+    updateNumericInput(session,"suggestiveLine", value=5)
+    updateNumericInput(session,"genomewideLine", value=8)
+    
+    updateCheckboxInput(session,"adjustLabels", value=TRUE)
+    updateSliderInput(session,"repFact", value=5)
+    
     updateSliderInput(session,"BPrange", value = c(RegionStart(),RegionEnd()))
     updateTextInput(session,"RegionZoom",value="chr:start-end")
     updateSelectInput(session,"Flank",
-                      choices = list("10KB"=10000,
-                                     "50KB"=50000,
-                                     "1MB"=100000,
-                                     "2MB"=200000), 
                       selected = 10000)
     updateCheckboxGroupInput(session,"HitSNPs",
                              choices = RegionHits(),
@@ -803,17 +806,6 @@ shinyServer(function(input, output, session) {
                                RegionHits()[1:min(5,length(RegionHits()))])
     
     updateCheckboxGroupInput(session,"ShowHideTracks",
-                             choices = c("Chromosome"="Chromosome",
-                                         "Manhattan"="Manhattan",
-                                         "Manhattan: Recombination"="Recombination",
-                                         "Manhattan: LDSmooth"="LDSmooth",
-                                         "SNPType"="SNPType",
-                                         "LD"="LD",
-                                         "BedGraph"="BedGraph",
-                                         "wgEncodeBroadHistone"="wgEncodeBroadHistone",
-                                         "wgEncodeRegDnaseClustered"="wgEncodeRegDnaseClustered",
-                                         "LNCaP Prostate"="LNCAP",
-                                         "Gene"="Gene"),
                              selected=c("Manhattan","Recombination")
     )
     })) #END observeEvent resetInput
@@ -825,20 +817,22 @@ shinyServer(function(input, output, session) {
       selectedTracks <- setdiff(selectedTracks,c("Recombination","LDSmooth"))
       
       updateCheckboxGroupInput(session,"ShowHideTracks",
-                               choices = c("Chromosome"="Chromosome",
-                                           "Manhattan"="Manhattan",
-                                           "Manhattan: Recombination"="Recombination",
-                                           "Manhattan: LDSmooth"="LDSmooth",
-                                           "SNPType"="SNPType",
-                                           "LD"="LD",
-                                           "BedGraph"="BedGraph",
-                                           "wgEncodeBroadHistone"="wgEncodeBroadHistone",
-                                           "wgEncodeRegDnaseClustered"="wgEncodeRegDnaseClustered",
-                                           "LNCaP Prostate"="LNCAP",
-                                           "Gene"="Gene"),
                                selected=c(selectedTracks))
       } #END if
     })) #END observeEvent ShowHideTracks
+  
+  #Action buttons to switch between nav bars 1.Input 2.Settings 3.Final
+  observeEvent(input$goToPlotSettings,{
+    updateNavbarPage(session, "navBarPageID", selected = "2.Plot Settings")
+  })
+  observeEvent(input$goToFinalPlot,{
+    updateNavbarPage(session, "navBarPageID", selected = "3.Final Plot")
+  })
+  
+  
+  
+  
+  
   
 })#END shinyServer
 

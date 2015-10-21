@@ -41,12 +41,11 @@ if(Sys.info()['sysname'] == "Windows") {
   setInternet2(TRUE)
 }
 
-
-
 # Define UI ---------------------------------------------------------------
 shinyUI(
   navbarPage(
     # Application title
+    id = "navBarPageID",
     title = "Locus Explorer v0.4",
     windowTitle = "Locus Explorer",
     fluid = FALSE,
@@ -54,7 +53,7 @@ shinyUI(
     inverse = TRUE,
     # Data --------------------------------------------------------------------
     tabPanel(
-      "Input Data",
+      "1.Input Data",
       sidebarPanel(
         #push it down 70px to avoid going under navbar
         tags$style(type="text/css", "body {padding-top: 70px;}"),
@@ -88,8 +87,9 @@ shinyUI(
         ),#conditionalPanel- Custom
         
         conditionalPanel("input.dataType == 'Example'"
-        )#conditionalPanel- CustomExample
-        
+        ),#conditionalPanel- CustomExample
+        actionButton("goToPlotSettings", "2.Plot Settings",icon = icon("cogs"),
+                     style = "background-color:#C9DD03")
       ),#sidebarPanel
       mainPanel(
         tabsetPanel(
@@ -144,7 +144,7 @@ shinyUI(
       )#mainPanel
     ),#tabPanel - Data
     # Plot --------------------------------------------------------------------  
-    tabPanel("Plot Settings",
+    tabPanel("2.Plot Settings",
              sidebarPanel(
                h4("SNP Filters:"),
                h6("Use sliders to set required threshold for P-value and LD. Filtered SNPs will not be plotted."),
@@ -175,8 +175,8 @@ shinyUI(
                selectInput("Flank", label = h5("Region Flank"), 
                            choices = list("10KB"=10000,
                                           "50KB"=50000,
-                                          "1MB"=100000,
-                                          "2MB"=200000), 
+                                          "100KB"=100000,
+                                          "200KB"=200000), 
                            selected = 10000),
                hr(),
                uiOutput("HitSNPs"),
@@ -198,9 +198,12 @@ shinyUI(
                ),
                
                h6("Recommneded to hide tracks until final zoom region is decided."),
-               #actionButton("resetInput", "Reset inputs",icon = icon("undo"))
                actionButton("resetInput", "Reset inputs",icon = icon("ambulance"),
+                            style = "background-color:#C9DD03"),
+               hr(),
+               actionButton("goToFinalPlot", "3.Final Plot",icon = icon("area-chart"),
                             style = "background-color:#C9DD03")
+               
              ), #sidebarPanel
              mainPanel(
                # Plot title zoomed region, link to UCSC
@@ -235,7 +238,7 @@ shinyUI(
              ) #mainPanel
     ), #tabPanel - "Plot"
     # Final Plot --------------------------------------------------------------  
-    tabPanel("Final Plot",
+    tabPanel("3.Final Plot",
              sidebarPanel(
                # Choose Title for merged plot
                uiOutput("downloadPlotTitle"),
