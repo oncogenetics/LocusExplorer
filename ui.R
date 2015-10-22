@@ -59,9 +59,9 @@ shinyUI(
         tags$style(type="text/css", "body {padding-top: 70px;}"),
         
         #hide red error messages
-         tags$style(type="text/css",
-                    ".shiny-output-error { visibility: hidden; }",
-                    ".shiny-output-error:before { visibility: hidden; }"),
+        tags$style(type="text/css",
+                   ".shiny-output-error { visibility: hidden; }",
+                   ".shiny-output-error:before { visibility: hidden; }"),
         
         
         
@@ -89,7 +89,7 @@ shinyUI(
         conditionalPanel("input.dataType == 'Example'"
         ),#conditionalPanel- CustomExample
         actionButton("goToPlotSettings", "2.Plot Settings",icon = icon("cogs"),
-                     style = "background-color:#C9DD03")
+                     style = "background-color:#85E7FF")
       ),#sidebarPanel
       mainPanel(
         tabsetPanel(
@@ -174,10 +174,10 @@ shinyUI(
                          value = "chr:start-end"),
                selectInput("Flank", label = h5("Region Flank"), 
                            choices = list( "0 kb"=1,
-                                          "10 kb"=10000,
-                                          "50 kb"=50000,
-                                          "100 kb"=100000,
-                                          "200 kb"=200000), 
+                                           "10 kb"=10000,
+                                           "50 kb"=50000,
+                                           "100 kb"=100000,
+                                           "200 kb"=200000), 
                            selected = 1),
                hr(),
                uiOutput("HitSNPs"),
@@ -203,7 +203,7 @@ shinyUI(
                             style = "background-color:#C9DD03"),
                hr(),
                actionButton("goToFinalPlot", "3.Final Plot",icon = icon("area-chart"),
-                            style = "background-color:#C9DD03")
+                            style = "background-color:#85E7FF")
                
              ), #sidebarPanel
              mainPanel(
@@ -246,65 +246,120 @@ shinyUI(
                
                
                radioButtons("PlotTheme","Plot theme",
-                            choices = list("Shaded - Colour picker" = 1,
+                            choices = list("Shades - Colour picker" = 1,
                                            "Classic - Borders only" = 2,
                                            "None - No colours no borders" = 3),
                             selected = 1),
                
                conditionalPanel("input.PlotTheme == 1",
-                                colourInput("PlotThemeColour1","Plot theme Colour 1", "#C2C2C2"),
-                                colourInput("PlotThemeColour2","Plot theme Colour 2", "#E5E5E5")
-                                ),
-               
-#                radioButtons("PlotTheme","Plot theme",
-#                             choices = list("Gray" = 1,
-#                                            "Yellow" = 2,
-#                                            "Green" = 3,
-#                                            "Classic" = 4,
-#                                            "None" = 5),
-#                             selected = 1),
-               
-               
+                                colourInput("PlotThemeColour1",
+                                            "Plot theme shade 1", "#C2C2C2"),
+                                colourInput("PlotThemeColour2",
+                                            "Plot theme shade 2", "#E5E5E5")
+               ),
                
                # Choose download filename.
                uiOutput("downloadPlotFileName"),
-               h6("Use PDF or SVG format for further image editing."),
-               selectInput(
-                 inputId = "downloadPlotType",
-                 label   = h4("File type"),
-                 choices = list(
-                   "PDF"  = "pdf",
-                   "SVG" = "svg",
-                   "JPEG" = "jpeg",
-                   "TIFF"  = "tiff"),
-                 selected = "pdf"),
-               # Allow the user to set the height and width of the plot download.
-               numericInput(
-                 inputId = "downloadPlotHeight",label = h4("Height (inches)"),
-                 value = 14,min = 1,max = 100),
+               helpText("Use PDF or SVG format for further image editing, e.g.: Photoshop, Inkscape."),
+               selectInput("downloadPlotType","File type",
+                           choices = list(
+                             "PDF"  = "pdf",
+                             "SVG" = "svg",
+                             "JPEG" = "jpeg",
+                             "TIFF"  = "tiff"),
+                           selected = "jpeg"),
+               checkboxInput("downloadPlotAdvancedSettings","Advanced settings",
+                             value = FALSE),
                
-               numericInput(
-                 inputId = "downloadPlotWidth",label = h4("Width (inches)"),
-                 value = 10,min = 1,max = 100),
-               p(),
-               #if jpeg or tiff then set resolution
-               conditionalPanel("(input.downloadPlotType == 'jpeg' || 
-                                input.downloadPlotType == 'tiff')",
-                                sliderInput("downloadPlotResolution",
-                                            h4("Resolution"),
-                                            min = 100, max = 600, value = 100,
-                                            step = 20)),
-               # File downloads when this button is clicked.
-               downloadButton(outputId = "downloadPlot", label = "Download Plot")
-    ), #sidebarPanel plot Download section
-    mainPanel(
-      #plot merge height is dynamic, based on seleceted tracks
-      uiOutput("plotMergeUI")
-    )
+               # Advanced settings
+               conditionalPanel(
+                 "(input.downloadPlotAdvancedSettings)",
+               wellPanel(style = "background-color: #F6FEAF;",
+                         numericInput("downloadPlotWidth",
+                                      "Width (pixels)",
+                                      value = 1000,
+                                      step = 100),
+                         
+                         numericInput("downloadPlotHeight", 
+                                     "Height (pixels)",
+                                     value = 1200,
+                                     step = 100),
+                         
+                         sliderInput("downloadPlotPointSize",
+                                     "Point size",
+                                     value = 12, min = 1, max = 100),
+                         
+                         conditionalPanel(
+                           "(input.downloadPlotType == 'pdf')",
+                           selectInput("downloadPlotPaper",
+                                       "Paper",
+                                       list("a4","letter","legal","us",
+                                            "executive","a4r","USr",
+                                            "special"),
+                                       selected = "special")),
+                         
+                         conditionalPanel("(input.downloadPlotType == 'jpeg' ||
+                                          input.downloadPlotType == 'tiff')",
+                                          sliderInput("downloadPlotRes",
+                                                      "Resolution (ppi)",
+                                                      min = 100, max = 600,
+                                                      value = 100,
+                                                      step = 10),
+                                          #if JPEG input quality
+                                          conditionalPanel(
+                                            "(input.downloadPlotType == 'jpeg')",
+                                            sliderInput("downloadPlotQuality",
+                                                        "Quality (%)",
+                                                        min = 1, max = 100,
+                                                        value = 100,
+                                                        step = 5)),
+                                          
+                                          selectInput("downloadPlotTypeJPEG",
+                                                      "Type",
+                                                      list("windows","cairo",
+                                                           "Xlib","quartz"),
+                                                      selected = "cairo"),
+                                          
+                                          #if TIFF input compression
+                                          conditionalPanel(
+                                            "(input.downloadPlotType == 'tiff')",
+                                            selectInput("downloadPlotCompression",
+                                                        "Compression",
+                                                        list("none", "rle",
+                                                             "lzw", "jpeg",
+                                                             "zip", "lzw+p",
+                                                             "zip+p"),
+                                                        selected = "lzw"))
+                                          ),#END JPEG/TIFF 
+                         actionButton("resetDownloadPlotSettings",
+                                      "Reset inputs",icon = icon("ambulance"),
+                                      style = "background-color:#C9DD03;")
+                         )#END Advanced settings wellPane
+               ),#END Advanced settings 
+             
+             
+             #              pdf(file = ifelse(onefile, "Rplots.pdf", "Rplot%03d.pdf"),
+             #                  width, height, onefile, family, title, fonts, version,
+             #                  paper, encoding, bg, fg, pointsize, pagecentre, colormodel,
+             #                  useDingbats, useKerning, fillOddEven, compress)
+             
+             #              svg(filename = if(onefile) "Rplots.svg" else "Rplot%03d.svg",
+             #                  width = 7, height = 7, pointsize = 12,
+             #                  onefile = FALSE, family = "sans", bg = "white",
+             #                  antialias = c("default", "none", "gray", "subpixel"))
+             
+             
+             # File downloads when this button is clicked.
+             downloadButton("downloadPlot", "Download Plot")
+             ), #sidebarPanel plot Download section
+             mainPanel(
+               #plot merge height is dynamic, based on seleceted tracks
+               uiOutput("plotMergeUI")
+             )
+             
+             ), #tabPanel - "Final Plot"
     
-  ), #tabPanel - "Final Plot"
-  
-  navbarMenu("Help",
+    navbarMenu("Help",
                tabPanel("About",
                         h4("About"),
                         hr(),
@@ -319,12 +374,12 @@ shinyUI(
                         h4("Input File Format"),
                         hr(),
                         includeMarkdown("Markdown/InputFileFormat.md")),
-#                tabPanel("Example Plot",
-#                         h4("Example Plot"),
-#                         hr(),
-#                         h4("Sample JPEG output"),
-#                         h5("res = 100, hight = 1200px, width = 1000px"),
-#                         imageOutput("ExamplePlotJPEG")),
+               #                tabPanel("Example Plot",
+               #                         h4("Example Plot"),
+               #                         hr(),
+               #                         h4("Sample JPEG output"),
+               #                         h5("res = 100, hight = 1200px, width = 1000px"),
+               #                         imageOutput("ExamplePlotJPEG")),
                tabPanel("R Session Info",
                         h4("R Session Info"),
                         hr(),
@@ -359,6 +414,6 @@ shinyUI(
                         h4("Frequently Asked Quesitons"),
                         hr(),
                         includeMarkdown("Markdown/FAQ.md"))
-  )#navbarMenu - Help
+    )#navbarMenu - Help
   )#navbarPage
-)#shinyUI
+  )#shinyUI

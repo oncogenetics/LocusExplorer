@@ -562,17 +562,7 @@ shinyServer(function(input, output, session) {
         c(input$PlotThemeColour1,
           input$PlotThemeColour2) } else { c("#FFFFFF","#FFFFFF") }
     
-#     myCols <- c("#C2C2C2","#E5E5E5")
-    
-#     myCols <- 
-#       if(input$PlotTheme=="1"){
-#         #grey
-#         c('#C2C2C2','#E5E5E5') } else if(input$PlotTheme=="2"){
-#           #yellow
-#           c("#FFD602","#FFE45C") } else if(input$PlotTheme=="3"){
-#             #green
-#             c("#C9DD03","#EDFD5E") } else {c("#FFFFFF","#FFFFFF")}
-    
+
     res <- cbind(trackHeights(),myCols)[,2][1:length(trackHeights())] 
     #chromosome background must be white
     if("Chromosome" %in% input$ShowHideTracks){res[1] <- "white"}
@@ -592,57 +582,43 @@ shinyServer(function(input, output, session) {
     plotUnit    <- ifelse(plotTypePDF, "inches", "pixels")
     plotUnitDefHeight <- ifelse(plotTypePDF, 12, 1200)
     plotUnitDefWidth <- ifelse(plotTypePDF, 10, 1000)
+    #plotUnitDefMin <- ifelse(plotTypePDF, 5, 800)
+    #plotUnitDefMax <- ifelse(plotTypePDF, 50, 10000)
+    plotUnitDefStep <- ifelse(plotTypePDF, 1, 100)
     
-    updateNumericInput(
-      session,
+    updateSliderInput( session,
       inputId = "downloadPlotHeight",
       label = sprintf("Height (%s)", plotUnit),
-      value = plotUnitDefHeight)
+      value = plotUnitDefHeight,
+      step = plotUnitDefStep)
     
-    updateNumericInput(
+    updateSliderInput(
       session,
       inputId = "downloadPlotWidth",
       label = sprintf("Width (%s)", plotUnit),
-      value = plotUnitDefWidth)
+      value = plotUnitDefWidth,
+      step = plotUnitDefStep)
   })
   
   
-  # Get the download dimensions.
-  downloadPlotHeight <- reactive({
-    input$downloadPlotHeight
-  })
+  downloadPlotHeight <- reactive({ input$downloadPlotHeight })
+  downloadPlotWidth <- reactive({ input$downloadPlotWidth })
+  downloadPlotFileName <- reactive({ input$downloadPlotFileName })
+  downloadPlotRes <- reactive({ input$downloadPlotRes })
+  downloadPlotPaper <- reactive({ input$downloadPlotPaper })
+  downloadPlotType <- reactive({ input$downloadPlotType })
+  downloadPlotPointSize <- reactive({ input$downloadPlotPointSize })
+  downloadPlotQuality <- reactive({ input$downloadPlotQuality })
+  downloadPlotTypeJPEG <- reactive({ input$downloadPlotTypeJPEG })
+  downloadPlotTypeCompression <- reactive({ input$downloadPlotCompression })
   
-  downloadPlotWidth <- reactive({
-    input$downloadPlotWidth
-  })
   
-  # Get the download file name.
-  downloadPlotFileName <- reactive({
-    input$downloadPlotFileName
-  })
-  
-  # Get the download resolution for jpeg/tiff
-  downloadPlotResolution <- reactive({
-    input$downloadPlotResolution
-  })
-  
-  # Include a downloadable file of the plot in the output list.
   output$downloadPlot <- downloadHandler(
     filename = function() {
       paste(downloadPlotFileName(), downloadPlotType(), sep=".")   
     },
     # The argument content below takes filename as a function
     # and returns what's printed to it.
-#     content = function(con) {
-#       # Gets the name of the function to use from the 
-#       # downloadFileType reactive element. Example:
-#       # returns function pdf() if downloadFileType == "pdf".
-#       plotFunction <- match.fun(downloadPlotType())
-#       plotFunction(con, width = downloadPlotWidth(), height = downloadPlotHeight())
-#       print(plotObjMerge())
-#       dev.off(which=dev.cur())
-#     }
-  
     content = function(con) {
       # Gets the name of the function to use from the 
       # downloadFileType reactive element. Example:
@@ -653,21 +629,27 @@ shinyServer(function(input, output, session) {
              pdf = {plotFunction(con, 
                                  width = downloadPlotWidth(),
                                  height = downloadPlotHeight(),
+                                 pointsize = downloadPlotPointSize(),
+                                 paper = downloadPlotPaper(),
                                  useDingbats = FALSE)},
              svg = {plotFunction(con, 
                                  width = downloadPlotWidth(),
-                                 height = downloadPlotHeight())},
+                                 height = downloadPlotHeight(),
+                                 pointsize = downloadPlotPointSize())},
              jpeg = {plotFunction(con, 
                                   width = downloadPlotWidth(),
                                   height = downloadPlotHeight(),
-                                  type="cairo",
-                                  res=downloadPlotResolution(),
-                                  quality = 100)},
+                                  pointsize = downloadPlotPointSize(),
+                                  res = downloadPlotRes(),
+                                  quality = downloadPlotQuality(),
+                                  type = downloadPlotTypeJPEG())},
              tiff = {plotFunction(con, 
                                   width = downloadPlotWidth(),
                                   height = downloadPlotHeight(),
-                                  type="cairo",
-                                  res=downloadPlotResolution())}
+                                  pointsize = downloadPlotPointSize(),
+                                  res = downloadPlotRes(),
+                                  type = downloadPlotTypeJPEG(),
+                                  compression = downloadPlotTypeCompression())}
              
              )
       
@@ -785,7 +767,7 @@ shinyServer(function(input, output, session) {
                         value = newStartEnd)}
     }))
   
-  #Reset plot options
+  #Reset plot options - 2.Plot Settings
   observeEvent(input$resetInput,({
     updateSliderInput(session,"FilterMinPlog", value=0)
     updateSliderInput(session,"FilterMinLD", value=0.2)
@@ -806,10 +788,25 @@ shinyServer(function(input, output, session) {
                                RegionHits()[1:min(5,length(RegionHits()))])
     
     updateCheckboxGroupInput(session,"ShowHideTracks",
-                             selected=c("Manhattan","Recombination")
-    )
-    })) #END observeEvent resetInput
+                             selected=c("Manhattan","Recombination"))
+    })
+    ) #END observeEvent resetInput
   
+  #reset plot output file settings - 3.Final Plot
+  observeEvent(input$resetDownloadPlotSettings |
+                 input$downloadPlotAdvancedSettings,({
+    updateSelectInput(session, "downloadPlotType", selected = "jpeg")
+    updateNumericInput(session,"downloadPlotWidth", value = 1000)
+    updateNumericInput(session,"downloadPlotHeight", value = 1200)
+    updateSliderInput(session,"downloadPlotPointSize", value = 12)
+    updateSelectInput(session,"downloadPlotPaper", selected = "special")
+    updateSliderInput(session,"downloadPlotRes", value = 100)
+    updateSliderInput(session, "downloadPlotQuality", value = 100)
+    updateSelectInput(session, "downloadPlotTypeJPEG", selected = "cairo")
+    updateSelectInput(session, "downloadPlotTypeCompression", selected = "lzw")
+    }) 
+    ) #END observeEvent resetDownloadPlotSettings
+
   #If manhattan track is not selected then Recomb and LDSmooth track unticked.
   observeEvent(input$ShowHideTracks,({
     selectedTracks <- input$ShowHideTracks
