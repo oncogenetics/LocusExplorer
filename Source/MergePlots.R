@@ -23,6 +23,9 @@ trackString <-
       sep=","),
     ", title = input$downloadPlotTitle)",
     
+    # change Y axis text to defualt font
+    "+ theme(axis.text.y = element_text(family=''))",
+    
     # Clear theme
     ifelse(input$PlotTheme == "2",
            "+ theme(panel.border = element_rect(fill = NA, color = 'grey80'))",

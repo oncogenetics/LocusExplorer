@@ -198,3 +198,17 @@ FFieldPtRep <- function (coords, rep.fact = 20, rep.dist.lmt = 10, attr.fact = 0
   }
   return(coords)
 }
+
+
+# Shade tint HEX input ----------------------------------------------------
+udf_shadeTintColor <- function(color, change = 25) {  
+  # Example: shadeColor("#5CFF5C", 25)
+  # positive shade
+  # negative tints
+  RGB <- col2rgb(color)
+  RGB <- RGB - RGB/100*change
+  RGB <- ifelse(RGB < 0, 0, RGB)
+  RGB <- ifelse(RGB > 255, 255, RGB)
+  
+  return(rgb(RGB[1],RGB[2],RGB[3],maxColorValue = 255))
+}
