@@ -10,6 +10,9 @@ LocusExplorer v0.4
 </a>
 </p>
 
+Server version of LocusExplorer is scheduled for 10/11/2015.
+http://oncogenetics.icr.ac.uk/LocusExplorer
+
 ### Disclaimer
 LocusExplorer should be used for illustrative purposes only. Any results provided by LocusExplorer should be used with caution. 
 
@@ -51,12 +54,16 @@ LocusExplorer runs through a web browser and uses an intuitive interface that do
 Open RStudio (start a new R session) copy the following code into the console and hit Return:
 ```R
 library(shiny)  
-runGitHub("LocusExplorer", "oncogenetics")
+runGitHub("LocusExplorer", "oncogenetics", launch.browser = TRUE)
 ```
 
 #### 2. Using *Download as Zip* (Recommended)
-Click on *Download as ZIP* button, this will download the repisotory locally as a zip file *LocusExplorer-master.zip*. Unzip the folder. Open *ui.R* file in RStudio (start a new R session) and click on *Run App* button at top right corner.
+Click on *Download as ZIP* button, this will download the repisotory locally as a zip file *LocusExplorer-master.zip*. Unzip the folder. Open *ui.R* file in RStudio (start a new R session) and click on *Run App* (Please ensure **Run External** option is selected for full functionality) button at top right corner, or run below code.
 
+```R
+library(shiny)  
+runApp(launch.browser = TRUE)
+```
 
 ### Cite LocusExplorer
 [LocusExplorer: a user-friendly tool for integrated visualisation of genetic association data and biological annotations](url to add) Tokhir Dadaev<sup>1</sup>, Daniel A Leongamornlert<sup>1</sup>, Edward J Saunders<sup>1</sup>, Rosalind Eeles<sup>1,2</sup> , Zsofia Kote-Jarai<sup>1</sup>   
