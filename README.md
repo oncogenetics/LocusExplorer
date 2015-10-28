@@ -4,14 +4,17 @@ LocusExplorer v0.4
 ## An interactive graphical illustration of genetic associations and their biological context.
 
 
+### News  
+- 28/10/2015 - Server version of LocusExplorer is scheduled for 10/11/2015.
+http://oncogenetics.icr.ac.uk/LocusExplorer
+
+
 <p>
 <a href="https://raw.githubusercontent.com/oncogenetics/LocusExplorer/master/www/Figure1.jpeg">
 <img src="www/Figure1.jpeg" height="840px" width="700px">
 </a>
 </p>
 
-Server version of LocusExplorer is scheduled for 10/11/2015.
-http://oncogenetics.icr.ac.uk/LocusExplorer
 
 ### Disclaimer
 LocusExplorer should be used for illustrative purposes only. Any results provided by LocusExplorer should be used with caution. 

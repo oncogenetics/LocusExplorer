@@ -46,8 +46,8 @@ shinyUI(
   navbarPage(
     # Application title
     id = "navBarPageID",
-    title = "Locus Explorer v0.4",
-    windowTitle = "Locus Explorer",
+    title = "LocusExplorer v0.4",
+    windowTitle = "LocusExplorer",
     fluid = FALSE,
     position = "fixed-top",
     inverse = TRUE,
