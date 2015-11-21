@@ -78,8 +78,8 @@ Tokhir Dadaev<sup>1</sup>, Daniel A Leongamornlert<sup>1</sup>, Edward J Saunder
 Bioinformatics first published online November 20, 2015 doi:10.1093/bioinformatics/btv690
 
 #### Abstract
-**Summary:** In this article we present LocusExplorer, a data visualisation and exploration tool for genetic association data. LocusExplorer is written in R using the Shiny library, providing access to powerful R-based functions through a simple user interface. LocusExplorer allows users to simultaneously display genetic, statistical and biological data in a single image and allows dynamic zooming and customisation of the plot features. Publication quality plots may be downloaded in a variety of file formats.   
-**Availability and implementation:** LocusExplorer is open source and runs through R and a web browser. It is available at https://github.com/oncogenetics/LocusExplorer, where user guides and example data are also provided.
+**Summary:** In this article we present LocusExplorer, a data visualisation and exploration tool for genetic association data. LocusExplorer is written in R using the Shiny library, providing access to powerful R-based functions through a simple user interface. LocusExplorer allows users to simultaneously display genetic, statistical and biological data for humans in a single image and allows dynamic zooming and customisation of the plot features. Publication quality plots may then be produced in a variety of file formats.  
+**Availability and implementation:** LocusExplorer is open source and runs through R and a web browser. It is available at www.oncogenetics.icr.ac.uk/LocusExplorer/ or can be installed locally and the source code accessed from https://github.com/oncogenetics/LocusExplorer.
 
 ### Publications: LocusExplorer plots
 * [Multiple novel prostate cancer susceptibility signals identified by fine-mapping of known risk loci among Europeans.](http://www.ncbi.nlm.nih.gov/pubmed/26025378) Al Olama AA *et al.*   
