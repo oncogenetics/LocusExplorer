@@ -69,12 +69,12 @@ runApp(launch.browser = TRUE)
 ```
 
 ### Cite LocusExplorer
-[Bioinformatics first published online November 20, 2015 doi:10.1093/bioinformatics/btv690] (http://bioinformatics.oxfordjournals.org/content/early/2015/11/19/bioinformatics.btv690.abstract)
-
-[LocusExplorer: a user-friendly tool for integrated visualisation of genetic association data and biological annotations](url to add) Tokhir Dadaev<sup>1</sup>, Daniel A Leongamornlert<sup>1</sup>, Edward J Saunders<sup>1</sup>, Rosalind Eeles<sup>1,2</sup> , Zsofia Kote-Jarai<sup>1</sup>   
+**[LocusExplorer: a user-friendly tool for integrated visualisation of genetic association data and biological annotations]**(url to http://bioinformatics.oxfordjournals.org/content/early/2015/11/19/bioinformatics.btv690.abstract) Tokhir Dadaev<sup>1</sup>, Daniel A Leongamornlert<sup>1</sup>, Edward J Saunders<sup>1</sup>, Rosalind Eeles<sup>1,2</sup> , Zsofia Kote-Jarai<sup>1</sup>   
 
 <sup>1</sup>Department of Genetics and Epidemiology, The Institute of Cancer Research, London, UK   
 <sup>2</sup>Royal Marsden NHS Foundation Trust, London, UK
+
+Bioinformatics first published online November 20, 2015 doi:10.1093/bioinformatics/btv690
 
 #### Abstract
 **Summary:** In this article we present LocusExplorer, a data visualisation and exploration tool for genetic association data. LocusExplorer is written in R using the Shiny library, providing access to powerful R-based functions through a simple user interface. LocusExplorer allows users to simultaneously display genetic, statistical and biological data in a single image and allows dynamic zooming and customisation of the plot features. Publication quality plots may be downloaded in a variety of file formats.   
