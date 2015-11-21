@@ -69,7 +69,7 @@ runApp(launch.browser = TRUE)
 ```
 
 ### Cite LocusExplorer
-**[LocusExplorer: a user-friendly tool for integrated visualisation of genetic association data and biological annotations]** (url to http://bioinformatics.oxfordjournals.org/content/early/2015/11/19/bioinformatics.btv690.abstract) Tokhir Dadaev<sup>1</sup>, Daniel A Leongamornlert<sup>1</sup>, Edward J Saunders<sup>1</sup>, Rosalind Eeles<sup>1,2</sup> , Zsofia Kote-Jarai<sup>1</sup>   
+[LocusExplorer: a user-friendly tool for integrated visualisation of genetic association data and biological annotations] (url to http://bioinformatics.oxfordjournals.org/content/early/2015/11/19/bioinformatics.btv690.abstract) Tokhir Dadaev<sup>1</sup>, Daniel A Leongamornlert<sup>1</sup>, Edward J Saunders<sup>1</sup>, Rosalind Eeles<sup>1,2</sup> , Zsofia Kote-Jarai<sup>1</sup>   
 
 <sup>1</sup>Department of Genetics and Epidemiology, The Institute of Cancer Research, London, UK   
 <sup>2</sup>Royal Marsden NHS Foundation Trust, London, UK
