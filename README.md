@@ -4,11 +4,6 @@ LocusExplorer v0.4
 ## An interactive graphical illustration of genetic associations and their biological context.
 
 
-### News  
-- 28/10/2015 - Server version of LocusExplorer is scheduled for 10/11/2015.
-http://oncogenetics.icr.ac.uk/LocusExplorer
-
-
 <p>
 <a href="https://raw.githubusercontent.com/oncogenetics/LocusExplorer/master/www/Figure1.jpeg">
 <img src="www/Figure1.jpeg" height="840px" width="700px">
@@ -69,8 +64,9 @@ runApp(launch.browser = TRUE)
 ```
 
 ### Cite LocusExplorer
-[**LocusExplorer: a user-friendly tool for integrated visualisation of genetic association data and biological annotations**] (http://bioinformatics.oxfordjournals.org/content/early/2015/11/19/bioinformatics.btv690.abstract)    
+**<a href="http://bioinformatics.oxfordjournals.org/content/early/2015/11/19/bioinformatics.btv690.abstract" target="_blank">LocusExplorer: a user-friendly tool for integrated visualisation of genetic association data and biological annotations</a>**   
 Tokhir Dadaev<sup>1</sup>, Daniel A Leongamornlert<sup>1</sup>, Edward J Saunders<sup>1</sup>, Rosalind Eeles<sup>1,2</sup> , Zsofia Kote-Jarai<sup>1</sup>   
+
 
 <sup>1</sup>Department of Genetics and Epidemiology, The Institute of Cancer Research, London, UK   
 <sup>2</sup>Royal Marsden NHS Foundation Trust, London, UK
@@ -82,8 +78,9 @@ Bioinformatics first published online November 20, 2015 doi:10.1093/bioinformati
 **Availability and implementation:** LocusExplorer is open source and runs through R and a web browser. It is available at www.oncogenetics.icr.ac.uk/LocusExplorer/ or can be installed locally and the source code accessed from https://github.com/oncogenetics/LocusExplorer.
 
 ### Publications: LocusExplorer plots
-* [Multiple novel prostate cancer susceptibility signals identified by fine-mapping of known risk loci among Europeans.](http://www.ncbi.nlm.nih.gov/pubmed/26025378) Al Olama AA *et al.*   
-    + [Figure 1](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4572072/figure/DDV203F1/)
+
+* <a href="http://www.ncbi.nlm.nih.gov/pubmed/26025378" target="_blank">Multiple novel prostate cancer susceptibility signals identified by fine-mapping of known risk loci among Europeans.</a> Al Olama AA *et al.*   
+    + <a href="http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4572072/figure/DDV203F1/" target="_blank">Figure 1</a>
 
 ### Frequently asked questions  
 See [FAQ](https://github.com/oncogenetics/LocusExplorer/blob/master/Markdown/FAQ.md).

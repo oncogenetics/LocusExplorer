@@ -367,9 +367,9 @@ shinyUI(
                tabPanel("Publication",
                         h4("Publication"),
                         hr(),
-                        h4("Submitted to Oxford University Press: Bioinformatics"),
-                        h4("Status: Accepted with minor revisions"),
-                        img(src="BioinformaticsPaper.PNG")),
+                        #PDF
+                        img(src="BioinformaticsPaper_p1.PNG"),
+                        img(src="BioinformaticsPaper_p2.PNG")),
                tabPanel("Input File Format",
                         h4("Input File Format"),
                         hr(),
