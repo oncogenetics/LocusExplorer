@@ -3,7 +3,7 @@
 
 # General options for all plots -------------------------------------------
 # ggplot() + udf_theme()
-udf_theme <- function(){
+theme_LE <- function(){
     theme(legend.position="none",
           panel.background = element_rect(fill="white"),
           panel.grid.minor=element_blank(),
@@ -19,16 +19,9 @@ udf_theme <- function(){
     )
 }
 
-# Padding function, used to add custom labels for Yaxis, to have them aligned.
-udf_pad <- function(labels){
-  require(stringr)
-  return(str_pad(labels,15,"left",pad = " "))
-}
-
-
 # GeneSymbol --------------------------------------------------------------
 # https://github.com/oncogenetics/R_UDF/blob/master/GeneSymbol.R
-udf_GeneSymbol <- function(chrom=NA,chromStart=NA,chromEnd=NA){
+geneSymbol <- function(chrom = NA, chromStart = NA, chromEnd = NA){
   require(dplyr)
   require(ggplot2)
   require(ggbio)
@@ -133,72 +126,6 @@ udf_GeneSymbol <- function(chrom=NA,chromStart=NA,chromEnd=NA){
 }
 
 
-# SNP label reposition ----------------------------------------------------
-# Adapted form FField package by Grigori Kapoustin
-# https://cran.r-project.org/web/packages/FField/
-FFieldPtRep <- function (coords, rep.fact = 20, rep.dist.lmt = 10, attr.fact = 0.2, 
-                         adj.max = 0.1, adj.lmt = 0.5, iter.max = 10000) 
-{
-  if (length(dim(coords)) != 2) {
-    stop("FFieldPtRep: dim(coords) must be 2\n")
-  }
-  if (ncol(coords) < 2) {
-    stop("FFieldPtRep: ncol(coords) must be >= 2\n")
-  }
-  if (nrow(coords) < 2) {
-    stop("FFieldPtRep: nrow(coords) must be >= 2\n")
-  }
-  coords <- as.data.frame(coords)
-  colnames(coords)[(1:2)] <- c("x", "y")
-  coords.orig <- coords
-  FVCalc <- function(vects.x, vects.y, f.fact, f.type = "invsq") {
-    d.sq <- (vects.x^2 + vects.y^2)
-    d <- sqrt(d.sq)
-    vects.x <- vects.x/d
-    vects.y <- vects.y/d
-    if (f.type == "invsq") {
-      d.sq[d >= rep.dist.lmt] <- Inf
-      vect.f.x <- vects.x/d.sq * f.fact
-      vect.f.y <- vects.y/d.sq * f.fact
-    }
-    else if (f.type == "lin") {
-      vect.f.x <- vects.x * d * f.fact
-      vect.f.y <- vects.y * d * f.fact
-    }
-    else {
-      stop("FFieldPtRep: Unexpected f.type\n")
-    }
-    vect.f.x[is.na(vect.f.x)] <- 0
-    vect.f.y[is.na(vect.f.y)] <- 0
-    f.vect <- cbind(colSums(vect.f.x), colSums(vect.f.y))
-    return(f.vect)
-  }
-  iter <- 0
-  repeat {
-    vects.x <- apply(coords, 1, function(c) (c[1] - coords$x))
-    vects.y <- apply(coords, 1, function(c) (c[2] - coords$y))
-    f.rep.v <- FVCalc(vects.x = vects.x, vects.y = vects.y, 
-                      f.fact = rep.fact, f.type = "invsq")
-    vects.orig <- coords.orig - coords
-    f.attr.v <- FVCalc(vects.x = t(as.matrix(vects.orig$x)), 
-                       vects.y = t(as.matrix(vects.orig$y)), f.fact = attr.fact, 
-                       f.type = "lin")
-    f.v <- f.rep.v + f.attr.v
-    if (all(abs(f.v) <= adj.lmt)) {
-      (break)()
-    }
-    mv.vect <- apply(f.v, c(1, 2), function(x) sign(x) * 
-                       min(abs(x), adj.max))
-    coords <- coords + mv.vect
-    if ((iter <- iter + 1) > iter.max) {
-      warning("FFieldPtRep: Maximum iterations exceeded ", 
-              "without convergence.\n")
-      (break)()
-    }
-  }
-  return(coords)
-}
-
 
 # Shade tint HEX input ----------------------------------------------------
 udf_shadeTintColor <- function(color, change = 25) {  
@@ -212,3 +139,236 @@ udf_shadeTintColor <- function(color, change = 25) {
   
   return(rgb(RGB[1],RGB[2],RGB[3],maxColorValue = 255))
 }
+
+
+
+  
+
+
+# !!! NOT IN USE !!! ------------------------------------------------------
+# SNP label reposition ----------------------------------------------------
+# Adapted form FField package by Grigori Kapoustin
+# https://cran.r-project.org/web/packages/FField/
+# FFieldPtRep <- function (coords, rep.fact = 20, rep.dist.lmt = 10, attr.fact = 0.2, 
+#                          adj.max = 0.1, adj.lmt = 0.5, iter.max = 10000) 
+# {
+#   if (length(dim(coords)) != 2) {
+#     stop("FFieldPtRep: dim(coords) must be 2\n")
+#   }
+#   if (ncol(coords) < 2) {
+#     stop("FFieldPtRep: ncol(coords) must be >= 2\n")
+#   }
+#   if (nrow(coords) < 2) {
+#     stop("FFieldPtRep: nrow(coords) must be >= 2\n")
+#   }
+#   coords <- as.data.frame(coords)
+#   colnames(coords)[(1:2)] <- c("x", "y")
+#   coords.orig <- coords
+#   FVCalc <- function(vects.x, vects.y, f.fact, f.type = "invsq") {
+#     d.sq <- (vects.x^2 + vects.y^2)
+#     d <- sqrt(d.sq)
+#     vects.x <- vects.x/d
+#     vects.y <- vects.y/d
+#     if (f.type == "invsq") {
+#       d.sq[d >= rep.dist.lmt] <- Inf
+#       vect.f.x <- vects.x/d.sq * f.fact
+#       vect.f.y <- vects.y/d.sq * f.fact
+#     }
+#     else if (f.type == "lin") {
+#       vect.f.x <- vects.x * d * f.fact
+#       vect.f.y <- vects.y * d * f.fact
+#     }
+#     else {
+#       stop("FFieldPtRep: Unexpected f.type\n")
+#     }
+#     vect.f.x[is.na(vect.f.x)] <- 0
+#     vect.f.y[is.na(vect.f.y)] <- 0
+#     f.vect <- cbind(colSums(vect.f.x), colSums(vect.f.y))
+#     return(f.vect)
+#   }
+#   iter <- 0
+#   repeat {
+#     vects.x <- apply(coords, 1, function(c) (c[1] - coords$x))
+#     vects.y <- apply(coords, 1, function(c) (c[2] - coords$y))
+#     f.rep.v <- FVCalc(vects.x = vects.x, vects.y = vects.y, 
+#                       f.fact = rep.fact, f.type = "invsq")
+#     vects.orig <- coords.orig - coords
+#     f.attr.v <- FVCalc(vects.x = t(as.matrix(vects.orig$x)), 
+#                        vects.y = t(as.matrix(vects.orig$y)), f.fact = attr.fact, 
+#                        f.type = "lin")
+#     f.v <- f.rep.v + f.attr.v
+#     if (all(abs(f.v) <= adj.lmt)) {
+#       (break)()
+#     }
+#     mv.vect <- apply(f.v, c(1, 2), function(x) sign(x) * 
+#                        min(abs(x), adj.max))
+#     coords <- coords + mv.vect
+#     if ((iter <- iter + 1) > iter.max) {
+#       warning("FFieldPtRep: Maximum iterations exceeded ", 
+#               "without convergence.\n")
+#       (break)()
+#     }
+#   }
+#   return(coords)
+# }
+
+
+
+# # Data for forceNetwork() -------------------------------------------------
+# #Hits[method] + LD plots
+# udf_NodesAndLinks <- function(method = NA){
+#   
+#   #method <- "Stepwise Forward"
+#   # datLD <- fread("Data/ProstateData/OncoArray/LE/chr17_35547276_36603565_LD.txt",
+#   #                header=TRUE, data.table=FALSE)
+#   # 
+#   # methodStats <- fread("Data/ProstateData/OncoArray/LE/chr17_35547276_36603565_stats.txt",
+#   #                      header=TRUE, data.table=FALSE) %>% 
+#   #   filter(Method == method)
+#   
+#   datLD <- datLD()
+#   
+#   methodStats <- datHitSNPStats() %>% 
+#     filter(Method == method)
+#   
+#   
+#   methodHits <- methodStats$SNP
+#   
+#   #make all combos for hits, in case there is no LD, then we set it to 0
+#   # so they show up on graph plot even if they are not connected to anything.
+#   methodHitsCombn <-
+#     as.data.frame(t(combn(methodHits,2)))
+#   colnames(methodHitsCombn) <- c("SNP_A","SNP_B")
+#   methodHitsCombn$SNP_A <- as.character(methodHitsCombn$SNP_A)
+#   methodHitsCombn$SNP_B <- as.character(methodHitsCombn$SNP_B)
+#   
+#   datGraph <- merge(
+#     datLD[,c("SNP_A","SNP_B","R2")] %>% 
+#       filter(SNP_A!=SNP_B & 
+#                R2 >=  input$FilterMinLD &
+#                (SNP_A %in% methodHits |
+#                   SNP_B %in% methodHits)) %>% 
+#       group_by(SNP_A) %>% 
+#       filter(n()>1),
+#     methodHitsCombn, 
+#     all=TRUE)
+#   #set missing R2 to zero - 0
+#   datGraph$R2 <- ifelse(is.na(datGraph$R2),0,datGraph$R2)
+#   
+#   #prepare graph plot data
+#   # Nodes and Links
+#   MisNodes <- data.table(name=unique(c(methodHits,
+#                                        datGraph$SNP_A,datGraph$SNP_B)),
+#                          #id must be zero based
+#                          id=0:(length(unique(c(methodHits,
+#                                                datGraph$SNP_A,datGraph$SNP_B)))-1))
+#   MisLinks <- merge(datGraph,MisNodes,by.x="SNP_A",by.y="name",all.x=TRUE)
+#   MisLinks <- merge(MisLinks,MisNodes,by.x="SNP_B",by.y="name",all.x=TRUE)
+#   MisLinks <- MisLinks %>% 
+#     transmute(source=ifelse(id.x<=id.y,id.x,id.y),
+#               target=ifelse(id.y>id.x,id.y,id.x),
+#               value=R2) %>% unique
+#   #group nodes
+#   MisNodes <- MisNodes %>% 
+#     mutate(group=ifelse(name %in% methodHits,"Hits","Other")) 
+#   
+#   #get Pvalues, use to set the size of nodes
+#   MisNodes <- merge(MisNodes,
+#                     methodStats[,c("SNP","Stats")],
+#                     by.x="name",by.y="SNP",all.x=TRUE) %>% unique
+#   MisNodes$size <- abs(ifelse(is.na(MisNodes$Stats),1,
+#                           round(log10(abs(MisNodes$Stats))))
+#                        ) + 5
+#   MisNodes$size <- ifelse(MisNodes$size > 30, 30, MisNodes$size)
+#   MisNodes <- MisNodes %>% arrange(id)
+#   
+#   #return list
+#   return(list(MisNodes=MisNodes,
+#               MisLinks=MisLinks))
+#   
+# }
+
+
+
+# # Data for arcplot() -------------------------------------------------
+# #Hits[method] + LD plots
+# udf_arcPlotData <- function(method=NA){
+#   #testing
+#   #method <- "Stepwise Forward"
+#   # datLD <- fread("Data/ProstateData/OncoArray/LE/chr17_35547276_36603565_LD.txt",
+#   #                header=TRUE, data.table=FALSE)
+#   # datHitSNPStats <- fread("Data/ProstateData/OncoArray/LE/chr17_35547276_36603565_stats.txt",
+#   #                         header=TRUE, data.table=FALSE) 
+#   # RegionChrN <- 17
+#   
+#   
+#   #input data
+#   datLD <- datLD()
+#   datHitSNPStats <- datHitSNPStats() 
+#   RegionChrN <- RegionChrN()
+#   
+#   hits <- unique(datHitSNPStats$SNP)
+#   methodHits <- datHitSNPStats %>% filter(Method %in% method) %>% .$SNP
+#   
+#   # Data 
+#   datArc <- datLD %>% 
+#     filter(
+#       SNP_A == SNP_B | (
+#         SNP_B %in% hits &
+#           R2 >= input$FilterMinLD
+#       )) 
+#   #if hits are not in LD file then add
+#   datMissingHits <-
+#     datHitSNPStats %>% 
+#     transmute(CHR_A=RegionChrN,
+#               BP_A=BP,
+#               SNP_A=SNP,
+#               CHR_B=RegionChrN,
+#               BP_B=BP,
+#               SNP_B=SNP,
+#               R2=1)
+#   datArc <- rbind(datArc,datMissingHits) %>% 
+#     unique %>% 
+#     arrange(BP_B,BP_A)
+#   #keep R2 for methodhits only, the rest 0
+#   datArc$R2 <- ifelse(datArc$SNP_B %in% methodHits,datArc$R2,0)
+#   
+#   #Data for arcplot
+#   # edgelist
+#   lab <- cbind(datArc$SNP_A,datArc$SNP_B)
+#   # make graph from edgelist
+#   glab <- graph.edgelist(lab, directed = F)
+#   
+#   E(glab)$weight <- datArc$R2
+#   
+#   #reorder based on BP - position of SNPs
+#   myV <- data.frame(SNP=as.character(names(V(glab))),
+#                     stringsAsFactors = FALSE)
+#   myV$rn <- 1:nrow(myV)
+#   
+#   orderV <- left_join(myV,
+#                       datHitSNPStats[,c("SNP","BP")],by="SNP") %>%
+#     unique %>% arrange(BP) %>% 
+#     mutate(orderV=row_number()) %>% 
+#     arrange(rn) %>% .$orderV
+#   
+#   # get clusters and rename to hits and other SNPs
+#   gclus <- clusters(glab)
+#   gclus$membership <- 
+#     ifelse(names(gclus$membership) %in% methodHits,1,2)
+#   # colour clusters
+#   cols <- c("green","grey50")[gclus$membership]
+#   
+#   return(list(lab=lab,
+#               glab=glab,
+#               cols=cols,
+#               orderV=orderV))
+#   }
+
+
+
+# Padding function, used to add custom labels for Yaxis, to have them aligned.
+# udf_pad <- function(labels){
+#   require(stringr)
+#   return(str_pad(labels,18,"left",pad = " "))
+# }

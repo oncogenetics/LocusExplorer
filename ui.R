@@ -1,52 +1,16 @@
 # Author: Tokhir Dadaev
 # License: MIT + file LICENSE.txt
 
-
 # About -------------------------------------------------------------------
 # User interface file for shiny
 
-# Workspace ---------------------------------------------------------------
-#CRAN
-# install.packages(c("shiny", "shinyjs", "data.table", "dplyr", "tidyr", 
-#                    "ggplot2", "knitr", "markdown", "stringr","DT","seqminer",
-#                    "lattice","cluster"))
-library(shiny)
-library(shinyjs)
-library(data.table)
-library(dplyr)
-library(tidyr)
-library(ggplot2)
-library(knitr)
-library(markdown)
-library(stringr)
-library(DT)
-library(seqminer)
-library(lattice) #ggbio
-library(cluster)
-
-#Bioconductor
-# source("http://bioconductor.org/biocLite.R")
-# biocLite("BiocInstaller")
-# biocLite(c("ggbio","GenomicRanges","TxDb.Hsapiens.UCSC.hg19.knownGene",
-#            "org.Hs.eg.db","rtracklayer"))
-library(ggbio)
-library(GenomicRanges)
-library(TxDb.Hsapiens.UCSC.hg19.knownGene)
-library(org.Hs.eg.db) # gene symobols
-library(rtracklayer) # bigwig
-
-#Map fonts to Windows
-if(Sys.info()['sysname'] == "Windows") {
-  windowsFonts(Courier=windowsFont("TT Courier New"))
-  setInternet2(TRUE)
-}
 
 # Define UI ---------------------------------------------------------------
 shinyUI(
   navbarPage(
     # Application title
     id = "navBarPageID",
-    title = "LocusExplorer v0.4",
+    title = "LocusExplorer v0.7",
     windowTitle = "LocusExplorer",
     fluid = FALSE,
     position = "fixed-top",
@@ -59,25 +23,32 @@ shinyUI(
         tags$style(type="text/css", "body {padding-top: 70px;}"),
         
         #hide red error messages
-        tags$style(type="text/css",
-                   ".shiny-output-error { visibility: hidden; }",
-                   ".shiny-output-error:before { visibility: hidden; }"),
-        
-        
+        # tags$style(type="text/css",
+        #            ".shiny-output-error { visibility: hidden; }",
+        #            ".shiny-output-error:before { visibility: hidden; }"),
         
         #Choose data type
-        radioButtons("dataType", h4("Input Data:"),
-                     c("Prostate"="Prostate",
-                       "Custom"="Custom",
-                       "Example"="Example"),
-                     selected = "Example"),
-        conditionalPanel("input.dataType == 'Prostate'",
-                         #Select CHR, 1:23 excluding chromosomes with no hit regions.
-                         selectInput("Chr",label=h5("Chr"),
-                                     choices=paste0("chr",c(1:14,16:22,"X")),
-                                     selected="chr17"),
-                         uiOutput("RegionID")
-        ),#conditionalPanel - prostate
+        radioButtons("dataType", h4("Input data:"),
+                     c("Prostate iCOGS" = "iCOGS",
+                       "Prostate OncoArrayFineMapping" = "OncoArrayFineMapping",
+                       "Prostate OncoArrayMeta" = "OncoArrayMeta",
+                       "Custom" = "Custom",
+                       "Example" = "Example"
+                       ),
+                     selected = "OncoArrayFineMapping"),
+        conditionalPanel("input.dataType == 'iCOGS' ||
+                         input.dataType == 'OncoArrayFineMapping' ||
+                         input.dataType == 'OncoArrayMeta'",
+                         uiOutput("Chr"),
+                         uiOutput("RegionID"),
+                         selectInput("Flank", label = h5("Region Flank"), 
+                                     choices = list( "0 kb" = 1,
+                                                     "10 kb" = 10000,
+                                                     "50 kb" = 50000,
+                                                     "100 kb" = 100000,
+                                                     "200 kb" = 200000), 
+                                     selected = 10000)
+                         ),#conditionalPanel - prostate
         
         conditionalPanel("input.dataType == 'Custom'",
                          fileInput("FileStats", "Association File (required)"),
@@ -96,10 +67,12 @@ shinyUI(
           tabPanel("Summary",
                    h4("Summary"),
                    hr(),
-                   #if Prostate data is selected then link to Ali finemapping paper
-                   conditionalPanel("input.dataType == 'Prostate'",
-                                    hr(),
-                                    includeMarkdown("Data/ProstateData/README.md"),
+                   # if Prostate data is selected then link to relevant paper
+                   # Abstract pudmedID
+                   conditionalPanel("input.dataType == 'iCOGS' ||
+                                     input.dataType == 'OncoArray' ||
+                                     input.dataType == 'OncoArrayMeta'",
+                                    uiOutput("refProstatePaper"),
                                     hr()
                    ),
                    helpText("UCSC link to selected region:"),
@@ -111,7 +84,11 @@ shinyUI(
           tabPanel("Association",
                    h4("Association"),
                    hr(),
-                   dataTableOutput("SummaryStats")),
+                   dataTableOutput("SummaryStats"),
+                   h4("Hit stats"),
+                   hr(),
+                   dataTableOutput("SummaryHitSNPStats")
+                   ),
           tabPanel("LD",
                    h4("Linkage Disequilibrium"),
                    hr(),
@@ -122,7 +99,11 @@ shinyUI(
                    includeMarkdown("Markdown/bedGraphFileFormat.md"),
                    hr(),
                    helpText("bedGraph input data summary"),
-                   dataTableOutput("SummaryBedGraph")),
+                   dataTableOutput("SummaryBedGraph"),
+                   hr(),
+                   helpText("TCGA eQTL"),
+                   dataTableOutput("SummaryROIdatAnnotEQTL")
+                   ),
           tabPanel("ENCODE",
                    h4("ENCODE"),
                    hr(),
@@ -132,9 +113,13 @@ shinyUI(
                    hr(),
                    includeMarkdown("Data/wgEncodeRegDnaseClustered/README.md"),
                    dataTableOutput("SummarywgEncodeRegDnaseClustered"),
+                   # hr(),
+                   # includeMarkdown("Data/ProstateLNCAP/README.md"),
+                   # dataTableOutput("SummaryLNCAP")
                    hr(),
-                   includeMarkdown("Data/ProstateLNCAP/README.md"),
-                   dataTableOutput("SummaryLNCAP")
+                   includeMarkdown("Data/Annotation/README.md"),
+                   dataTableOutput("SummaryAnnotSmooth")
+                   
           ),
           tabPanel("Input File Format",
                    h4("Input File Format"),
@@ -148,86 +133,197 @@ shinyUI(
              sidebarPanel(
                h4("SNP Filters:"),
                h6("Use sliders to set required threshold for P-value and LD. Filtered SNPs will not be plotted."),
-               sliderInput("FilterMinPlog",h5("-Log10(PValue)"),
-                           min = 0, max = 5, value = 0, step = 0.5),
-               sliderInput("FilterMinLD", h5("LD"),
-                           min = 0, max = 0.9, value = 0.2, step = 0.05),
-               #Add suggestiveline and genomewideline
-               numericInput("suggestiveLine",h5("Suggestive Line -Log10(Pvalue)"),
-                            value = 5, min = 0, max = 15, step = 0.1),
-               numericInput("genomewideLine",h5("Genomewide Line -Log10(Pvalue)"),
-                            value = 8, min = 0, max = 15, step = 0.1),
+               conditionalPanel("input.plotTypePanelSelected=='Manhattan'",
+                                sliderInput("FilterMinPlog",h5("-Log10(PValue)"),
+                                            min = 0, max = 5, value = 0.5, step = 0.5),
+                                sliderInput("FilterMinLD", h5("LD"),
+                                            min = 0, max = 0.9, value = 0, step = 0.05)
+                                ),
                
-               #if SNP labels are overlapping then adjust using repulsion force.
-               checkboxInput("adjustLabels","Adjust SNP Lables",TRUE),
-               conditionalPanel("input.adjustLabels",
-                                sliderInput("repFact",
-                                            h5("Repulsion force factor"),
-                                            min = 0, max = 50, 
-                                            value = 20, step = 0.5)),
+               conditionalPanel("input.plotTypePanelSelected=='Annotation'",
+                                selectInput("FilterMinBVS_BF", h5("BVS Bayes Factor:"), 
+                                            choices = c(3,5,10,100,1000,10000,30000,50000,100000))
+                                ),
                
-               h4("Zoom region:"),
-               h6("Use sliders to zoom in to required region, or enter region as text, e.g.: chr1:36020000-36140000"),
-               uiOutput("BPrange"),
-               #Zoom using text: chr1:36020000-36140000
-               textInput("RegionZoom", label = h5("Region zoom"),
-                         value = "chr:start-end"),
-               selectInput("Flank", label = h5("Region Flank"), 
-                           choices = list( "0 kb"=1,
-                                           "10 kb"=10000,
-                                           "50 kb"=50000,
-                                           "100 kb"=100000,
-                                           "200 kb"=200000), 
-                           selected = 1),
-               hr(),
-               uiOutput("HitSNPs"),
-               h6("Maximum of 5 hit SNPs can be plotted."),
-               hr(),
-               checkboxGroupInput("ShowHideTracks", h4("Tracks:"),
-                                  c("Chromosome"="Chromosome",
-                                    "Manhattan"="Manhattan",
-                                    "Manhattan: Recombination"="Recombination",
-                                    "Manhattan: LDSmooth"="LDSmooth",
-                                    "SNPType"="SNPType",
-                                    "Custom LD"="LD",
-                                    "Custom BedGraph"="BedGraph",
-                                    "wgEncodeBroadHistone"="wgEncodeBroadHistone",
-                                    "wgEncodeRegDnaseClustered"="wgEncodeRegDnaseClustered",
-                                    "LNCaP Prostate"="LNCAP",
-                                    "Gene"="Gene"),
-                                  selected=c("Manhattan","Recombination")
-               ),
+               conditionalPanel("input.plotTypePanelSelected=='Network'",
+                                checkboxGroupInput("haploreg", h5("Haploreg annotation"),
+                                             choices = list("SiPhy_cons",
+                                                            "EnhancerHistoneMarks",
+                                                            "DNAse",
+                                                            "ProteinBound",
+                                                            "MotifsChanged",
+                                                            "GERP_cons",
+                                                            "eQTL",
+                                                            "Func_INT",
+                                                            "Func_NSM",
+                                                            "Func_SYN"), 
+                                             selected = "SiPhy_cons")
+                                ),
                
-               h6("Recommneded to hide tracks until final zoom region is decided."),
-               actionButton("resetInput", "Reset inputs",icon = icon("ambulance"),
-                            style = "background-color:#C9DD03"),
-               hr(),
-               actionButton("goToFinalPlot", "3.Final Plot",icon = icon("area-chart"),
-                            style = "background-color:#85E7FF")
+               
+               
+               conditionalPanel("input.plotTypePanelSelected=='Manhattan'",
+                                #Add suggestiveline and genomewideline
+                                numericInput("suggestiveLine",h5("Suggestive Line -Log10(Pvalue)"),
+                                             value = 5, min = 0, max = 15, step = 0.1),
+                                numericInput("genomewideLine",h5("Genomewide Line -Log10(Pvalue)"),
+                                             value = 8, min = 0, max = 15, step = 0.1),
+                                #if SNP labels are overlapping then adjust using repulsion force.
+                                checkboxInput("adjustLabels","Adjust SNP Lables",TRUE),
+                                conditionalPanel("input.adjustLabels",
+                                                 sliderInput("repFact",
+                                                             h5("Repulsion force factor"),
+                                                             min = 0, max = 50, 
+                                                             value = 20, step = 0.5)),
+                                
+                                h4("Zoom region:"),
+                                h6("Use sliders to zoom in to required region, or enter region as text, e.g.: chr1:36020000-36140000"),
+                                uiOutput("BPrange"),
+                                #Zoom using text: chr1:36020000-36140000
+                                textInput("RegionZoom", label = h5("Region zoom"),
+                                          value = "chr:start-end"),
+                                hr(),
+                                radioButtons("HitSNPsType", h4("Hit SNPs Type:"),
+                                                   c("JAM" = "JAM",
+                                                     "Stepwise Forward" = "StepwiseForward"),
+                                                   selected = c("StepwiseForward")
+                                                   ),
+                                hr(),
+                                uiOutput("HitSNPs"),
+                                h6("Maximum of 5 hit SNPs can be plotted."),
+                                hr(),
+                                checkboxGroupInput("ShowHideTracks", h4("Tracks:"),
+                                                   c("Chromosome"="Chromosome",
+                                                     "Manhattan"="Manhattan",
+                                                     "Manhattan: Recombination"="Recombination",
+                                                     "Manhattan: LDSmooth"="LDSmooth",
+                                                     "SNPType"="SNPType",
+                                                     "Custom LD"="LD",
+                                                     "Custom BedGraph"="BedGraph",
+                                                     "wgEncodeBroadHistone"="wgEncodeBroadHistone",
+                                                     "wgEncodeRegDnaseClustered"="wgEncodeRegDnaseClustered",
+                                                     #"LNCaP Prostate"="LNCAP",
+                                                     "Annotation"="annotSmooth",
+                                                     "Gene"="Gene"),
+                                                   selected=c("Manhattan","Recombination")
+                                                   ),
+                                
+                                h6("Recommneded to hide tracks until final zoom region is decided."),
+                                actionButton("resetInput", "Reset inputs",icon = icon("ambulance"),
+                                             style = "background-color:#C9DD03"),
+                                hr(),
+                                actionButton("goToFinalPlot", "3.Final Plot",icon = icon("area-chart"),
+                                             style = "background-color:#85E7FF"))
+               
                
              ), #sidebarPanel
+             
              mainPanel(
-               # Plot title zoomed region, link to UCSC
-               htmlOutput("plotTitle", align = "center"),
-               # Conditional plots
-               conditionalPanel("input.ShowHideTracks.indexOf('Chromosome')>-1",
-                                plotOutput("PlotChromosome",width=800,height=70)),
-               conditionalPanel("input.ShowHideTracks.indexOf('Manhattan')>-1",
-                                plotOutput("PlotManhattan",width=800,height=500)),
-               conditionalPanel("input.ShowHideTracks.indexOf('SNPType')>-1",
-                                plotOutput("PlotSNPType",width=800,height=70)),
-               conditionalPanel("input.ShowHideTracks.indexOf('LD')>-1",
-                                plotOutput("PlotSNPLD",width=800,height=110)),
-               conditionalPanel("input.ShowHideTracks.indexOf('BedGraph')>-1",
-                                plotOutput("PlotBedGraph",width=800,height=60)),
-               conditionalPanel("input.ShowHideTracks.indexOf('wgEncodeBroadHistone')>-1",
-                                plotOutput("PlotwgEncodeBroadHistone",width=800,height=90)),
-               conditionalPanel("input.ShowHideTracks.indexOf('wgEncodeRegDnaseClustered')>-1",
-                                plotOutput("PlotwgEncodeRegDnaseClustered",width=800,height=60)),
-               conditionalPanel("input.ShowHideTracks.indexOf('LNCAP')>-1",
-                                plotOutput("PlotLNCAP",width=800,height=60)),
-               conditionalPanel("input.ShowHideTracks.indexOf('Gene')>-1",
-                                plotOutput("PlotGene",width=800,height=350)) #,
+               tabsetPanel(id = "plotTypePanelSelected",
+                 # tabPanel("Network",
+                 #          #OncoArray Graph and Arc plots for SNP relationships
+                 #          conditionalPanel("input.dataType == 'OncoArray'",
+                 #                           tabsetPanel(type = c("pills"),
+                 #                                       tabPanel("Hits vs methods",
+                 #                                                forceNetworkOutput("plotGraphStats"),
+                 #                                                dataTableOutput("SummaryHaploreg")),
+                 #                                       tabPanel("Hits vs other SNPs - R2",
+                 #                                                hr(), h4("Hits from all methods"),
+                 #                                                forceNetworkOutput("plotGraphLD_All"),
+                 #                                                hr(), h4("Stepwise Forward"),
+                 #                                                forceNetworkOutput("plotGraphLD_StepwiseForward"),
+                 #                                                hr(), h4("ElasticNet"),
+                 #                                                forceNetworkOutput("plotGraphLD_ElasticNet"),
+                 #                                                hr(), h4("BVS"),
+                 #                                                forceNetworkOutput("plotGraphLD_BVS")
+                 #                                                
+                 #                                                # trying to add borders....FAIL
+                 #                                                # splitLayout ...
+                 #                                                # verticalLayout(
+                 #                                                #   style = "border: 1px solid silver;",
+                 #                                                #   cellArgs = list(style = "padding: 6px"),
+                 #                                                #   forceNetworkOutput("plotGraphLD_All"),
+                 #                                                #   forceNetworkOutput("plotGraphLD_StepwiseForward")#,
+                 #                                                #   # forceNetworkOutput("plotGraphLD_StepwiseBackward"),
+                 #                                                #   # forceNetworkOutput("plotGraphLD_ElasticNet"),
+                 #                                                #   # forceNetworkOutput("plotGraphLD_BVS")  
+                 #                                                # )
+                 #                                                ),
+                 #                                       tabPanel("Hits vs other SNPs vs Methods - R2",
+                 #                                                forceNetworkOutput("plotGraphLDStats")),
+                 #                                       tabPanel("Hit SNPs - R2",
+                 #                                                hr(), h4("All"),
+                 #                                                plotOutput("plotArcLD_All",width=800,height=400),
+                 #                                                hr(), h4("Forward"),
+                 #                                                plotOutput("plotArcLD_StepwiseForward",width=800,height=400),
+                 #                                                hr(), h4("ElasticNet"),
+                 #                                                plotOutput("plotArcLD_ElasticNet",width=800,height=400),
+                 #                                                hr(), h4("BVS"),
+                 #                                                plotOutput("plotArcLD_BVS",width=800,height=400)
+                 #                                                )
+                 #                                       ) #tabsetPanel
+                 #                           ) # conditionalPanel - input.dataType == 'OncoArray'
+                 #          ), #tabPanel - Network Plots
+                 
+                 tabPanel("Manhattan",
+                          h4("Manhattan"),
+                          hr(),
+                          # Plot title zoomed region, link to UCSC
+                          htmlOutput("plotTitle", align = "center"),
+                          # Conditional plots
+                          conditionalPanel("input.ShowHideTracks.indexOf('Chromosome')>-1",
+                                           plotOutput("PlotChromosome",width=800,height=70)),
+                          conditionalPanel("input.ShowHideTracks.indexOf('Manhattan')>-1",
+                                           plotOutput("PlotManhattan",width=800,height=500)),
+                          conditionalPanel("input.ShowHideTracks.indexOf('SNPType')>-1",
+                                           plotOutput("PlotSNPType",width=800,height=70)),
+                          conditionalPanel("input.ShowHideTracks.indexOf('LD')>-1",
+                                           plotOutput("PlotSNPLD",width=800,height=110)),
+                          conditionalPanel("input.ShowHideTracks.indexOf('BedGraph')>-1",
+                                           plotOutput("PlotBedGraph",width=800,height=200)),
+                          conditionalPanel("input.ShowHideTracks.indexOf('wgEncodeBroadHistone')>-1",
+                                           plotOutput("PlotwgEncodeBroadHistone",width=800,height=90)),
+                          conditionalPanel("input.ShowHideTracks.indexOf('wgEncodeRegDnaseClustered')>-1",
+                                           plotOutput("PlotwgEncodeRegDnaseClustered",width=800,height=60)),
+                          # conditionalPanel("input.ShowHideTracks.indexOf('LNCAP')>-1",
+                          #                  plotOutput("PlotLNCAP",width=800,height=60)),
+                          conditionalPanel("input.ShowHideTracks.indexOf('annotSmooth')>-1",
+                                           plotOutput("PlotAnnotSmooth",width=800,height=220)),
+                          conditionalPanel("input.ShowHideTracks.indexOf('Gene')>-1",
+                                           plotOutput("PlotGene",width=800,height=350))
+                          ), # tabPanel - Main Plot
+                 # tabPanel("Annotation",
+                 #          h4("Annotation"),
+                 #          hr()
+                 #          ), # tabPanel - Annotation
+                 tabPanel("Annotation", 
+                          h4("Annotation"),
+                          hr(),
+                          tabsetPanel(type = "pills",
+                                      tabPanel("Annotation 1", 
+                                               h4("Annotation 1"),
+                                               dataTableOutput("SummarydatAnnotEQTL")),
+                                      tabPanel("Annotation 2", 
+                                               h4("Sankey (Spaghetti)"),
+                                               htmlOutput("PlotSankeyAnnotation")),
+                                      tabPanel("Annotation 2 - Data", 
+                                               dataTableOutput("SummaryROIdatSankeyAnnotation"))
+                                      # tabPanel("BVS Top Models", 
+                                      #          htmlOutput("PlotSankeyBVS_TopModels")),
+                                      
+                                      ) # END tabsetPanel
+                          
+                          
+                          
+                 ) # END tabPanel("Annotation",
+                 
+                 ) # tabsetPanel
+               
+               
+               
+               
+               
+               
                
                #Legend Floating --------------------------------------------------------
                #                absolutePanel(id = "Legend", class = "panel panel-default", fixed = TRUE,
@@ -237,7 +333,7 @@ shinyUI(
                #                              helpText("Coming soon..."),
                #                              style = "opacity: 0.75")
              ) #mainPanel
-    ), #tabPanel - "Plot"
+    ), #tabPanel - "2.Plot Settings"
     # Final Plot --------------------------------------------------------------  
     tabPanel("3.Final Plot",
              sidebarPanel(

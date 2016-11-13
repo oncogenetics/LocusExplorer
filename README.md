@@ -1,5 +1,16 @@
-LocusExplorer v0.4
+LocusExplorer v0.7
 =========
+
+
+## COMING SOON...
+## ShinyApp doesn't work in dev branch
+## Please use Master branch: LocusExplorer v0.4
+https://github.com/oncogenetics/LocusExplorer
+
+
+
+
+
 
 ## An interactive graphical illustration of genetic associations and their biological context.
 
