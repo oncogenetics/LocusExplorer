@@ -17,7 +17,8 @@ library(roxygen2)
 # Step 4: Process your documentation
 library(devtools)
 library(roxygen2)
-setwd("C:/Users/tdadaev/Desktop/Work/GitHubProjects/oncofunco/")
+#setwd("C:/Users/tdadaev/Desktop/Work/GitHubProjects/oncofunco/")
+setwd("N:/Translational Cancer Genetics Team/Bioinformatics/Development/R_Packages/oncofunco")
 document()
 
 # Step 5: Install!
@@ -41,7 +42,7 @@ barplot(rep(1, 11), border = NA,
         col = oncofunco::shadeTintColour(col = "orange",
                                          change = seq(0, 100, 10)))
 
-
+# install on hpc ----------------------------------------------------------
 library("devtools",lib.loc="/scratch/cancgene/tdadaev/Rpackages/")
 library("httr",lib.loc="/scratch/cancgene/tdadaev/Rpackages/")
 library("curl",lib.loc="/scratch/cancgene/tdadaev/Rpackages/")
