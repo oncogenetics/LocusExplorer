@@ -1,4 +1,4 @@
-# 29/09/2016
+# 15/02/2017
 # Author: Tokhir Dadaev
 # License: MIT + file LICENSE.txt
 
@@ -13,17 +13,15 @@ library(ggplot2)
 library(oncofunco) # custom library
 #library(cowplot)
 library(rtracklayer) # bigwig file subset
-library(ggbio) # tracks
+#library(ggbio) # tracks
 
-if(Sys.info()['sysname'] == "Windows") {
-  windowsFonts(Courier=windowsFont("TT Courier New"))
-  setInternet2(use = NA)}
-
-setwd("C:/Users/tdadaev/Desktop/Work/GitHubProjects/fix_manhattan_function")
+#setwd("C:/Users/tdadaev/Desktop/Work/GitHubProjects/fix_manhattan_function")
+setwd("N:/Translational Cancer Genetics Team/Bioinformatics/Development/R_ShinyApps/LocusExplorer/Source/tempMakePackage")
 source("plotFunctions.R")
 
 # Data --------------------------------------------------------------------
-folderLEData <- "C:/Users/tdadaev/Desktop/LocusExplorerPractical_v2/Data"
+#folderLEData <- "C:/Users/tdadaev/Desktop/LocusExplorerPractical_v2/Data"
+folderLEData <- "N:/Translational Cancer Genetics Team/Bioinformatics/Development/R_ShinyApps/LocusExplorer/Data"
 
 #wgEncodeBroadHistone bigwig data description
 wgEncodeBroadHistoneFileDesc <-
@@ -33,7 +31,7 @@ wgEncodeBroadHistoneFileDesc <-
 # Annotation data
 #annotOncoFinemap
 #annotOncoMeta
-annot <- fread("annot/annot_OncoArrayFineMapping.txt")
+annot <- fread(paste0(folderLEData, "/Annotation/annot_OncoArrayFineMapping.txt"))
 annot$TYPEN <-
   as.numeric(
     factor(annot$TYPE,
@@ -44,7 +42,7 @@ annot$TYPEN <-
              "Poised_Promoter","Transcribed","Repressed","CTCF+Promoter")))
 
 # TCGA data
-tcgaEQTL <- fread("annot/eQTL_OncoArrayFineMapping.tsv")
+tcgaEQTL <- fread(paste0(folderLEData, "/Annotation/eQTL_OncoArrayFineMapping.tsv"))
 #tcgaEQTL <- fread("annot/eQTL_OncoArrayMeta.tsv")
 datEQTL <-
   tcgaEQTL %>% 
@@ -59,7 +57,6 @@ datEQTL <-
                    eQTL_TCGA = 1,
                    yend = 0.35) %>%
   base::unique()
-
 
 regions <- fread("regions_Final.csv")
 regionPaper <- regions[ grepl("Paper", Comment), rn ]
@@ -79,6 +76,10 @@ for(i in selectedRegions) {
   # i=68 #RAD51B Clara
   # i=15 #ANO7/FARP2 Zsofia talk
   # i=80 #KLK        Zsofia talk
+  
+  # for paper simple region
+  # i=38 #RFX chr6, onco_merged_chr6_unphased_116666036_117710052
+
   
   regionTitle = regions[i, regionNameClean]
   regionName = regions[i, regionNameClean]
@@ -125,15 +126,32 @@ for(i in selectedRegions) {
   stats <- fread(fileStat)
   hits <- list(
     Stepwise = unique(stats[ Method == "Stepwise", SNP]),
-    JAM = unique(stats[ Method == "JAM", SNP]),
-    JAMtag = unique(stats[ Method == "JAMtagAssoc", SNP]))
+    JAMmeta = intersect(
+      stats[ Method == "JAM_metaS1_credSet", SNP],
+      stats[ Method == "JAM_metaS2_credSet", SNP]),
+    JAMonco = intersect(
+      stats[ Method == "JAM_oncoS1_credSet", SNP],
+      stats[ Method == "JAM_oncoS2_credSet", SNP]),
+    StepwiseTag = unique(stats[ grepl("^S.*Tag", Method), SNP]),
+    JAMmetaTag = unique(stats[ grepl("^JAM_m.*Tag", Method), SNP]),
+    JAMoncoTag = unique(stats[ grepl("^JAM_o.*Tag", Method), SNP]))
+  
+  #get mean JAM BF for meta, to be desplayed on plot together with SNP name.
+  hitsMetaBF <- 
+    stats %>%
+    filter(rsid %in% hits$JAMmeta & grepl("JAM_metaS._credSet$", Method)) %>% 
+    mutate(Method1 = gsub("S1|S2", "", Method)) %>% 
+    group_by(rsid) %>% 
+      summarise(BF = round(mean(Stats))) %>% 
+    mutate(rsid_BF = paste0(rsid, ":BF=", BF ))
+  
   
   #region top SNP pvalue log10
   ROIPLogMax <- round(max(-log10(assoc$P)) + 5, -1)
   
   #Recombination map
   geneticMap <- seqminer::tabix.read.table(
-    "data/GeneticMap1KG.txt.gz",
+    paste0(folderLEData,"/GeneticMap1KG/GeneticMap1KG.txt.gz"),
     paste0(ifelse(regionChr == "chrX", "chr23", regionChr),
            ":", regionStart, "-", regionEnd)) %>%
     transmute(BP = V2,
@@ -191,6 +209,7 @@ for(i in selectedRegions) {
         return(d)}))
   rm(tempBP)
   
+
   # Manhattan data mDat list object -----------------------------------------
   #Manhattan input data - list
   mDat <- list(
@@ -204,322 +223,271 @@ for(i in selectedRegions) {
     zoomEnd =   regionEndZoom,
     hits = unique(LD$SNP_A),
     hitsLabel = TRUE)
-  # zoomStart = min(assoc$BP, na.rm = TRUE),
-  # zoomEnd =   max(assoc$BP, na.rm = TRUE),
-  # hits = hitJAM,
-  # hits = sort(c("rs3110641","rs3110644","rs11649743","rs9901746","rs11263763","rs117836847")),
-  # hits = c("rs3110641","rs3110644","rs11649743","rs9901746","rs11263763"),
-  # hits = sort(c("rs3110644","rs11649743","rs9901746","rs11263763")),
-  # hits = c("rs11649743","yy","rs11263763","xx"),
-  
-  # LD arc plots ---------------
-  # mDat1 <- mDat
-  # mDat1$stats <- mDat$stats[SNP != "rs13174377",]
-  # mDat1$LD <- mDat$LD[SNP_A != "rs13174377" & 
-  #                       SNP_B != "rs13174377",]
-  # pdf(paste0("plot/arc_", regionTitle, "_R2_2.pdf"), width = 11.69, height = 8.27)
-  # plotLDarc(data = mDat, minR2 = 0.2) +
-  #   ggtitle(paste0(regionTitle, "; R2 >= 0.2"))
-  # dev.off()
-  
-  # Plot --------------------------------------------------------------------
-  
-  pdf(paste0("plot/", regionTitle, ".pdf"),width = 8.27, height = 11.69, useDingbats = FALSE)
-  #pdf(paste0("TET2_",regionTitle, ".pdf"),width = 8.27, height = 11.69)
-  #pdf(paste0("RAD23B_",regionTitle, ".pdf"),width = 8.27, height = 11.69)
-  #pdf(paste0("RAD51B_",regionTitle, ".pdf"),width = 8.27, height = 11.69)
-  
-  #pdf(paste0("ANO7_",regionTitle, ".pdf"),width = 8.27, height = 11.69, useDingbats = FALSE)
-  #jpeg(paste0("ANO7_",regionTitle, ".jpeg"),width = 1000, height = 1400,
-  #     res = 100, quality = 100, pointsize = 12)
-  
-  #pdf(paste0("KLK_",regionTitle, ".pdf"),width = 8.27, height = 11.69, useDingbats = FALSE)
-  #svg(paste0("KLK_",regionTitle, ".svg"),width = 8.27, height = 11.69)
-  # jpeg(paste0("KLK_",regionTitle, ".jpeg"),width = 1000, height = 1400,
-  #      res = 100, quality = 100, pointsize = 12)
+  # Plot: Locus Explorer ------------------------------------------------------
   # loop through hit types
-  for(hitType in names(hits)[1:2]){
-    #hitType = names(hits)[2]
-    mDat$hits <- hits[[hitType]]
-    #mDat$hits <- c(hits[["JAM"]], hits[["JAMtag"]])
-    
-    ggManhattan <- 
-      plotManhattan(data = mDat,
-                    opts = c("Recombination","LD","LDSmooth","SuggestiveLine",
-                             "GenomewideLine","Hits"))
-    
-    ggLD <- plotLD(data = mDat)
-    
-    ggLDarc1 <- plotLDarc(data = mDat, minR2 = 0.4)
-    #ggLDarc2 <- plotLDarc(data = mDat, minR2 = 0.1, hitsOnly = TRUE)
-    
-    # temp for plotting Arc plots separately
-    # pdf(paste0("RAD51B_",regionTitle, "_arc.pdf"),width = 11.69, height = 8.27)
-    # pdf(paste0("RAD23B_",regionTitle, "_arc.pdf"),width = 11.69, height = 8.27)
-    # plotLDarc(data = mDat, minR2 = 0.2) + ggtitle("RAD23B, R2 >= 0.2")
-    # plotLDarc(data = mDat, minR2 = 0.4) + ggtitle("RAD23B, R2 >= 0.4")
-    # plotLDarc(data = mDat, minR2 = 0.1, hitsOnly = TRUE) + ggtitle("RAD23B, R2 >= 0.1, hits only")
-    # dev.off()
-    
-    ggSNPtype <- plotSNPtype(mDat)
-    
-    
-    ggGeneList <- plotGene(chrom = regionChr,
-                           chromStart = regionStartZoom,
-                           chromEnd = regionEndZoom,
-                           vline = mDat$assoc[ SNP %in% mDat$hits, BP])
-    ggGene <- ggGeneList$genePlot
-    ggGeneCnt <- ggGeneList$geneCnt
-    
-    ggAnnot <- plotAnnot(data = annot, chrom = regionChr,
+  #for(hitType in names(hits)[1:2]){
+  
+  # JAM hits only  
+  hitType = names(hits)[2]
+  mDat$hits <- hits[[hitType]]
+  #mDat$hits <- c(hits[["JAM"]], hits[["JAMtag"]])
+  rm(plotManhattan)
+  
+  # ggManhattan <- 
+  #   plotManhattan(data = mDat,
+  #                 # opts = c("Recombination","LD","LDSmooth","SuggestiveLine",
+  #                 #          "GenomewideLine","Hits"))
+  #                 opts = c("Recombination","LD","SuggestiveLine",
+  #                          "GenomewideLine","Hits"))
+  
+  
+  
+  
+  
+  ggManhattan <-
+    plotManhattan1(assoc = assoc, LD = LD, geneticMap = geneticMap,
+                xStart = regionStartZoom, xEnd = regionEndZoom,
+                hits = hits$JAMmeta,
+                hitsName = hitsMetaBF$rsid_BF[match(hits$JAMmeta, hitsMetaBF$rsid)],
+                title = regionTitle, pad = FALSE,
+                opts = c("Recombination","LD",
+                         "GenomewideLine","Hits")) + theme_LE()
+  
+  
+  #hits <- hits$JAMmeta
+  plotDat <- assoc[ assoc$SNP %in% hits$JAMmeta, ]
+  plotDat$label <- hitsName[match(plotDat$SNP, hits)]
+  
+  
+  ggplot(plotDat, aes(BP, PLog, label = label)) +
+  geom_point() +
+  geom_text_repel()
+  
+  #ggLD <- plotLD(data = mDat)
+  
+  #ggLDarc1 <- plotLDarc(data = mDat, minR2 = 0.4)
+  #ggLDarc2 <- plotLDarc(data = mDat, minR2 = 0.1, hitsOnly = TRUE)
+  
+  #ggSNPtype <- plotSNPtype(mDat)
+  ggSNPtype <-
+    plotSNPtype(assoc = assoc, 
+                xStart = regionStartZoom, xEnd = regionEndZoom, pad = FALSE) +
+    thene_LE()
+  
+  ggGeneList <- plotGene(chrom = regionChr,
                          chromStart = regionStartZoom,
                          chromEnd = regionEndZoom,
                          vline = mDat$assoc[ SNP %in% mDat$hits, BP])
-    
-    ggAnnotCollapsed <- plotAnnot(data = annot, chrom = regionChr,
-                                  chromStart = regionStartZoom,
-                                  chromEnd = regionEndZoom,
-                                  collapse = TRUE,
-                                  vline = mDat$assoc[ SNP %in% mDat$hits, BP])
-    
-    #BP_hits = mDat$assoc[ SNP %in% mDat$hits, BP]
-    #BP_hits = mDat$LD[, BP_B]
-    ggEQTL <- plotEQTL(data = datEQTL, chromN = regionChrN,
-                       chromStart = regionStartZoom, chromEnd = regionEndZoom,
-                       BP_hits = unique(mDat$LD[ SNP_A %in% mDat$hits, BP_A]),
-                       BP_hits_tag = unique(mDat$LD[ SNP_A %in% mDat$hits & R2 > 0.4, BP_B])
-                       )
-    
-    ggHistone <- plotHistone(data = wgEncodeBroadHistone,
-                             chromStart = regionStartZoom,
-                             chromEnd = regionEndZoom)
-    
-    
-    # Merged Plot -------------------------------------------------------------
-    # using ggbio::tracks
-    print(
-      tracks(ggManhattan,
-             ggLD, 
-             #ggLDarc1,
-             #ggLDarc2,
-             ggSNPtype,
-             ggEQTL,
-             ggHistone,
-             #ggAnnot,
-             ggAnnotCollapsed,
-             ggGene,
-             heights = c(300, #manhattan
-                         max(c(15, length(mDat$hits) * 10)), #LD
-                         #80,
-                         #100,
-                         25, #SNPType
-                         70, #eqtl
-                         25, #histone
-                         #110, #annot
-                         35, #annotcollapsed
-                         min(c(ggGeneCnt * 10, 120)) #gene
-             ), #trackHeights(),
-             track.plot.color = c("grey70", "grey80","grey70","grey80",
-                                  "grey70", "grey80", "grey70"), #trackColours(),
-             title = paste0(regionTitle, " Hits: ", hitType),
-             xlim = c(regionStartZoom, regionEndZoom)
-             #padding = unit(-0.5, "lines")
-      ) +
-        #input$downloadPlotTitle) +
-        # change Y axis text to defualt font
-        theme(axis.text.y = element_text(family = ''))
-    ) # print tracks
-  } # END for(hitType in names(hits))
+  ggGene <- ggGeneList$genePlot
+  ggGeneCnt <- ggGeneList$geneCnt
+  
+  # ggAnnot <- plotAnnot(data = annot, chrom = regionChr,
+  #                      chromStart = regionStartZoom,
+  #                      chromEnd = regionEndZoom,
+  #                      vline = mDat$assoc[ SNP %in% mDat$hits, BP])
+  
+  # eqtl as a box ------------------------------------------------------------
+  # merged with annot collapsed
+  #    CHR    START      END      FILE            TYPE  COLOUR_RGB COLOUR_HEX TYPEN
+  # 1: chr10 45559800 45583200  ChromHMM Heterochromatin 211,211,211    #D3D3D3     3
+  # 2: chr10 45583200 45583400  ChromHMM            CTCF   255,165,0    #FFA500     4
+  
+  # eqtl subset
+  plotDatEQTL <- datEQTL %>% 
+    filter(CHR == regionChrN &
+             x %in% unique(LD[ SNP_A %in% hits$JAMmeta & R2 > 0.4, BP_B])) %>% 
+    group_by(GENE) %>% 
+    summarise(START = min(x),
+              END = max(xend)) %>% 
+    transmute(CHR = regionChr,
+              START,
+              END,
+              FILE = "EQTL",
+              TYPE = GENE,
+              COLOUR_RGB = "255,0,0",
+              COLOUR_HEX = "#FF0000",
+              TYPEN = 4)
+  
+  annot_and_eqtl <- rbind(annot, plotDatEQTL)
+  setDT(annot_and_eqtl)
+  
+  ggAnnotCollapsed <- plotAnnot(data = annot_and_eqtl, chrom = regionChr,
+                                chromStart = regionStart,
+                                chromEnd = regionEnd,
+                                collapse = TRUE,
+                                vline = mDat$assoc[ SNP %in% mDat$hits, BP]) +
+    coord_cartesian(xlim = c(regionStartZoom, regionEndZoom)) +
+    #geom_text(data = plotDatEQTL, aes(x = START, y = 4, label = TYPE))
+    geom_text_repel(data = plotDatEQTL, aes(x = START, y = 4, label = TYPE))
+  
+  #add lines to gene track to match with eqtl
+  x <- ggplot_build(ggGene)
+  x <- sort(x$layout$panel_ranges[[1]]$y.labels)
+  geneNames <- seq(x)
+  names(geneNames) <- x
+  
+  # plotDatEQTL$yend = geneNames[plotDatEQTL$TYPE]
+  # ggGene <- ggGene +
+  #   geom_segment(data = plotDatEQTL, aes(x = START, xend = END,
+  #                                        y = ggGeneCnt, yend = yend), col = "red", alpha = 0.5)
+  
+
+  
+  # ggAnnotCollapsed <- plotAnnot(data = annot, chrom = regionChr,
+  #                               chromStart = regionStartZoom,
+  #                               chromEnd = regionEndZoom,
+  #                               collapse = TRUE,
+  #                               vline = mDat$assoc[ SNP %in% mDat$hits, BP])
+  
+  # ggEQTL <- plotEQTL(data = datEQTL, chromN = regionChrN,
+  #                    chromStart = regionStartZoom, chromEnd = regionEndZoom,
+  #                    BP_hits = unique(mDat$LD[ SNP_A %in% mDat$hits, BP_A]),
+  #                    BP_hits_tag = unique(mDat$LD[ SNP_A %in% mDat$hits & R2 > 0.4, BP_B]))
+  
+  ggHistone <- plotHistone(data = wgEncodeBroadHistone,
+                           chromStart = regionStartZoom,
+                           chromEnd = regionEndZoom)
+  
+  # Plot: JAM -----------------------------------------------------------------  
+  fileJAMmeta <- paste0("JAM_meta/20160830_r2_9_BF3_manualPruning_withoutPvalue/",
+                        regionNameSplit,"_jam.csv")
+  fileJAMmetaRData <- paste0("JAM_meta/20160830_r2_9_BF3_manualPruning_withoutPvalue/",
+                             regionNameSplit,".RData")
+  fileJAMonco <- paste0("JAM_onco/20161118_r2_9_BF3_manualPruning_withoutPvalue_oncoFullData/",
+                        regionNameSplit,"_fullData_jam.csv")
+  fileJAMoncoRData <- paste0("JAM_onco/20161118_r2_9_BF3_manualPruning_withoutPvalue_oncoFullData/",
+                             regionNameSplit,"_fullData.RData")
+  
+  # Jam data
+  jamMeta <- fread(fileJAMmeta)
+  jamOnco <- fread(fileJAMonco)
+  
+  # hits
+  hitsJAMmeta <- jamMeta %>%
+    mutate(rn = as.numeric(gsub("SNP_", "", SNPid))) %>%
+    arrange(rn) %>%
+    filter(PostProb > 0.01 | TopModel95 == 1)
+  hitsJAMonco <- jamOnco %>%
+    mutate(rn = as.numeric(gsub("SNP_", "", SNPid))) %>%
+    arrange(rn) %>%
+    filter(PostProb > 0.01 | TopModel95 == 1)
+  
+  # JAM binary logistic results
+  load(fileJAMmetaRData)
+  jamMetaResuts <- binary.results
+  load(fileJAMoncoRData)
+  jamOncoResuts <- logistic.results
+  
+  # Plot: PostProbs -----------------------------------------------------------
+  ggJAM <- list(
+    # META: JAM postprob & BF
+    metaPP =
+      #data
+      jamMeta %>% 
+      mutate(rsid_BF = if_else(PostProb > 0.05,
+                               paste0(rsid, " | BF:", round(BF)),
+                               NA_character_),
+             col = if_else(TopModel95 == 1, "red", "grey80")) %>% 
+      #plot
+      ggplot(aes(BP, PostProb, label = rsid_BF, fill = col, col = col)) +
+      geom_point() + 
+      geom_text_repel(col = "black", na.rm = TRUE) +
+      scale_color_identity() + scale_fill_identity() +
+      scale_y_continuous(breaks = seq(0, 1, 0.1), limits = c(0,1)) +
+      theme_minimal() +
+      ggtitle("meta PostProb > 0.05"),
+    # ONCO: JAM postprob & BF
+    oncoPP =
+      #data
+      jamOnco %>% 
+      mutate(rsid_BF = if_else(PostProb > 0.05,
+                               paste0(rsid, " | BF:", round(BF)),
+                               NA_character_),
+             col = if_else(TopModel95 == 1, "red", "grey80")) %>% 
+      #plot
+      ggplot(aes(BP, PostProb, label = rsid_BF, fill = col, col = col)) +
+      geom_point() + 
+      geom_text_repel(col = "black", na.rm = TRUE) +
+      scale_color_identity() + scale_fill_identity() +
+      scale_y_continuous(breaks = seq(0, 1, 0.1), limits = c(0,1)) +
+      theme_minimal() +
+      ggtitle("onco PostProb > 0.05"),
+    # META: AutoCorr plot
+    metaAuto = 
+      AutocorrelationPlotGG(jamMetaResuts,
+                            covariates.to.include = hitsJAMmeta$SNPid,
+                            #plot.title = paste0(regionName, ": meta PostProb > 0.01")) +
+                            plot.title = "meta PostProb > 0.01") +
+      scale_x_discrete(labels = hitsJAMmeta$rsid, name = NULL),
+    oncoAuto = 
+      AutocorrelationPlotGG(jamOncoResuts,
+                            covariates.to.include = hitsJAMonco$SNPid,
+                            #plot.title = paste0(regionName, ": onco PostProb > 0.01")) +
+                            plot.title = "onco PostProb > 0.01") +
+      scale_x_discrete(labels = hitsJAMonco$rsid, name = NULL)
+  ) # END ggJAM list
+  
+  # Plot: Merge --------------------------------------------------------------
+  #merge JAM plots
+  # outPlot2 <- 
+  #   cowplot::plot_grid(cowplot::plot_grid(ggJAM$metaPP,
+  #                                         ggJAM$oncoPP, nrow = 1),
+  #                      cowplot::plot_grid(ggJAM$metaAuto,
+  #                                         ggJAM$oncoAuto, nrow = 1,
+  #                                         align = "h"),
+  #                      nrow = 2)
+  # 
+  
+  relHeights = 
+    c(250, #manhattan
+      30, #SNPType
+      #35, #eqtl
+      30, #histone
+      60, #annotcollapsed
+      min(c(ggGeneCnt * 20, 120)) #gene
+    )
+  
+  
+  
+  outPlot1 <- 
+    cowplot::plot_grid(
+      ggManhattan + ggtitle(regionName),
+      ggSNPtype,
+      #ggEQTL,
+      ggHistone,
+      ggAnnotCollapsed,
+      ggGene,
+      nrow = 5,
+      rel_heights = relHeights,
+      align = "v")
+  
+  pdf(paste0("ANO7_",regionTitle, ".pdf"),width = 8.27, height = 11.69, useDingbats = FALSE)
+  #pdf(paste0("ANO7_",regionTitle, ".pdf"),width = 6, height = 8, useDingbats = FALSE)
+  print(outPlot1)
+  dev.off()
+  
+  outPlot2 <- 
+    cowplot::plot_grid(ggJAM$metaPP,
+                       ggJAM$metaAuto,
+                       nrow = 2
+                       # rel_heights = c(relHeights[1],
+                       #                 sum(relHeights[2:length(relHeights)]))
+    )
+  
+  
+  outPlotFinal <- cowplot::plot_grid(
+    outPlot1,
+    outPlot2,
+    ncol = 2
+  )
+  
+  # Plot: output -------------------------------------------------------------
+  pdf(paste0("plot/", regionTitle, ".pdf"),
+      width = 11.69, height = 8.27,
+      #width = 12, height = 12,
+      useDingbats = FALSE)
+  print(outPlotFinal)
+  # print(outPlot1)
+  # print(outPlot2)
   dev.off()
 } # END for(i in regions)
-
-
-
-# TESTING -----------------------------------------------------------------
-
-
-# test cowplot -----
-# cowplot: Switching axis messes up plot_grid alignment
-#ggManhattan <- ggdraw(switch_axis_position(ggManhattan, axis = "x"))
-
-
-# theme(legend.position = "none",
-#       panel.background = element_rect(fill = "white"), 
-#       panel.grid.minor = element_blank(),
-#       panel.grid.major.x = element_blank(), 
-#       panel.grid.major.y = element_line(colour = "grey60", linetype = "dotted"),
-#       axis.title.x = element_blank(), 
-#       axis.line = element_blank(),
-#       panel.border = element_blank(), 
-#       axis.text.y = element_text(family = "Courier", colour = "grey20"))
-
-
-
-# annotOncoFinemap %>% 
-#   transmute(CHR = Chr,
-#             BP = End,
-#             DNaseI =
-#               as.numeric((GSM1008595_RWPE1_DNaseI +
-#                             GSM1024742_PrEC_DNaseI +
-#                             GSM1024743_PrEC_DNaseI +
-#                             GSM736565_LNCaP_DNaseI +
-#                             GSM736603_LNCaP_DNaseI +
-#                             `GSM816634_LNCaP+androgen_DNaseI` +
-#                             GSM816637_LNCaP_DNaseI) > 0),
-#             Conserved =
-#               as.numeric((`GERP++` +
-#                             SiPhy_Omega +
-#                             SiPhy_Pi +
-#                             PhastCons) > 0),
-#             Heterochromatin = PrEC_ChromHMM_Heterochromatin,
-#             CTCF = PrEC_ChromHMM_CTCF,
-#             CTCF_Enhancer = 0,
-#             Promoter = PrEC_ChromHMM_Promoter,
-#             Enhancer = PrEC_ChromHMM_Enhancer,
-#             Poised_Promoter = PrEC_ChromHMM_Poised_Promoter,
-#             Transcribed = PrEC_ChromHMM_Transcribed,
-#             Repressed = PrEC_ChromHMM_Repressed,
-#             CTCF_Promoter = 0
-#             ) %>% head
-# 
-# write.csv(head(annotOncoFinemap), "temp.csv")
-
-
-# Merge = dont use cowplot, can't align ggbio genes track... :(
-# plot_grid(ggManhattan,
-#           ggLD,
-#           ggSNPtype,
-#           ggGene,
-#           ncol = 1, rel_heights = c(0.6,0.1,0.1,0.3), align = "hv")
-
-
-# test tracks backup ----------
-# tracks(ggManhattan,
-#        ggLD, 
-#        ggSNPtype,
-#        #ggEQTL,
-#        ggHistone,
-#        #ggAnnot,
-#        ggAnnotCollapsed,
-#        ggGene,
-#        heights = c(300, #manhattan
-#                    20, #LD
-#                    30, #SNPType
-#                    #50, #eqtl
-#                    25, #histone
-#                    #110, #annot
-#                    40, #annotcollapsed
-#                    120 #gene
-#        ), #trackHeights(),
-#        track.plot.color = c("grey70", "grey80","grey70","grey80",
-#                             "grey70", "grey80"), #trackColours(),
-#        title = regionTitle,
-#        xlim = c(regionStartZoom, regionEndZoom)) +
-#   #input$downloadPlotTitle) +
-#   # change Y axis text to defualt font
-#   theme(axis.text.y = element_text(family = ''))
-
-
-
-#regionChr = unlist(strsplit(regionName,"_"))[1]
-#regionChrN = ifelse(regionChr == "chrX", 23, as.numeric(sub("chr","",regionChr)))
-#regionStart = as.numeric(unlist(strsplit(regionName,"_"))[2])
-#regionEnd = as.numeric(unlist(strsplit(regionName,"_"))[3])
-
-
-# test Haploreg -------------
-# #haploreg <- fread(paste0(folderLEData,"/Haploreg/20161027.txt"))
-# haploreg[haploreg == "." | haploreg == ""] <- NA
-# haploreg <- haploreg %>%
-#         transmute(
-#           CHR = chr,
-#           SNP = rsID,
-#           SiPhy_cons,
-#           EnhancerHistoneMarks = as.integer(!is.na(Chromatin_Marks)),
-#           DNAse = as.integer(!is.na(DNAse)),
-#           ProteinBound = as.integer(!is.na(Proteins)),
-#           MotifsChanged = as.integer(!is.na(Motifs)),
-#           GERP_cons = GERP_cons,
-#           eQTL = as.integer(is.na(grasp) + is.na(eQTL) < 2),
-#           functional = dbSNP_functional_annotation)substr(dbSNP_functional_annotation, 1, 3)) %>%
-#         gather(annot,value,SiPhy_cons:functional) %>%
-#         filter(value != 0) %>%
-#         mutate(annot = if_else(value == 1,
-#                                as.character(annot), paste0("Func_", value))) %>%
-#         dplyr::select(CHR, SNP, ANNOT = annot)
-# setDT(haploreg)
-# # table(haploreg$annot)
-
-
-#haploreg = haploreg[ CHR == regionChrN, ],
-# annot = annot[ CHR == regionChr &
-#                  START >= regionStartZoom &
-#                  END <= regionEndZoom &
-#                  # c("Heterochromatin","CTCF","CTCF+Enhancer",
-#                  #   "Promoter","Enhancer","Poised_Promoter",
-#                  #   "Transcribed","Repressed","CTCF+Promoter",
-#                  #   "DNaseI","Conserved")
-#                  TYPE %in%  c("Heterochromatin","CTCF","CTCF+Enhancer",
-#                               "Promoter","Enhancer","Poised_Promoter",
-#                               "Transcribed","Repressed","CTCF+Promoter")],
-# c("Heterochromatin","CTCF","CTCF+Enhancer",
-#   "Promoter","Enhancer","Poised_Promoter",
-#   "Transcribed","Repressed","CTCF+Promoter",
-#   "DNaseI","Conserved")
-# TYPE %in%  c("Heterochromatin","CTCF","CTCF+Enhancer",
-#              "Promoter","Enhancer","Poised_Promoter",
-#              "Transcribed","Repressed","CTCF+Promoter")]
-
-
-
-
-
-
-# selected region for main paper for Zsofia - zoom
-# regionSelected <- c("chr11_107643000_108644000", # 107800000,108500000
-#                     "chr12_12371000_13372000", #12700000,13000000
-#                     "chr15_55886000_56887000", #56000000,
-#                     "chr12_64513000_65514000") #56800000
-
-# regionSelected <- paste(regions$CHR, regions$START, regions$END, sep = "_")
-# regionSelected <- regionSelected[ regions$DATA == "OncoArrayFineMapping"]
-# regionExclude <- c("chr2_9611973_11210730",
-#                    "chr3_86610674_87967332",
-#                    "chr4_20378153_21378153",
-#                    "chr5_780028_2395829",
-#                    "chr6_29573776_30573776",
-#                    "chr6_30618511_32900939",
-#                    "chr8_127333841_129040776",
-#                    "chr17_46302314_47952263")
-#regionSelected <- regionSelected[!regionSelected %in% regionExclude]
-
-# test Regions for paper ---------
-# onco_merged_chr2_unphased_241657087_242920971,rs3771570_2q37_(FARP2)
-# onco_merged_chr6_unphased_116666036_117710052,rs339331_6q22_(RFX6)
-# onco_merged_chr10_unphased_51049496_52049496,rs10993994_10q11_(MSMB)
-# onco_merged_chr17_unphased_35547276_36603565,rs11649743_17q12_(HNF1B); rs4430796_17q12_(HNF1B)
-# onco_merged_chr19_unphased_50840794_51864623,rs2735839_19q13_(KLK2/3)
-# onco_merged_chr21_unphased_42401421_43401421,rs1041449_21q22_(TMPRSS2)
-# onco_merged_chr5_unphased_780028_2395829_1,Split:TERT
-# regionsPaper <- c("chr2_241657087_242920971",
-#                   "chr6_116666036_117710052",
-#                   "chr10_51049496_52049496",
-#                   "chr17_35547276_36603565",
-#                   "chr19_50840794_51864623",
-#                   "chr21_42401421_43401421",
-#                   "chr5_780028_1600000")
-
-
-
-# test Japanese hits ------------
-# [1]  9 17 18 28 29 35 38 54 57 65
-# onco_merged_chr2_unphased_20388265_21388265	keep:Japanese_Takata
-# onco_merged_chr3_unphased_86610674_87967332	keep:split:Japanese_Akamatsu
-# onco_merged_chr3_unphased_86610674_87967332	keep:split:Japanese_Akamatsu
-# onco_merged_chr5_unphased_780028_2395829	keep:split:forPaperMainText:Japanese_Takata
-# onco_merged_chr5_unphased_780028_2395829	keep:split:Japanese_Takata
-# onco_merged_chr6_unphased_41036427_42043793	keep:Japanese_Takata
-# onco_merged_chr6_unphased_116666036_117710052	keep:forPaperMainText:Japanese_Takata
-# onco_merged_chr10_unphased_122283141_123344709	keep:Japanese_Akamatsu
-# onco_merged_chr11_unphased_58415110_59610571	keep:Japanese_Akamatsu
-# onco_merged_chr13_unphased_73228139_74468916	keep:Japanese_Takata
