@@ -363,8 +363,11 @@ shinyServer(function(input, output, session) {
     progress$set(message = "Plotting please wait...", value = 0)
     # Close the progress when this reactive exits (even if there's an error)
     on.exit(progress$close())
+    
+    plotManhattan(assoc = plotdatAssoc(), LD = plotDatLD(), geneticMap = plotDatGeneticMap())
 
-    source("Source/Manhattan.R",local=TRUE)})
+    #source("Source/Manhattan.R",local=TRUE)
+    })
   output$PlotManhattan <- renderPlot({
     # Create a Progress object
     progress <- shiny::Progress$new()
@@ -423,9 +426,8 @@ shinyServer(function(input, output, session) {
     selectInput(inputId = "Chr", label = h5("Chr"),
               choices = regions %>%
                 filter(DATA == input$dataType) %>%
-                .$CHR %>% unique
-              #paste0("chr", c(1:22,"X")),
-              #selected = "chr1"
+                .$CHR %>% unique,
+              selected = "chr2"
               )
               })
   
@@ -434,9 +436,9 @@ shinyServer(function(input, output, session) {
                 choices = regions %>%
                   filter(CHR == input$Chr &
                            DATA == input$dataType) %>%
-                  .$REGIONBED
+                  .$REGIONBED,
                 #pre selected a region to demonstrate as an example - HNF1B gene
-                #selected = "chr17_35947000_36204000"
+                selected = "chr2_241657087_242920971"
                 )})
 
 })#END shinyServer

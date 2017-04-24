@@ -70,7 +70,7 @@ shinyUI(
                    # if Prostate data is selected then link to relevant paper
                    # Abstract pudmedID
                    conditionalPanel("input.dataType == 'iCOGS' ||
-                                     input.dataType == 'OncoArray' ||
+                                     input.dataType == 'OncoArrayFineMapping' ||
                                      input.dataType == 'OncoArrayMeta'",
                                     uiOutput("refProstatePaper"),
                                     hr()
@@ -110,9 +110,9 @@ shinyUI(
                    includeMarkdown("Data/wgEncodeBroadHistone/README.md"),
                    helpText("Scores filtered at 5+, and rounded and set maximum value to 100."),
                    dataTableOutput("SummarywgEncodeBroadHistone"),
-                   hr(),
-                   includeMarkdown("Data/wgEncodeRegDnaseClustered/README.md"),
-                   dataTableOutput("SummarywgEncodeRegDnaseClustered"),
+                   # hr(),
+                   # includeMarkdown("Data/wgEncodeRegDnaseClustered/README.md"),
+                   # dataTableOutput("SummarywgEncodeRegDnaseClustered"),
                    # hr(),
                    # includeMarkdown("Data/ProstateLNCAP/README.md"),
                    # dataTableOutput("SummaryLNCAP")

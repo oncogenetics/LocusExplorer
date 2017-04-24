@@ -9,7 +9,7 @@
 #                    "googleVis"))
 
 library(shiny)
-#library(shinyjs)
+library(shinyjs) #colourInput
 library(dtplyr)
 library(data.table)
 library(dplyr) 
@@ -37,11 +37,16 @@ library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 library(org.Hs.eg.db) # gene symobols
 library(rtracklayer) # bigwig
 
+#GitHub packages
+# install.packages("devtools")
+# devtools::install_github("oncogenetics/oncofunco")
+library(oncofunco)
+
 # increase upload limit to 20Mb
 options(shiny.maxRequestSize = 20 * 1024 ^ 2)
 
-#Custom functions
-source("Source/UDF.R", local = TRUE)
+#Custom functions - replaced by "oncofunco" package
+#source("Source/UDF.R", local = TRUE)
 
 # Data --------------------------------------------------------------------
 # prostate data region names
@@ -50,17 +55,18 @@ regions <- fread("Data/ProstateData/regions.csv",
   mutate(REGIONBED = paste0(CHR,"_",START,"_",END))
 
 # oncoarray finemapping annotation + TCGA
-annotOncoFinemap <- fread("Data/Annotation/OA_meta_All_SNPs_Annotated_150716.tsv")
+# annotOncoFinemap <- fread("Data/Annotation/OA_meta_All_SNPs_Annotated_150716.tsv")
 # annotOncoFinemap$Gene <-
 #   sapply(annotOncoFinemap$eqtl.Eze.gene,
 #          function(i)unlist(strsplit(i, split = "|", fixed = TRUE))[1])
 
-annotOncoFinemapEQTL <- fread("Data/Annotation/LE_finemap_eQTL.tsv")
+#annotOncoFinemapEQTL <- fread("Data/Annotation/LE_finemap_eQTL.tsv")
 #annotOncoFinemapEQTL[!is.na(annotOncoFinemapEQTL$geneStart),]
 
-annotOncoNewHits <- fread("Data/Annotation/LE_OA_65_new_hits_Annotation_2016-07-22.tsv")
+annotOncoFinemapEQTL <- fread("Data/Annotation/Supp_Table2_finemapping_eqtl.csv")
 
-annotOncoNewHitsEQTL <- fread("Data/Annotation/OA_NewHits_eQTLs.tsv")
+#annotOncoNewHits <- fread("Data/Annotation/LE_OA_65_new_hits_Annotation_2016-07-22.tsv")
+#annotOncoNewHitsEQTL <- fread("Data/Annotation/OA_NewHits_eQTLs.tsv")
 
 
 #wgEncodeBroadHistone bigwig data description
