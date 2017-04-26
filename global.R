@@ -16,6 +16,7 @@ library(dplyr)
 library(lazyeval) # dplyr
 library(tidyr)
 library(ggplot2)
+library(ggrepel) # geom_text_repel
 library(knitr)
 library(markdown)
 library(stringr)

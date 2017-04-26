@@ -30,10 +30,10 @@ shinyUI(
         #Choose data type
         radioButtons("dataType", h4("Input data:"),
                      c("Prostate iCOGS" = "iCOGS",
-                       "Prostate OncoArrayFineMapping" = "OncoArrayFineMapping",
-                       "Prostate OncoArrayMeta" = "OncoArrayMeta",
-                       "Custom" = "Custom",
-                       "Example" = "Example"
+                       "Prostate OncoArrayFineMapping" = "OncoArrayFineMapping"#,
+                       #"Prostate OncoArrayMeta" = "OncoArrayMeta",
+                       #"Custom" = "Custom",
+                       #"Example" = "Example"
                        ),
                      selected = "OncoArrayFineMapping"),
         conditionalPanel("input.dataType == 'iCOGS' ||
@@ -65,6 +65,8 @@ shinyUI(
       mainPanel(
         tabsetPanel(
           tabPanel("Summary",
+                   
+                   
                    h4("Summary"),
                    hr(),
                    # if Prostate data is selected then link to relevant paper
@@ -76,10 +78,11 @@ shinyUI(
                                     hr()
                    ),
                    helpText("UCSC link to selected region:"),
-                   htmlOutput("SummaryRegion"),
-                   hr(),
-                   helpText("NCBI link to hit SNPs:"),
-                   dataTableOutput("SummaryHits")),
+                   htmlOutput("SummaryRegion")
+                   # hr(),
+                   # helpText("NCBI link to hit SNPs:"),
+                   # dataTableOutput("SummaryHits")
+                   ),
           #hr() #dataTableOutput("tempSummaryplotDatLD")
           tabPanel("Association",
                    h4("Association"),
@@ -130,6 +133,13 @@ shinyUI(
     ),#tabPanel - Data
     # Plot --------------------------------------------------------------------  
     tabPanel("2.Plot Settings",
+             
+             # testing vars -------------------------------------------
+             h4("testing vars"),
+             dataTableOutput("testVars"),
+             
+             
+             
              sidebarPanel(
                h4("SNP Filters:"),
                h6("Use sliders to set required threshold for P-value and LD. Filtered SNPs will not be plotted."),
@@ -182,12 +192,12 @@ shinyUI(
                                 #Zoom using text: chr1:36020000-36140000
                                 textInput("RegionZoom", label = h5("Region zoom"),
                                           value = "chr:start-end"),
-                                hr(),
-                                radioButtons("HitSNPsType", h4("Hit SNPs Type:"),
-                                                   c("JAM" = "JAM",
-                                                     "Stepwise Forward" = "StepwiseForward"),
-                                                   selected = c("StepwiseForward")
-                                                   ),
+                                # hr(),
+                                # radioButtons("HitSNPsType", h4("Hit SNPs Type:"),
+                                #                    c("JAM" = "JAM",
+                                #                      "Stepwise Forward" = "StepwiseForward"),
+                                #                    selected = c("StepwiseForward")
+                                #                    ),
                                 hr(),
                                 uiOutput("HitSNPs"),
                                 h6("Maximum of 5 hit SNPs can be plotted."),
@@ -292,10 +302,6 @@ shinyUI(
                           conditionalPanel("input.ShowHideTracks.indexOf('Gene')>-1",
                                            plotOutput("PlotGene",width=800,height=350))
                           ), # tabPanel - Main Plot
-                 # tabPanel("Annotation",
-                 #          h4("Annotation"),
-                 #          hr()
-                 #          ), # tabPanel - Annotation
                  tabPanel("Annotation", 
                           h4("Annotation"),
                           hr(),
