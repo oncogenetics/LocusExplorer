@@ -230,17 +230,7 @@ shinyServer(function(input, output, session) {
     #                    RecombAdj=Recomb * ROIPLogMax() / 100))
   })
   
-  ROIdatwgEncodeRegDnaseClustered <- reactive({
-    #define region to subset
-    tabixRegion <- paste0(RegionChr(),":",
-                          RegionStart(),"-",
-                          RegionEnd())
-    #subset using seqmineR::tabix.read.table
-    x <- tabix.read.table("Data/wgEncodeRegDnaseClustered/wgEncodeRegDnaseClusteredV3.txt.gz",tabixRegion)
-    colnames(x) <- c("CHR","START","END","SCORE")
-    return(x)
-  })
-  
+
   #   # Define Zoom Start End ---------------------------------------------------
   zoomStart <- reactive({ input$BPrange[1] })
   zoomEnd <- reactive({ input$BPrange[2] })
@@ -289,6 +279,8 @@ shinyServer(function(input, output, session) {
                    "RegionEnd",
                    "zoomStart", #reactive({ input$BPrange[1] })
                    "zoomEnd",   #reactive({ input$BPrange[2] })
+                   "input$suggestiveLine, input$genomewideLine",
+                   "input$Chr",
                    
                    "RegionHits",
                    "RegionHitsSelected",
@@ -314,6 +306,8 @@ shinyServer(function(input, output, session) {
                  RegionEnd(),
                  zoomStart(),
                  zoomEnd(),
+                 paste(input$suggestiveLine, input$genomewideLine, sep = ","),
+                 input$Chr,
                  
                  paste(RegionHits(), collapse = ","),
                  paste(RegionHitsSelected(), collapse = ","),
@@ -383,17 +377,18 @@ shinyServer(function(input, output, session) {
                href=paste0('http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=',
                            RegionChr(),'%3A',RegionStart(),'-',RegionEnd()),target="_blank"))
   
-  # Plot --------------------------------------------------------------------
-  #plot title
+
+  # Plot: Title ---------------------------------------------------------------
   output$plotTitle <-
     renderUI(a(paste0(RegionChr(),':',zoomStart(),'-',zoomEnd()),
                href=paste0('http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=',
                            RegionChr(),'%3A',zoomStart(),'-',zoomEnd()), target="_blank"))
   
-  #Plot Chr ideogram
-  plotObjChromosome <- reactive({source("Source/Chromosome.R",local=TRUE)})
+  # Plot: Chr ideogram --------------------------------------------------------
+  plotObjChromosome <- reactive({source("Source/Chromosome.R", local = TRUE)})
   output$PlotChromosome <- renderPlot({print(plotObjChromosome())})
-  #Manhattan track
+  
+  # Plot: Manhattan ------------------------------------------------------------
   plotObjManhattan <- reactive({
     # Create a Progress object
     progress <- shiny::Progress$new()
@@ -404,7 +399,17 @@ shinyServer(function(input, output, session) {
     plotManhattan(assoc = plotDatAssoc(),
                   LD = plotDatLD(),
                   geneticMap = plotDatGeneticMap(),
-                  hits = RegionHitsSelected())
+                  suggestiveLine = input$suggestiveLine,
+                  genomewideLine = input$genomewideLine,
+                  hits = RegionHitsSelected(),
+                  xStart = zoomStart(),
+                  xEnd = zoomEnd(),
+                  opts = intersect(
+                    c("Hits", "LD", "SuggestiveLine", "GenomewideLine", 
+                      input$ShowHideTracks), 
+                    c("Recombination", "LDSmooth",
+                      "Hits", "LD", "SuggestiveLine", "GenomewideLine"))
+                  ) + theme_LE()
                   #opts = c("LD", "LDSmooth", "Hits"))
     
     #source("Source/Manhattan.R",local=TRUE)
@@ -418,21 +423,40 @@ shinyServer(function(input, output, session) {
     
     print(plotObjManhattan())})
   
-  #SNPType track
-  plotObjSNPType <- reactive({source("Source/SNPType.R",local=TRUE)})
+  # Plot: SNPType -------------------------------------------------------------
+  # SNP is imputed or typed
+  plotObjSNPType <- reactive({
+    plotSNPtype(assoc = plotDatAssoc(),
+                xStart = zoomStart(),
+                xEnd = zoomEnd()) + theme_LE()
+    
+    #source("Source/SNPType.R",local=TRUE)
+    })
   output$PlotSNPType <- renderPlot({print(plotObjSNPType())})
-  #SNP LD track
-  plotObjSNPLD <- reactive({source("Source/LD.R",local=TRUE)})
+  
+  # Plot: SNP LD --------------------------------------------------------------
+  plotObjSNPLD <- reactive({
+    plotLD(data = plotDatLD(),
+           hits = RegionHitsSelected(),
+           xStart = zoomStart(),
+           xEnd = zoomEnd()) + theme_LE()
+    #source("Source/LD.R",local=TRUE)
+    })
   output$PlotSNPLD <- renderPlot({print(plotObjSNPLD())})
   
-  #wgEncodeBroadHistone 7 bigwig data track
-  plotObjwgEncodeBroadHistone <- reactive({source("Source/wgEncodeBroadHistone.R",local=TRUE)})
+  # Plot: wgEncodeBroadHistone 7 bigwig ---------------------------------------
+  plotObjwgEncodeBroadHistone <- reactive({
+    plotHistone(folder = "Data/wgEncodeBroadHistone/",
+                chr = input$Chr,
+                xStart = zoomStart(),
+                xEnd = zoomEnd()
+                ) + theme_LE()
+    
+    #source("Source/wgEncodeBroadHistone.R",local=TRUE)
+    })
   output$PlotwgEncodeBroadHistone <- renderPlot({print(plotObjwgEncodeBroadHistone())})
   
-  #wgEncodeRegDnaseClustered 1 bed file
-  plotObjwgEncodeRegDnaseClustered <- reactive({source("Source/wgEncodeRegDnaseClustered.R",local=TRUE)})
-  output$PlotwgEncodeRegDnaseClustered <- renderPlot({print(plotObjwgEncodeRegDnaseClustered())})
-  
+
   # Dynamic UI --------------------------------------------------------------
   #Zoom to region X axis BP
   output$BPrange <-
@@ -451,24 +475,6 @@ shinyServer(function(input, output, session) {
                          #select max of 5 SNPs
                          selected = RegionHits()[1:min(c(5, length(RegionHits())))]
                          
-                         
-                         #if the input data oncoarray then select Forward hits only
-                         # selected = if(input$dataType == "OncoArrayFineMapping" &
-                         #               input$HitSNPsType == "Stepwise Forward"){
-                         #   datStats() %>%
-                         #     filter(Method == input$HitSNPsType) %>%
-                         #     arrange(Stats) %>%
-                         #     head(5) %>%
-                         #     .$SNP
-                         # 
-                         #   } else if(input$dataType == "OncoArrayFineMapping" &
-                         #       input$HitSNPsType == "BVS"){
-                         #    datStats() %>%
-                         #       filter(Method == input$HitSNPsType) %>%
-                         #       arrange(-Stats) %>%
-                         #       head(5) %>%
-                         #       .$SNP
-                         #   } else {1:min(5,length(RegionHits()))}
       ) #END checkboxGroupInput
     })
   
