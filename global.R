@@ -64,7 +64,7 @@ regions <- fread("Data/ProstateData/regions.csv",
 #annotOncoFinemapEQTL <- fread("Data/Annotation/LE_finemap_eQTL.tsv")
 #annotOncoFinemapEQTL[!is.na(annotOncoFinemapEQTL$geneStart),]
 
-annotOncoFinemapEQTL <- fread("Data/Annotation/Supp_Table2_finemapping_eqtl.csv")
+annotOncoFinemapEQTL <- fread("Data/Annotation/Supp_Table2.csv")
 
 #annotOncoNewHits <- fread("Data/Annotation/LE_OA_65_new_hits_Annotation_2016-07-22.tsv")
 #annotOncoNewHitsEQTL <- fread("Data/Annotation/OA_NewHits_eQTLs.tsv")

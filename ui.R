@@ -5,6 +5,37 @@
 # User interface file for shiny
 
 
+tweaks <- 
+  list(
+     tags$head(tags$style(HTML("
+                                 .multicol {
+                                   -webkit-column-count: 2; /* Chrome, Safari, Opera */
+                                   -moz-column-count: 2;    /* Firefox */
+                                   column-count: 2;
+                                   -moz-column-fill: auto;
+                                   -column-fill: auto;
+                                 }
+                                 "))),
+    #push it down 70px to avoid going under navbar
+    tags$style(type = "text/css", "body {padding-top: 70px;}"
+        #        HTML(
+        #          ".checkbox-inline { 
+        #             margin-left: 0px;
+        #             margin-right: 10px;
+        #   }
+        #  .checkbox-inline+.checkbox-inline {
+        #             margin-left: 0px;
+        #             margin-right: 10px;
+        #   }
+        # "
+        #        )
+               )
+    #hide red error messages
+    # tags$style(type="text/css",
+    #            ".shiny-output-error { visibility: hidden; }",
+    #            ".shiny-output-error:before { visibility: hidden; }")
+  )
+
 # Define UI ---------------------------------------------------------------
 shinyUI(
   navbarPage(
@@ -19,25 +50,16 @@ shinyUI(
     tabPanel(
       "1.Input Data",
       sidebarPanel(
-        #push it down 70px to avoid going under navbar
-        tags$style(type="text/css", "body {padding-top: 70px;}"),
-        
-        #hide red error messages
-        # tags$style(type="text/css",
-        #            ".shiny-output-error { visibility: hidden; }",
-        #            ".shiny-output-error:before { visibility: hidden; }"),
-        
+        tweaks,
         #Choose data type
         radioButtons("dataType", h4("Input data:"),
-                     c("Prostate iCOGS" = "iCOGS",
-                       "Prostate OncoArrayFineMapping" = "OncoArrayFineMapping"#,
+                     c("Prostate OncoArray Fine-mapping" = "OncoArrayFineMapping",
                        #"Prostate OncoArrayMeta" = "OncoArrayMeta",
-                       #"Custom" = "Custom",
-                       #"Example" = "Example"
+                       "Custom" = "Custom",
+                       "Example" = "Example"
                        ),
                      selected = "OncoArrayFineMapping"),
-        conditionalPanel("input.dataType == 'iCOGS' ||
-                         input.dataType == 'OncoArrayFineMapping' ||
+        conditionalPanel("input.dataType == 'OncoArrayFineMapping' ||
                          input.dataType == 'OncoArrayMeta'",
                          uiOutput("Chr"),
                          uiOutput("RegionID"),
@@ -71,8 +93,7 @@ shinyUI(
                    hr(),
                    # if Prostate data is selected then link to relevant paper
                    # Abstract pudmedID
-                   conditionalPanel("input.dataType == 'iCOGS' ||
-                                     input.dataType == 'OncoArrayFineMapping' ||
+                   conditionalPanel("input.dataType == 'OncoArrayFineMapping' ||
                                      input.dataType == 'OncoArrayMeta'",
                                     uiOutput("refProstatePaper"),
                                     hr()
@@ -126,7 +147,7 @@ shinyUI(
              
              # testing vars -------------------------------------------
              h4("testing vars"),
-             dataTableOutput("testVars"),
+             DT::dataTableOutput("testVars"),
              
              
              
@@ -177,11 +198,11 @@ shinyUI(
                                 #                              value = 20, step = 0.5)),
                                 # 
                                 h4("Zoom region:"),
-                                h6("Use sliders to zoom in to required region, or enter region as text, e.g.: chr1:36020000-36140000"),
+                                h6("Use sliders to zoom in to required region."),
                                 uiOutput("BPrange"),
                                 #Zoom using text: chr1:36020000-36140000
-                                textInput("RegionZoom", label = h5("Region zoom"),
-                                          value = "chr:start-end"),
+                                # textInput("RegionZoom", label = h5("Region zoom"),
+                                #           value = "chr:start-end"),
                                 # hr(),
                                 # radioButtons("HitSNPsType", h4("Hit SNPs Type:"),
                                 #                    c("JAM" = "JAM",
@@ -190,9 +211,9 @@ shinyUI(
                                 #                    ),
                                 hr(),
                                 uiOutput("HitSNPs"),
-                                h6("Maximum of 5 hit SNPs can be plotted."),
+                                # h6("Maximum of 5 hit SNPs can be plotted."),
                                 hr(),
-                                checkboxGroupInput("ShowHideTracks", h4("Tracks:"),
+                                checkboxGroupInput("ShowHideTracks", h4("Tracks*:"),
                                                    c("Chromosome" = "Chromosome",
                                                      "Manhattan" = "Manhattan",
                                                      "Manhattan: Recombination" = "Recombination",
@@ -206,7 +227,8 @@ shinyUI(
                                                    selected=c("Manhattan","Recombination")
                                                    ),
                                 
-                                h6("Recommneded to hide tracks until final zoom region is decided."),
+                                h6("* Recommneded to hide tracks until final zoom region is decided."),
+                                hr(),
                                 actionButton("resetInput", "Reset inputs",icon = icon("ambulance"),
                                              style = "background-color:#C9DD03"),
                                 hr(),

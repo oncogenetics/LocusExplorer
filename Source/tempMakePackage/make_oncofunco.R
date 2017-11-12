@@ -17,8 +17,8 @@ library(roxygen2)
 # Step 4: Process your documentation
 library(devtools)
 library(roxygen2)
-#setwd("C:/Users/tdadaev/Desktop/Work/GitHubProjects/oncofunco/")
-setwd("N:/Translational Cancer Genetics Team/Bioinformatics/Development/R_Packages/oncofunco")
+setwd("C:/Users/tdadaev/Desktop/Work/GitHubProjects/oncofunco/")
+#setwd("N:/Translational Cancer Genetics Team/Bioinformatics/Development/R_Packages/oncofunco")
 document()
 
 # Step 5: Install!

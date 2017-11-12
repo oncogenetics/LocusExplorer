@@ -10,9 +10,6 @@ shinyServer(function(input, output, session) {
   # Data level 1 - Raw Input ------------------------------------------------
   datAssoc <- reactive({
     switch(input$dataType,
-           iCOGS = {
-             fread(paste0("Data/ProstateData/iCOGS/plotData/", input$RegionID, "_assoc.txt"),
-                   header = TRUE, data.table = FALSE)},
            OncoArrayFineMapping = {
              fread(paste0("Data/ProstateData/OncoArrayFineMapping/plotData/", input$RegionID, "_assoc.txt"),
                    header = TRUE, data.table = FALSE)},
@@ -24,10 +21,12 @@ shinyServer(function(input, output, session) {
              validate(need(input$FileStats != "", "Please upload Association file"))
              
              inFile <- input$FileStats
-             
-             if(is.null(inFile)){return(NULL)} else {
-               fread(inFile$datapath, header = TRUE, data.table = FALSE) 
-             }
+             req(inFile)
+             fread(inFile$datapath, header = TRUE, data.table = FALSE) 
+             # 
+             # if(is.null(inFile)){return(NULL)} else {
+             #   fread(inFile$datapath, header = TRUE, data.table = FALSE) 
+             # }
              
            },
            Example = {
@@ -38,9 +37,6 @@ shinyServer(function(input, output, session) {
   
   datLD <- reactive({
     switch(input$dataType,
-           iCOGS = {
-             fread(paste0("Data/ProstateData/iCOGS/plotData/",input$RegionID,"_LD.txt"),
-                   header = TRUE, data.table = FALSE)},
            OncoArrayFineMapping = {
              fread(paste0("Data/ProstateData/OncoArrayFineMapping/plotData/",input$RegionID,"_LD.txt"),
                    header = TRUE, data.table = FALSE)},
@@ -73,14 +69,6 @@ shinyServer(function(input, output, session) {
   
   datBedGraph <- reactive({
     switch(input$dataType,
-           iCOGS = {
-             res <-
-               fread(paste0("Data/ProstateData/iCOGS/plotData/", input$RegionID,
-                            "_EQTL.txt"), header = FALSE, data.table = FALSE)
-             res <- res[,1:4]
-             colnames(res) <- c("CHR", "START", "END", "SCORE")
-             return(res)
-           },
            OncoArrayFineMapping = { annotOncoFinemap },
            OncoArrayMeta = { annotOncoNewHits },
            Custom = {
@@ -88,12 +76,13 @@ shinyServer(function(input, output, session) {
              validate(need(input$FileBedGraph != "", "Please upload BedGraph file"))
              
              inFile <- input$FileBedGraph
-             if(is.null(inFile)){return(NULL)} else {
-               res <- fread(inFile$datapath, header = FALSE, data.table = FALSE)
-               res <- res[,1:4]
-               colnames(res) <- c("CHR", "START", "END", "SCORE")
-               return(res)
-             }
+             req(inFile)
+             #if(is.null(inFile)){return(NULL)} else {
+             res <- fread(inFile$datapath, header = FALSE, data.table = FALSE)
+             res <- res[,1:4]
+             colnames(res) <- c("CHR", "START", "END", "SCORE")
+             return(res)
+             
            },
            Example = {
              res <- fread("Data/CustomDataExample/bedGraph.txt",
@@ -109,7 +98,8 @@ shinyServer(function(input, output, session) {
     validate(need(input$FileLDlink != "", "Please upload LDlink file"))
     
     inFile <- input$FileLDlink
-    if(is.null(inFile)){return(NULL)}
+    req(inFile)
+    #if(is.null(inFile)){return(NULL)}
     fread(inFile$datapath, header = TRUE, data.table = FALSE)
   })
   
@@ -271,7 +261,7 @@ shinyServer(function(input, output, session) {
   # Output Summary ----------------------------------------------------------
   
   # testing vars ------------------------------------------------------------
-  output$testVars <- renderDataTable({
+  output$testVars <- DT::renderDataTable({
     data.frame(Data =
                  c("input$FilterMinPlog",
                    "input$FilterMinLD",
@@ -326,8 +316,12 @@ shinyServer(function(input, output, session) {
                  paste(dim(plotDatGeneticMap()), collapse = ","),
                  paste(colnames(plotDatGeneticMap()), collapse = ",")
                  )
-    )
+    ) %>% datatable(options = list(pageLength = 100))
+    
+    
   })
+  
+  
   
   
   
@@ -470,12 +464,22 @@ shinyServer(function(input, output, session) {
   #Select hit SNPs
   output$HitSNPs <-
     renderUI({
-      checkboxGroupInput("HitSNPs", h4("Hit SNPs:"),
-                         RegionHits(),
-                         #select max of 5 SNPs
-                         selected = RegionHits()[1:min(c(5, length(RegionHits())))]
+      list(tags$div(align = 'left', 
+                    class = 'multicol', 
+                    checkboxGroupInput(inputId  = 'HitSNPs', 
+                                       label    = "Hit SNPs:", 
+                                       choices  = RegionHits(),
+                                       selected = RegionHits()[1:min(c(5, length(RegionHits())))],
+                                       inline   = FALSE))) 
+      
+      
+      # checkboxGroupInput("HitSNPs", h4("Hit SNPs:"),
+      #                    RegionHits(),
+      #                    #select max of 5 SNPs
+      #                    selected = RegionHits()[1:min(c(5, length(RegionHits())))],
+      #                    inline = TRUE
                          
-      ) #END checkboxGroupInput
+      #) #END checkboxGroupInput
     })
   
   

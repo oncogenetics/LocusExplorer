@@ -1,0 +1,73 @@
+Type,Description,
+General Variant Information,Region_Coordinates,Boundaries of region finemapped (hg19)
+General Variant Information,SNPs_Mapped,Originally reported index variants selected for finemapping
+General Variant Information,Number_SNPs_Mapped,Number of originally reported variants within the finemap region boundary
+General Variant Information,Variant_Name,IMPUTE2 ID of variant analysed
+General Variant Information,Varaint_Chromosome,Chromosome of variant analysed
+General Variant Information,Variant_Position,Position of variant analysed
+General Variant Information,Variant_A1,Allele 1 of variant analysed
+General Variant Information,Variant_A2,Allele 2 of variant analysed
+General Variant Information,Variant_A1_Freq,Allele 1 frequency of variant analysed (from European meta-analysis data)
+General Variant Information,Variant_type,"Whether variant analysed is a SNP, insertion or deletion variant"
+General Variant Information,dbSNP,dbSNP ID of variant analysed (annotated by wANNOVAR according to dbSNP138)
+Finemapping Data,PP_best_tag,Tag variant representing the variant analysed in finemapping analyses (selected using Priority Pruner)
+Finemapping Data,PP_tag_r.2,Linkage disequilibrium between tag and proxy variants (calculated using the OncoArray sub-cohort)
+Finemapping Data,PP_r2_threshold,Pruning threshold used in final finemapping analysis
+Finemapping Data,Finemapping_best_tag_PostProb,"Consensus posterior probability after finemapping for the tag variant, incorporating data from two independent analysis seeds"
+Finemapping Data,Finemapping_best_tag_BF,"Consensus Bayes Factor after finemapping for the tag variant, incorporating data from two independent analysis seeds"
+Finemapping Data,QR_best_tag_Postprob,Adjusted posterior probability of the tag variant after Quantile Regression
+Finemapping Data,Finemapping_Number_Signals,Number of independent signals identified through finemapping
+Original GWAS Data,OddsRatio,Variant Odds Ratio (from European meta-analysis data)
+Original GWAS Data,PValue,Variant P Value (from European meta-analysis data)
+Original GWAS Data,Info,Variant Info Score (from European meta-analysis data)
+Original GWAS Data,African_American_GWAS_PValue,Variant P Value in additional ethinc population GWAS data (lookup in African Ancestry Prostate Cancer GWAS Consortium (AAPC) meta-analysis data)
+Biological Annotations,GencodeV19_location,Location of variant with respect to transcripts in GencodeV19 (annotated by wANNOVAR)
+Biological Annotations,GencodeV19_nearest_gene,Name of nearest GencodeV19 gene(s) (annotated by wANNOVAR)
+Biological Annotations,GencodeV19_Gene_Detail,Additional information related to nearest GencodeV19 gene(s) (annotated by wANNOVAR)
+Biological Annotations,GencodeV19_Exonic_Effect,Effect of variant on coding sequence of gene (exonic variants only; annotated by wANNOVAR)
+Biological Annotations,GencodeV19_Amino_Acid_Change,Effect of variant on protein sequence of gene (non-synonymous and frameshift variants only; annotated by wANNOVAR)
+Biological Annotations,GM12878_ChromHMM,Chromatin state annotation of the variant location in the GM12878 cell-line (lymphoblastoid cell-line; ENCODE)
+Biological Annotations,H1-hESC_ChromHMM,Chromatin state annotation of the variant location in the H1-hESC cell-line (embryonic stem cell-line; ENCODE)
+Biological Annotations,HUVEC_ChromHMM,Chromatin state annotation of the variant location in the HUVEC cell-line (umbilical vein endothelial cell-line; ENCODE)
+Biological Annotations,PC3_ChromHMM,Chromatin state annotation of the variant location in the PC3 cell-line (prostate cancer cell-line; Taberlay et al.)
+Biological Annotations,PrEC_ChromHMM,Chromatin state annotation of the variant location in the PrEC cell-line (normal prostate epithelial cell-line; Taberlay et al.)
+Biological Annotations,GSM1008595_RWPE1_DNaseI,Whether the variant is situated within a DNaseI Hypersensitivity peak in the RWPE1 cell-line (normal prostate epithelial cell-line; ENCODE)
+Biological Annotations,GSM1024742_PrEC_DNaseI,Whether the variant is situated within a DNaseI Hypersensitivity peak in the PrEC cell-line (normal prostate epithelial cell-line; ENCODE)
+Biological Annotations,GSM1024743_PrEC_DNaseI,Whether the variant is situated within a DNaseI Hypersensitivity peak in the PrEC cell-line (normal prostate epithelial cell-line; ENCODE)
+Biological Annotations,GSM736565_LNCaP_DNaseI,Whether the variant is situated within a DNaseI Hypersensitivity peak in theLNCaP cell-line (prostate cancer cell-line; ENCODE)
+Biological Annotations,GSM736603_LNCaP_DNaseI,Whether the variant is situated within a DNaseI Hypersensitivity peak in theLNCaP cell-line (prostate cancer cell-line; ENCODE)
+Biological Annotations,GSM816634_LNCaP+androgen_DNaseI,Whether the variant is situated within a DNaseI Hypersensitivity peak in theLNCaP cell-line (prostate cancer cell-line exposed to DHT; ENCODE)
+Biological Annotations,GSM816637_LNCaP_DNaseI,Whether the variant is situated within a DNaseI Hypersensitivity peak in theLNCaP cell-line (prostate cancer cell-line; ENCODE)
+Biological Annotations,ARandrogen_LNCaP_GSM1236922,Whether the variant is situated within an Androgen Receptor binding site peak in the LNCaP cell-line (prostate cancer cell-line)
+Biological Annotations,AR_VCaP_GSM1328945,Whether the variant is situated within an Androgen Receptor transcription factor binding site peak in the VCaP cell-line (prostate cancer cell-line)
+Biological Annotations,AR_LNCaP_GSM1576447,Whether the variant is situated within an Androgen Receptor transcription factor binding site peak in the LNCaP cell-line (prostate cancer cell-line)
+Biological Annotations,CTCF_LNCaP_GSM1006874,Whether the variant is situated within a CTCF transcription factor binding site peak in the LNCaP cell-line (prostate cancer cell-line)
+Biological Annotations,CTCF_PC3_GSM1383877,Whether the variant is situated within a CTCF transcription factor binding site peak in the PC-3 cell-line (prostate cancer cell-line)
+Biological Annotations,ERG_VCaP_GSM1193657,Whether the variant is situated within an ERG transcription factor binding site peak in the VCaP cell-line (prostate cancer cell-line)
+Biological Annotations,ERG_VCaP_GSM1328978,Whether the variant is situated within an ERG transcription factor binding site peak in the VCaP cell-line (prostate cancer cell-line)
+Biological Annotations,FOXA1_LNCaP_GSM1068136,Whether the variant is situated within a FOXA1 transcription factor binding site peak in the LNCaP cell-line (prostate cancer cell-line)
+Biological Annotations,FOXA1_LNCaP_GSM1274873,Whether the variant is situated within a FOXA1 transcription factor binding site peak in the LNCaP cell-line (prostate cancer cell-line)
+Biological Annotations,FOXA1_PrCa_GSM1716762 ,Whether the variant is situated within a FOXA1 transcription factor binding site peak in prostate tumour tissue
+Biological Annotations,GABPA_VCaP_GSM1193660,Whether the variant is situated within a GABPA transcription factor binding site peak in the VCaP cell-line (prostate cancer cell-line)
+Biological Annotations,GATA2_LNCaP_GSM1600544,Whether the variant is situated within a GATA2 transcription factor binding site peak in the LNCaP cell-line (prostate cancer cell-line)
+Biological Annotations,HOXB13_PrCa_GSM1716763,Whether the variant is situated within a HOXB13 transcription factor binding site peak in prostate tumour tissue
+Biological Annotations,HOXB13_LNCaP_GSM1716764,Whether the variant is situated within a HOXB13 transcription factor binding site peak in the LNCaP cell-line (prostate cancer cell-line)
+Biological Annotations,NKX3.1_LNCaP+androgen_GSM699633,Whether the variant is situated within an NKX3.1 transcription factor binding site peak in the LNCaP cell-line (prostate cancer cell-line)
+Biological Annotations,NKX3.1_LNCaP_GSM989640,Whether the variant is situated within an NKX3.1 transcription factor binding site peak in the LNCaP cell-line (prostate cancer cell-line)
+Biological Annotations,H3K27AC_LNCaP_GSM1249447,Whether the variant is situated within a histone H3 lysine 27 acetylation site in the LNCaP cell-line (prostate cancer cell-line)
+Biological Annotations,H3K27AC_LNCaP_GSM1249448,Whether the variant is situated within a histone H3 lysine 27 acetylation site in the LNCaP cell-line (prostate cancer cell-line)
+Biological Annotations,H3K27Me3_PrEC_GSM1383866,Whether the variant is situated within a histone H3 lysine 27 trimethylation site in the PrEC cell-line (prostate cancer cell-line)
+Biological Annotations,H3K27Me3_PC3_GSM1383872,Whether the variant is situated within a histone H3 lysine 27 trimethylation site in the PC-3 cell-line (prostate cancer cell-line)
+Biological Annotations,H3K4Me3_PC3_GSM1383874,Whether the variant is situated within a histone H3 lysine 4 trimethylation site in the PC-3 cell-line (prostate cancer cell-line)
+Biological Annotations,H3K4Me3_LNCaP_GSM945240,Whether the variant is situated within a histone H3 lysine 4 trimethylation site in the LNCaP cell-line (prostate cancer cell-line)
+Biological Annotations,CADD_RawScore,Variant CADDv1.3 score (unscaled)
+Biological Annotations,CADD_PHRED,Variant CADDv1.3 score (scaled)
+Biological Annotations,GERP++,Whether the variant analysed is located in a conserved element annotated by GERP++
+Biological Annotations,SiPhy_Omega,Whether the variant analysed is located in a conserved element annotated by SiPhy Omega
+Biological Annotations,SiPhy_Pi,Whether the variant analysed is located in a conserved element annotated by SiPhy Pi
+Biological Annotations,PhastCons,Whether the variant analysed is located in a conserved element annotated by PhastCons
+Biological Annotations,MirBasev20_Binary,Whether the variant is situated within a microRNA transcript according to MirBasev20
+Biological Annotations,MIRBasev20_Name,MicroRNA transcript names for variants situated within a microRNA transcript according to MirBasev20
+Biological Annotations,MIRBasev20_ID,MicroRNA transcript IDs for variants situated within a microRNA transcript according to MirBasev20
+Biological Annotations,TCGA_eQTL_coloc0.9,Whether the variant is colocalised with a score ?0.9 with an eQTL significant after adjustment for multiple testing in the TCGA prostate adenocarcinoma dataset
+Biological Annotations,TCGA_eQTL_coloc0.9_genes,"Gene names for significant, colocalised eQTLs associated with the variant"
