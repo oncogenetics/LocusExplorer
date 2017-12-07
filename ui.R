@@ -153,12 +153,12 @@ shinyUI(
              
              sidebarPanel(
                h4("SNP Filters:"),
-               h6("Use sliders to set required threshold for P-value and LD. Filtered SNPs will not be plotted."),
+               h6("Use sliders to set required threshold for P-value and LD."),
                conditionalPanel("input.plotTypePanelSelected=='Manhattan'",
-                                sliderInput("FilterMinPlog",h5("-Log10(PValue)"),
-                                            min = 0, max = 5, value = 0.5, step = 0.5),
-                                sliderInput("FilterMinLD", h5("LD"),
-                                            min = 0, max = 0.9, value = 0, step = 0.05)
+                                splitLayout(sliderInput("FilterMinPlog",h5("-Log10(PValue)"),
+                                                        min = 0, max = 5, value = 0.5, step = 1),
+                                            sliderInput("FilterMinLD", h5("LD"),
+                                                        min = 0, max = 0.9, value = 0, step = 0.1))
                                 ),
                
                conditionalPanel("input.plotTypePanelSelected=='Annotation'",
@@ -185,10 +185,13 @@ shinyUI(
                
                conditionalPanel("input.plotTypePanelSelected=='Manhattan'",
                                 #Add suggestiveline and genomewideline
-                                numericInput("suggestiveLine",h5("Suggestive Line -Log10(Pvalue)"),
-                                             value = 5, min = 0, max = 15, step = 0.1),
-                                numericInput("genomewideLine",h5("Genomewide Line -Log10(Pvalue)"),
-                                             value = 8, min = 0, max = 15, step = 0.1),
+                                splitLayout(
+                                  numericInput("suggestiveLine", 
+                                               h5("Suggestive"),
+                                               value = 5, min = 0, max = 15, step = 0.1),
+                                  numericInput("genomewideLine",
+                                               h5("Genomewide"),
+                                               value = 8, min = 0, max = 15, step = 0.1)),
                                 #if SNP labels are overlapping then adjust using repulsion force.
                                 #checkboxInput("adjustLabels","Adjust SNP Lables",TRUE),
                                 # conditionalPanel("input.adjustLabels",
@@ -198,7 +201,6 @@ shinyUI(
                                 #                              value = 20, step = 0.5)),
                                 # 
                                 h4("Zoom region:"),
-                                h6("Use sliders to zoom in to required region."),
                                 uiOutput("BPrange"),
                                 #Zoom using text: chr1:36020000-36140000
                                 # textInput("RegionZoom", label = h5("Region zoom"),
@@ -229,11 +231,12 @@ shinyUI(
                                 
                                 h6("* Recommneded to hide tracks until final zoom region is decided."),
                                 hr(),
+                                splitLayout(
                                 actionButton("resetInput", "Reset inputs",icon = icon("ambulance"),
                                              style = "background-color:#C9DD03"),
-                                hr(),
+                                
                                 actionButton("goToFinalPlot", "3.Final Plot",icon = icon("area-chart"),
-                                             style = "background-color:#85E7FF"))
+                                             style = "background-color:#85E7FF")))
                
                
              ), #sidebarPanel
@@ -358,10 +361,11 @@ shinyUI(
                             selected = 1),
                
                conditionalPanel("input.PlotTheme == 1",
-                                colourInput("PlotThemeColour1",
-                                            "Plot theme shade 1", "#C2C2C2"),
-                                colourInput("PlotThemeColour2",
-                                            "Plot theme shade 2", "#E5E5E5")
+                                splitLayout(
+                                  colourInput("PlotThemeColour1",
+                                              "Plot theme shade 1", "#C2C2C2"),
+                                  colourInput("PlotThemeColour2",
+                                              "Plot theme shade 2", "#E5E5E5"))
                ),
                
                # Choose download filename.

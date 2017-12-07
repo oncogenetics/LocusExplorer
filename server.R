@@ -495,7 +495,6 @@ shinyServer(function(input, output, session) {
                 xStart = zoomStart(),
                 xEnd = zoomEnd()) + theme_LE()
     
-    #source("Source/SNPType.R",local=TRUE)
     })
   output$PlotSNPType <- renderPlot({print(plotObjSNPType())})
   
@@ -505,7 +504,6 @@ shinyServer(function(input, output, session) {
            hits = RegionHitsSelected(),
            xStart = zoomStart(),
            xEnd = zoomEnd()) + theme_LE()
-    #source("Source/LD.R",local=TRUE)
     })
   output$PlotSNPLD <- renderPlot({print(plotObjSNPLD())})
   
@@ -541,7 +539,7 @@ shinyServer(function(input, output, session) {
   #Zoom to region X axis BP
   output$BPrange <-
     renderUI({
-      sliderInput("BPrange", h5("Region: Start-End"),
+      sliderInput("BPrange", h5("Use sliders to zoom in to required region."),
                   min = RegionStart(),
                   max = RegionEnd(),
                   value = c(RegionStart(),RegionEnd()),
@@ -587,6 +585,116 @@ shinyServer(function(input, output, session) {
                 #pre selected a region to demonstrate as an example - HNF1B gene
                 selected = "chr2_241657087_242920971"
     )})
+  
+  
+  
+  # Merged Final plot -------------------------------------------------------  
+  # #merged plot with dynamic plot height
+  # plotObjMerge <- reactive({
+  #   # Create a Progress object
+  #   progress <- shiny::Progress$new()
+  #   progress$set(message = "Plotting please wait...", value = 0)
+  #   # Close the progress when this reactive exits (even if there's an error)
+  #   on.exit(progress$close())
+  #   
+  #   source("Source/MergePlots.R",local=TRUE)
+  #   
+  # })
+  # output$plotMerge <- renderPlot({
+  #   # Create a Progress object
+  #   progress <- shiny::Progress$new()
+  #   progress$set(message = "Almost there...", value = 80)
+  #   # Close the progress when this reactive exits (even if there's an error)
+  #   on.exit(progress$close())
+  #   
+  #   print(plotObjMerge())
+  #   
+  # })
+  # 
+  # #plot merge height is dynamic, based on seleceted tracks
+  # output$plotMergeUI <- renderUI({
+  #   plotOutput("plotMerge",width=800,height=sum(trackHeights()))
+  # })
+  
+  
+  # Observe update ----------------------------------------------------------
+  # maximum of 5 SNPs can be selected to display LD, minimum 1 must be ticked.
+   observe({
+    # if(length(input$HitSNPs) < 1){
+    #   updateCheckboxGroupInput(
+    #     session, "HitSNPs",
+    #     selected = RegionHits()[1:min(5, length(RegionHits()))])}
+     if(length(input$ShowHideTracks) < 1){
+       updateCheckboxGroupInput(session, "ShowHideTracks", selected= "Manhattan")}
+   })
+  # 
+  # #manual chr:start-end zoom values
+  # observeEvent(input$RegionZoom,({
+  #   if(!input$RegionZoom %in% c("chr:start-end","")){
+  #     newStartEnd <- as.numeric(unlist(strsplit(input$RegionZoom,":|-"))[2:3])
+  #     updateSliderInput(session, "BPrange",
+  #                       value = newStartEnd)}
+  # }))
+  
+  #Reset plot options - 2.Plot Settings
+  observeEvent(input$resetInput,({
+    updateSliderInput(session,"FilterMinPlog", value=0)
+    updateSliderInput(session,"FilterMinLD", value=0.2)
+
+    updateNumericInput(session,"suggestiveLine", value=5)
+    updateNumericInput(session,"genomewideLine", value=8)
+
+    updateCheckboxInput(session,"adjustLabels", value=TRUE)
+    updateSliderInput(session,"repFact", value=5)
+
+    updateSliderInput(session,"BPrange", value = c(RegionStart(),RegionEnd()))
+    updateTextInput(session,"RegionZoom",value="chr:start-end")
+    updateSelectInput(session,"Flank",
+                      selected = 10000)
+    updateCheckboxGroupInput(session,"HitSNPs",
+                             choices = RegionHits(),
+                             selected =
+                               RegionHits()[1:min(5,length(RegionHits()))])
+
+    updateCheckboxGroupInput(session,"ShowHideTracks",
+                             selected=c("Manhattan","Recombination"))
+  })
+  ) #END observeEvent resetInput
+
+  #reset plot output file settings - 3.Final Plot
+  observeEvent(input$resetDownloadPlotSettings |
+                 input$downloadPlotAdvancedSettings,({
+                   updateSelectInput(session, "downloadPlotType", selected = "jpeg")
+                   updateNumericInput(session,"downloadPlotWidth", value = 1000)
+                   updateNumericInput(session,"downloadPlotHeight", value = 1200)
+                   updateSliderInput(session,"downloadPlotPointSize", value = 12)
+                   updateSelectInput(session,"downloadPlotPaper", selected = "special")
+                   updateSliderInput(session,"downloadPlotRes", value = 100)
+                   updateSliderInput(session, "downloadPlotQuality", value = 100)
+                   updateSelectInput(session, "downloadPlotTypeJPEG", selected = "cairo")
+                   updateSelectInput(session, "downloadPlotTypeCompression", selected = "lzw")
+                 })
+  ) #END observeEvent resetDownloadPlotSettings
+
+  #If manhattan track is not selected then Recomb and LDSmooth track unticked.
+  observeEvent(input$ShowHideTracks,({
+    selectedTracks <- input$ShowHideTracks
+    if(!"Manhattan"%in% selectedTracks){
+      selectedTracks <- setdiff(selectedTracks,c("Recombination","LDSmooth"))
+
+      updateCheckboxGroupInput(session,"ShowHideTracks",
+                               selected=c(selectedTracks))
+    } #END if
+  })) #END observeEvent ShowHideTracks
+  
+  #Action buttons to switch between nav bars 1.Input 2.Settings 3.Final
+  observeEvent(input$goToPlotSettings,{
+    updateNavbarPage(session, "navBarPageID", selected = "2.Plot Settings")
+  })
+  observeEvent(input$goToFinalPlot,{
+    updateNavbarPage(session, "navBarPageID", selected = "3.Final Plot")
+  })
+  
   
 })#END shinyServer
 
