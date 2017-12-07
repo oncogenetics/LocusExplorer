@@ -517,11 +517,26 @@ shinyServer(function(input, output, session) {
                 xEnd = zoomEnd()
                 ) + theme_LE()
     
-    #source("Source/wgEncodeBroadHistone.R",local=TRUE)
     })
   output$PlotwgEncodeBroadHistone <- renderPlot({print(plotObjwgEncodeBroadHistone())})
   
+  # Plot: Gene ---------------------------------------------------------------
+  # returns ggplot and count of genes
+  plotObjGene <- reactive({
+    plotGene(chrom = input$Chr,
+             chromStart = zoomStart(), chromEnd = zoomEnd())})
+  # ggplot object to plot gene track
+  plotObjGenePlot <- reactive({ 
+    plotObjGene()$genePlot + theme_LE()})
+  
+  # numeric count of genes, passed for merging tracks, more genes vertical space.
+  # used for cowplot::plot_grid(), rel_heights
+  # plotObjGene()$geneCnt
 
+  output$PlotGene <- renderPlot({print(plotObjGenePlot())})
+  
+  
+  
   # Dynamic UI --------------------------------------------------------------
   #Zoom to region X axis BP
   output$BPrange <-

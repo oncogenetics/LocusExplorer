@@ -46,6 +46,13 @@ library(oncofunco)
 # increase upload limit to 20Mb
 options(shiny.maxRequestSize = 20 * 1024 ^ 2)
 
+
+#Map fonts to Windows
+if(Sys.info()['sysname'] == "Windows") {
+  windowsFonts(Courier=windowsFont("TT Courier New")) 
+}
+
+
 #Custom functions - replaced by "oncofunco" package
 #source("Source/UDF.R", local = TRUE)
 

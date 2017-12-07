@@ -308,18 +308,16 @@ shinyUI(
                           conditionalPanel("input.ShowHideTracks.indexOf('Gene')>-1",
                                            plotOutput("PlotGene",width=800,height=350))
                           ), # tabPanel - Main Plot
-                 tabPanel("Annotation", 
-                          h4("Annotation"),
-                          hr(),
+                 tabPanel("LD", 
                           tabsetPanel(type = "pills",
-                                      tabPanel("Annotation 1", 
-                                               h4("Annotation 1"),
+                                      tabPanel("Heatmap", 
+                                               h4("Heatmap"),
                                                dataTableOutput("SummarydatAnnotEQTL")),
-                                      tabPanel("Annotation 2", 
-                                               h4("Sankey (Spaghetti)"),
-                                               htmlOutput("PlotSankeyAnnotation")),
-                                      tabPanel("Annotation 2 - Data", 
-                                               dataTableOutput("SummaryROIdatSankeyAnnotation"))
+                                      tabPanel("Network", 
+                                               h4("Network"),
+                                               htmlOutput("PlotSankeyAnnotation"))
+                                      #tabPanel("Annotation 2 - Data", 
+                                      #         dataTableOutput("SummaryROIdatSankeyAnnotation"))
                                       # tabPanel("BVS Top Models", 
                                       #          htmlOutput("PlotSankeyBVS_TopModels")),
                                       
