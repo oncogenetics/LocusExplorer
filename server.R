@@ -23,11 +23,6 @@ shinyServer(function(input, output, session) {
              inFile <- input$FileStats
              req(inFile)
              fread(inFile$datapath, header = TRUE, data.table = FALSE) 
-             # 
-             # if(is.null(inFile)){return(NULL)} else {
-             #   fread(inFile$datapath, header = TRUE, data.table = FALSE) 
-             # }
-             
            },
            Example = {
              fread("Data/CustomDataExample/Association.txt",
@@ -66,32 +61,126 @@ shinyServer(function(input, output, session) {
                    header = TRUE, data.table = FALSE)}
     )# END switch
   })# END datLD
+
+  datStats <-  reactive({
+    if(input$dataType == "OncoArrayFineMapping"){
+      
+      d <- fread(paste0("Data/ProstateData/OncoArrayFineMapping/plotData/",
+                        input$RegionID,"_stats.txt")) 
+      d$Method <- "JAM"
+      d$Stats <- d$BF
+        
+      d
+      #   SNP,rsid,BP,PP_best_tag,PP_tag_r2,PostProb,BF,JAM99
+      #   rs587636640,1:150283370:C:AA,150283370,1:150283370:C:AA,1,0.0129,2.601395291,0
+      
+      
+      # datAssoc() %>% filter(BP %in% unique(datLD()$BP_A)) %>%
+      #   transmute(SNP,
+      #             Method = "JAM",
+      #             BP,
+      #             Stats = P)
+      
+    } else {
+      datAssoc() %>% filter(BP %in% unique(datLD()$BP_A)) %>%
+        transmute(SNP,
+                  Method = "Forward regression",
+                  BP,
+                  Stats = P)
+    }
+  })
   
-  datBedGraph <- reactive({
+  datAnnot <-   reactive({
+      switch(input$dataType,
+             OncoArrayFineMapping = { 
+               annotOncoFinemap <- annot %>% 
+                 transmute(CHR = Variant_Chromosome,
+                           BP = Variant_Position,
+                           DNaseI = (GSM1008595_RWPE1_DNaseI + GSM1024742_PrEC_DNaseI +
+                                       GSM1024743_PrEC_DNaseI + GSM736565_LNCaP_DNaseI +
+                                       GSM736603_LNCaP_DNaseI + GSM816634_LNCaP_androgen_DNaseI +
+                                       GSM816637_LNCaP_DNaseI) > 0,
+                           Conserved = (GERP__ + SiPhy_Omega + SiPhy_Pi + PhastCons) > 0,
+                           #PrEC_ChromHMM
+                           ChromHMM = PrEC_ChromHMM) 
+               # wide to long
+               annotOncoFinemap <- gather(annotOncoFinemap, key = TYPE1, value = TYPE2, -c(CHR, BP)) %>% 
+                 filter(TYPE2 != "FALSE") %>%
+                 mutate(TYPE2 = if_else(TYPE2 == "TRUE", TYPE1, TYPE2)) %>% 
+                 arrange(CHR, BP)
+               # add colors names
+               annotOncoFinemap$COLOUR_HEX <- annotCols[ annotOncoFinemap$TYPE2 ]
+               # TypeN, used for plotting in order on yaxis
+               annotOncoFinemap$TYPE2N <-
+                 as.numeric(
+                   factor(annotOncoFinemap$TYPE2,
+                          levels = c(
+                            "DNaseI","Conserved",
+                            #ChromHMM
+                            "Heterochromatin","CTCF","CTCF+Enhancer","Promoter","Enhancer",
+                            "Poised_Promoter","Transcribed","Repressed","CTCF+Promoter")))
+               
+               #return
+               annotOncoFinemap
+               },
+             OncoArrayMeta = { NULL },
+             Custom = { NULL },
+             Example = { NULL })
+    }) # END datAnnot
+    
+  datAnnotEQTL <-   reactive({
     switch(input$dataType,
-           OncoArrayFineMapping = { annotOncoFinemap },
-           OncoArrayMeta = { annotOncoNewHits },
-           Custom = {
-             #input file check
-             validate(need(input$FileBedGraph != "", "Please upload BedGraph file"))
+           OncoArrayFineMapping = { 
+             # eQTL
+             annotOncoFinemapEQTL <- annot %>% 
+               filter(!is.na(TCGA_eQTL_coloc0.9_genes)) %>% 
+               transmute(
+                 CHR = Variant_Chromosome,
+                 BP = Variant_Position,
+                 GENE = TCGA_eQTL_coloc0.9_genes)
              
-             inFile <- input$FileBedGraph
-             req(inFile)
-             #if(is.null(inFile)){return(NULL)} else {
-             res <- fread(inFile$datapath, header = FALSE, data.table = FALSE)
-             res <- res[,1:4]
-             colnames(res) <- c("CHR", "START", "END", "SCORE")
-             return(res)
-             
+             annotOncoFinemapEQTL <- 
+               do.call(rbind,
+                       apply(annotOncoFinemapEQTL, 1, function(i){
+                         data.frame(CHR = as.numeric(i[1]),
+                                    BP = as.numeric(i[2]),
+                                    GENE = as.character(unlist(strsplit(i[3], split = "; "))))
+                         
+                       }))
+             #return
+             annotOncoFinemapEQTL
            },
-           Example = {
-             res <- fread("Data/CustomDataExample/bedGraph.txt",
-                          header = FALSE, data.table = FALSE)
-             res <- res[,1:4]
-             colnames(res) <- c("CHR", "START", "END", "SCORE")
-             return(res)
-           })
-  }) # END datBedGraph
+           OncoArrayMeta = { NULL },
+           Custom = { NULL },
+           Example = { NULL })
+  }) # END datAnnotEQTL
+  
+  
+  # datBedGraph <- reactive({
+  #   switch(input$dataType,
+  #          OncoArrayFineMapping = { annotOncoFinemapEQTL },
+  #          OncoArrayMeta = { annotOncoNewHits },
+  #          Custom = {
+  #            #input file check
+  #            validate(need(input$FileBedGraph != "", "Please upload BedGraph file"))
+  # 
+  #            inFile <- input$FileBedGraph
+  #            req(inFile)
+  #            #if(is.null(inFile)){return(NULL)} else {
+  #            res <- fread(inFile$datapath, header = FALSE, data.table = FALSE)
+  #            res <- res[,1:4]
+  #            colnames(res) <- c("CHR", "START", "END", "SCORE")
+  #            return(res)
+  # 
+  #          },
+  #          Example = {
+  #            res <- fread("Data/CustomDataExample/bedGraph.txt",
+  #                         header = FALSE, data.table = FALSE)
+  #            res <- res[,1:4]
+  #            colnames(res) <- c("CHR", "START", "END", "SCORE")
+  #            return(res)
+  #          })
+  # }) # END datBedGraph
   
   datLDlink <- reactive({
     #input file check
@@ -121,27 +210,6 @@ shinyServer(function(input, output, session) {
       ## Reorder columns
       dplyr::select(c(6, 7, 5, 2, 3, 1, 4)) %>%
       arrange(BP_B)})
-  
-  
-  datStats <-  reactive({
-    if(input$dataType == "OncoArrayFineMapping"){
-      datAssoc() %>% filter(BP %in% unique(datLD()$BP_A)) %>%
-        transmute(SNP,
-                  Method = "JAM",
-                  BP,
-                  Stats = P)
-      
-      # fread(paste0("Data/ProstateData/OncoArrayFineMapping/plotData/",input$RegionID,"_stats.txt"),
-      #       header = TRUE) %>%
-      #   mutate(SNP = ifelse(is.na(SNP), rsid, SNP))
-    } else {
-      datAssoc() %>% filter(BP %in% unique(datLD()$BP_A)) %>%
-        transmute(SNP,
-                  Method = "Forward regression",
-                  BP,
-                  Stats = P)
-    }
-  })
   
   # Define ROI --------------------------------------------------------------
   RegionFlank <- reactive({
@@ -245,7 +313,7 @@ shinyServer(function(input, output, session) {
   
   #get granges collapsed genes for ggplot+ggbio
   plotDatGene <- reactive({
-    udf_GeneSymbol(chrom = RegionChr(),
+    GeneSymbol(chrom = RegionChr(),
                    chromStart = zoomStart(),
                    chromEnd = zoomEnd()) })
   
@@ -253,7 +321,7 @@ shinyServer(function(input, output, session) {
   plotDatGeneN <- reactive({
     res <- try({
       length(unique(plotDatGene()@elementMetadata$gene_id))}, silent=TRUE)
-    if(class(res)=="try-error"){res <- 1}
+    if(class(res) == "try-error"){res <- 1}
     return(res)
   })
   
@@ -285,6 +353,9 @@ shinyServer(function(input, output, session) {
                    "plotDatLD",
                    "colnames(plotDatLD)",
                    
+                   "datStats",
+                   "colnames(datStats)",
+                   
                    "ROIdatGeneticMap",
                    "plotDatGeneticMap",
                    "colnames(plotDatGeneticMap)"
@@ -311,6 +382,9 @@ shinyServer(function(input, output, session) {
                  paste(dim(ROIdatLD()), collapse = ","),
                  paste(dim(plotDatLD()), collapse = ","),
                  paste(colnames(plotDatLD()), collapse = ","),
+                 
+                 paste(dim(datStats()), collapse = ","),
+                 paste(colnames(datStats()), collapse = ","),
                  
                  paste(dim(ROIdatGeneticMap()), collapse = ","),
                  paste(dim(plotDatGeneticMap()), collapse = ","),
@@ -404,9 +478,6 @@ shinyServer(function(input, output, session) {
                     c("Recombination", "LDSmooth",
                       "Hits", "LD", "SuggestiveLine", "GenomewideLine"))
                   ) + theme_LE()
-                  #opts = c("LD", "LDSmooth", "Hits"))
-    
-    #source("Source/Manhattan.R",local=TRUE)
   })
   output$PlotManhattan <- renderPlot({
     # Create a Progress object

@@ -55,20 +55,15 @@ regions <- fread("Data/ProstateData/regions.csv",
                  data.table = FALSE, header = TRUE) %>% 
   mutate(REGIONBED = paste0(CHR,"_",START,"_",END))
 
-# oncoarray finemapping annotation + TCGA
-# annotOncoFinemap <- fread("Data/Annotation/OA_meta_All_SNPs_Annotated_150716.tsv")
-# annotOncoFinemap$Gene <-
-#   sapply(annotOncoFinemap$eqtl.Eze.gene,
-#          function(i)unlist(strsplit(i, split = "|", fixed = TRUE))[1])
 
-#annotOncoFinemapEQTL <- fread("Data/Annotation/LE_finemap_eQTL.tsv")
-#annotOncoFinemapEQTL[!is.na(annotOncoFinemapEQTL$geneStart),]
-
-annotOncoFinemapEQTL <- fread("Data/Annotation/Supp_Table2.csv")
-
-#annotOncoNewHits <- fread("Data/Annotation/LE_OA_65_new_hits_Annotation_2016-07-22.tsv")
-#annotOncoNewHitsEQTL <- fread("Data/Annotation/OA_NewHits_eQTLs.tsv")
-
+annot <- fread("Data/Annotation/Supp_Table2.csv", na.strings = c("", "NA"),
+               data.table = FALSE)
+annotCols <- setNames(
+  c("#D3D3D3", "#FFA500", "#7070FF", "#00DD00", "#0000AA", "#009900",
+    "#E0E0E0", "#ED3333", "#4FFFA4", "#C9DD03", "#F9A100"),
+  c("Heterochromatin",	"CTCF", "CTCF+Enhancer", "Promoter",
+    "Enhancer", "Poised_Promoter", "Transcribed", "Repressed",
+    "CTCF+Promoter", "DNaseI", "Conserved"))
 
 #wgEncodeBroadHistone bigwig data description
 wgEncodeBroadHistoneFileDesc <-

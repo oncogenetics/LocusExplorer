@@ -1,23 +1,6 @@
 # Author: Tokhir Dadaev
 # License: MIT + file LICENSE.txt
 
-# General options for all plots -------------------------------------------
-# ggplot() + udf_theme()
-theme_LE <- function(){
-    theme(legend.position="none",
-          panel.background = element_rect(fill="white"),
-          panel.grid.minor=element_blank(),
-          panel.grid.major.x = element_blank(),
-          panel.grid.major.y = element_line(colour = "grey60", linetype = "dotted"),
-          axis.title.x=element_blank(),
-          #axis.text.x=element_blank(),
-          #axis.ticks.x=element_blank(),
-          axis.line=element_blank(),
-          panel.border=element_blank(),
-          #Y Axis font
-          axis.text.y=element_text(family="Courier",colour = "grey20")
-    )
-}
 
 # GeneSymbol --------------------------------------------------------------
 # https://github.com/oncogenetics/R_UDF/blob/master/GeneSymbol.R
@@ -28,6 +11,7 @@ geneSymbol <- function(chrom = NA, chromStart = NA, chromEnd = NA){
   require(GenomicFeatures)
   require(TxDb.Hsapiens.UCSC.hg19.knownGene)
   require(org.Hs.eg.db) # gene symobols
+  require(DBI)
   
   txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
   
@@ -118,7 +102,7 @@ geneSymbol <- function(chrom = NA, chromStart = NA, chromEnd = NA){
   
   # pad gene names to align
   CollapsedGenes@elementMetadata$gene_id <- 
-    udf_pad(CollapsedGenes@elementMetadata$gene_id)
+    oncofunco::strPadLeft(CollapsedGenes@elementMetadata$gene_id)
   
   # Output ----------------------------------------------------------------
   #return collapsed genes per CHR
@@ -127,25 +111,48 @@ geneSymbol <- function(chrom = NA, chromStart = NA, chromEnd = NA){
 
 
 
-# Shade tint HEX input ----------------------------------------------------
-udf_shadeTintColor <- function(color, change = 25) {  
-  # Example: shadeColor("#5CFF5C", 25)
-  # positive shade
-  # negative tints
-  RGB <- col2rgb(color)
-  RGB <- RGB - RGB/100*change
-  RGB <- ifelse(RGB < 0, 0, RGB)
-  RGB <- ifelse(RGB > 255, 255, RGB)
-  
-  return(rgb(RGB[1],RGB[2],RGB[3],maxColorValue = 255))
-}
-
 
 
   
 
 
 # !!! NOT IN USE !!! ------------------------------------------------------
+# # Shade tint HEX input ----------------------------------------------------
+# udf_shadeTintColor <- function(color, change = 25) {  
+#   # Example: shadeColor("#5CFF5C", 25)
+#   # positive shade
+#   # negative tints
+#   RGB <- col2rgb(color)
+#   RGB <- RGB - RGB/100*change
+#   RGB <- ifelse(RGB < 0, 0, RGB)
+#   RGB <- ifelse(RGB > 255, 255, RGB)
+#   
+#   return(rgb(RGB[1],RGB[2],RGB[3],maxColorValue = 255))
+# }
+# 
+
+
+
+# # General options for all plots -------------------------------------------
+# # ggplot() + udf_theme()
+# theme_LE <- function(){
+#   theme(legend.position="none",
+#         panel.background = element_rect(fill="white"),
+#         panel.grid.minor=element_blank(),
+#         panel.grid.major.x = element_blank(),
+#         panel.grid.major.y = element_line(colour = "grey60", linetype = "dotted"),
+#         axis.title.x=element_blank(),
+#         #axis.text.x=element_blank(),
+#         #axis.ticks.x=element_blank(),
+#         axis.line=element_blank(),
+#         panel.border=element_blank(),
+#         #Y Axis font
+#         axis.text.y=element_text(family="Courier",colour = "grey20")
+#   )
+# }
+
+
+
 # SNP label reposition ----------------------------------------------------
 # Adapted form FField package by Grigori Kapoustin
 # https://cran.r-project.org/web/packages/FField/
