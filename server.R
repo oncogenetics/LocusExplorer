@@ -212,9 +212,7 @@ shinyServer(function(input, output, session) {
       arrange(BP_B)})
   
   # Define ROI --------------------------------------------------------------
-  RegionFlank <- reactive({
-    as.numeric(input$Flank)
-  })
+  RegionFlank <- reactive({ as.numeric(input$Flank) })
   
   RegionChr <- reactive({ datAssoc()$CHR[1] })
   RegionChrN <- reactive({
