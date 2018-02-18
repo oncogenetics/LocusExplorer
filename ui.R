@@ -63,13 +63,12 @@ shinyUI(
                          input.dataType == 'OncoArrayMeta'",
                          uiOutput("Chr"),
                          uiOutput("RegionID"),
-                         selectInput("Flank", label = h5("Region Flank"), 
-                                     choices = list( "0 kb" = 1,
-                                                     "10 kb" = 10000,
-                                                     "50 kb" = 50000,
-                                                     "100 kb" = 100000,
-                                                     "200 kb" = 200000), 
-                                     selected = 10000)
+                         sliderInput("Flank", label = h5("Region Flank"), 
+                                     min = 0,
+                                     max = 100,
+                                     #step = 10,
+                                     round = TRUE,
+                                     value = 10, post = "kb")
                          ),#conditionalPanel - prostate
         
         conditionalPanel("input.dataType == 'Custom'",
@@ -144,13 +143,6 @@ shinyUI(
     ),#tabPanel - Data
     # Plot --------------------------------------------------------------------  
     tabPanel("2.Plot Settings",
-             
-             # testing vars -------------------------------------------
-             h4("testing vars"),
-             DT::dataTableOutput("testVars"),
-             
-             
-             
              sidebarPanel(
                h4("SNP Filters:"),
                h6("Use sliders to set required threshold for P-value and LD."),
@@ -161,25 +153,25 @@ shinyUI(
                                                         min = 0, max = 0.9, value = 0, step = 0.1))
                                 ),
                
-               conditionalPanel("input.plotTypePanelSelected=='Annotation'",
-                                selectInput("FilterMinBVS_BF", h5("BVS Bayes Factor:"), 
-                                            choices = c(3,5,10,100,1000,10000,30000,50000,100000))
-                                ),
+               # conditionalPanel("input.plotTypePanelSelected=='Annotation'",
+               #                  selectInput("FilterMinBVS_BF", h5("BVS Bayes Factor:"), 
+               #                              choices = c(3,5,10,100,1000,10000,30000,50000,100000))
+               #                  ),
                
-               conditionalPanel("input.plotTypePanelSelected=='Network'",
-                                checkboxGroupInput("haploreg", h5("Haploreg annotation"),
-                                             choices = list("SiPhy_cons",
-                                                            "EnhancerHistoneMarks",
-                                                            "DNAse",
-                                                            "ProteinBound",
-                                                            "MotifsChanged",
-                                                            "GERP_cons",
-                                                            "eQTL",
-                                                            "Func_INT",
-                                                            "Func_NSM",
-                                                            "Func_SYN"), 
-                                             selected = "SiPhy_cons")
-                                ),
+               # conditionalPanel("input.plotTypePanelSelected=='Network'",
+               #                  checkboxGroupInput("haploreg", h5("Haploreg annotation"),
+               #                               choices = list("SiPhy_cons",
+               #                                              "EnhancerHistoneMarks",
+               #                                              "DNAse",
+               #                                              "ProteinBound",
+               #                                              "MotifsChanged",
+               #                                              "GERP_cons",
+               #                                              "eQTL",
+               #                                              "Func_INT",
+               #                                              "Func_NSM",
+               #                                              "Func_SYN"), 
+               #                               selected = "SiPhy_cons")
+               #                  ),
                
                
                
@@ -215,21 +207,21 @@ shinyUI(
                                 uiOutput("HitSNPs"),
                                 # h6("Maximum of 5 hit SNPs can be plotted."),
                                 hr(),
-                                checkboxGroupInput("ShowHideTracks", h4("Tracks*:"),
+                                checkboxGroupInput("ShowHideTracks", h4("Tracks:"),
                                                    c("Chromosome" = "Chromosome",
                                                      "Manhattan" = "Manhattan",
                                                      "Manhattan: Recombination" = "Recombination",
-                                                     "Manhattan: LDSmooth" = "LDSmooth",
-                                                     "SNPType" = "SNPType",
-                                                     "Custom LD" = "LD",
-                                                     "Custom BedGraph" = "BedGraph",
-                                                     "wgEncodeBroadHistone" = "wgEncodeBroadHistone",
-                                                     "Annotation" = "annotSmooth",
+                                                     "Manhattan: LD smooth" = "LDSmooth",
+                                                     "SNP type" = "SNPType",
+                                                     "Hit SNPs R^2" = "LD",
+                                                     #"Custom BedGraph" = "BedGraph",
+                                                     "Histone" = "wgEncodeBroadHistone",
+                                                     "Annotation" = "annotOncoFinemap",
                                                      "Gene" = "Gene"),
-                                                   selected=c("Manhattan","Recombination")
+                                                   selected = c("Manhattan", "Recombination")
                                                    ),
                                 
-                                h6("* Recommneded to hide tracks until final zoom region is decided."),
+                                #h6("* Recommneded to hide tracks until final zoom region is decided."),
                                 hr(),
                                 splitLayout(
                                 actionButton("resetInput", "Reset inputs",icon = icon("ambulance"),
@@ -306,10 +298,17 @@ shinyUI(
                                            plotOutput("PlotBedGraph",width=800,height=200)),
                           conditionalPanel("input.ShowHideTracks.indexOf('wgEncodeBroadHistone')>-1",
                                            plotOutput("PlotwgEncodeBroadHistone",width=800,height=90)),
-                          conditionalPanel("input.ShowHideTracks.indexOf('annotSmooth')>-1",
-                                           plotOutput("PlotAnnotSmooth",width=800,height=220)),
+                          # conditionalPanel("input.ShowHideTracks.indexOf('annotSmooth')>-1",
+                          #                  plotOutput("PlotAnnotSmooth",width=800,height=220)),
+                          conditionalPanel("input.ShowHideTracks.indexOf('annotOncoFinemap')>-1",
+                                            plotOutput("PlotAnnotOncoFinemap",width=800,height=120)),
                           conditionalPanel("input.ShowHideTracks.indexOf('Gene')>-1",
-                                           plotOutput("PlotGene",width=800,height=350))
+                                           plotOutput("PlotGene",width=800,height=350)),
+                          
+                          # testing vars -------------------------------------------
+                          h4("testing vars"),
+                          DT::dataTableOutput("testVars")
+                          
                           ), # tabPanel - Main Plot
                  tabPanel("LD", 
                           tabsetPanel(type = "pills",
