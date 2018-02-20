@@ -440,7 +440,7 @@ shinyServer(function(input, output, session) {
                       input$ShowHideTracks), 
                     c("Recombination", "LDSmooth",
                       "Hits", "LD", "SuggestiveLine", "GenomewideLine")),
-                  pad = FALSE
+                  pad = TRUE
     ) + theme_LE()
   })
   output$PlotManhattan <- renderPlot({
@@ -458,7 +458,7 @@ shinyServer(function(input, output, session) {
     plotSNPtype(assoc = plotDatAssoc(),
                 xStart = zoomStart(),
                 xEnd = zoomEnd(),
-                pad = FALSE) +
+                pad = TRUE) +
       theme_LE()
     
   })
@@ -470,7 +470,7 @@ shinyServer(function(input, output, session) {
            hits = RegionHitsSelected(),
            xStart = zoomStart(),
            xEnd = zoomEnd(),
-           pad = FALSE) +
+           pad = TRUE) +
       theme_LE()
   })
   output$PlotSNPLD <- renderPlot({print(plotObjSNPLD())})
@@ -481,7 +481,7 @@ shinyServer(function(input, output, session) {
                 chr = input$Chr,
                 xStart = zoomStart(),
                 xEnd = zoomEnd(),
-                pad = FALSE
+                pad = TRUE
     ) + theme_LE()
     
   })
@@ -532,7 +532,7 @@ shinyServer(function(input, output, session) {
   plotObjGene <- reactive({
     plotGene(chrom = input$Chr,
              chromStart = zoomStart(), chromEnd = zoomEnd(),
-             pad = FALSE)})
+             pad = TRUE)})
   # ggplot object to plot gene track
   plotObjGenePlot <- reactive({ 
     plotObjGene()$genePlot + theme_LE()})

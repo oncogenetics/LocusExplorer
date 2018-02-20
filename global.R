@@ -84,7 +84,8 @@ plotAnnot <- function(data,
                       chromStart = NULL,
                       chromEnd = NULL,
                       vline = NULL,
-                      collapse = FALSE){
+                      collapse = FALSE,
+                      pad = TRUE){
   #subset data for zoomed region
   data <- data[ CHR == chrom &
                   BP >= chromStart &
@@ -104,19 +105,25 @@ plotAnnot <- function(data,
       scale_y_continuous(
         limits = c(-1, 4),
         breaks = c(0:3) + 0.5, 
-        labels = c("DNaseI", "Conserved", "ChromHMM", "eQTL"),
-        name = "")
+        labels = if(pad){
+          strPadLeft(c("DNaseI", "Conserved", "ChromHMM", "eQTL")) } else {
+            c("DNaseI", "Conserved", "ChromHMM", "eQTL")},
+        name = "Annot")
   } else {
     gg_out <- gg_out +
       scale_y_continuous(
         limits = c(-1, 11),
         breaks = c(0:10) + 0.5, 
-        labels = c("DNaseI","Conserved",
-                   #ChromHMM
-                   "Heterochromatin","CTCF","CTCF+Enhancer","Promoter","Enhancer",
-                   "Poised_Promoter","Transcribed","Repressed","CTCF+Promoter"),
-        name = "")
-    
+        labels = if(pad){
+          strPadLeft( c("DNaseI","Conserved",
+                        #ChromHMM
+                        "Heterochromatin","CTCF","CTCF+Enhancer","Promoter","Enhancer",
+                        "Poised_Promoter","Transcribed","Repressed","CTCF+Promoter")) } else {
+                          c("DNaseI","Conserved",
+                            #ChromHMM
+                            "Heterochromatin","CTCF","CTCF+Enhancer","Promoter","Enhancer",
+                            "Poised_Promoter","Transcribed","Repressed","CTCF+Promoter") } ,
+        name = "Annot")
   }
   
   #prettify
@@ -124,12 +131,7 @@ plotAnnot <- function(data,
     scale_color_identity() +
     # general options
     coord_cartesian(xlim = c(chromStart, chromEnd))
-    # xlim(c(chromStart, chromEnd)) +
-    # theme_LE() +
-    # theme(
-    #   axis.text.x = element_blank(),
-    #   axis.ticks.x = element_blank())
-  
+
   # mark hit SNPs - vline
   if(!is.null(vline)){
     gg_out <- gg_out +
@@ -161,14 +163,40 @@ NCBIrsidHyperlink <- function(SNP,
 } #END NCBIrsidHyperlink
 
 
+# theme_LE <- function(){
+#   # LocusExplorer ggplot custom theme
+#   # General options for all plots -------------------------------------------
+#   # Usage: ggplot() + theme_LE()
+#   
+#   theme(legend.position = "none",
+#         #panel.background = element_rect(fill = "white"),
+#         plot.background = element_rect(fill="darkseagreen"),
+#         panel.grid.minor = element_blank(),
+#         panel.grid.major.x = element_blank(),
+#         panel.grid.major.y = element_line(colour = "grey60",
+#                                           linetype = "dotted"),
+#         axis.title.x = element_blank(),
+#         axis.line = element_blank(),
+#         panel.border = element_blank(),
+#         axis.text.y = element_text(colour = "grey20",
+#                                    margin = margin(t = 0, r = 0, b = 0, l = 5, unit = "cm"),
+#                                    face = "italic"),
+#         axis.title.y = element_text(margin = margin(t = 0, r = 0, b = 0, l = 2, unit = "cm")),
+#         plot.margin = unit(c(0, 0, 0, 1), "cm")
+#         #plot.margin = unit(c(1, 1, 0.5, 0.5), "lines")
+#         #plot.margin = rep(unit(0,"null"),4)
+#         )
+#   
+#   }
+
+
 theme_LE <- function(){
   # LocusExplorer ggplot custom theme
   # General options for all plots -------------------------------------------
   # Usage: ggplot() + theme_LE()
   
   theme(legend.position = "none",
-        #panel.background = element_rect(fill = "white"),
-        plot.background = element_rect(fill="darkseagreen"),
+        panel.background = element_rect(fill = "white"),
         panel.grid.minor = element_blank(),
         panel.grid.major.x = element_blank(),
         panel.grid.major.y = element_line(colour = "grey60",
@@ -176,13 +204,8 @@ theme_LE <- function(){
         axis.title.x = element_blank(),
         axis.line = element_blank(),
         panel.border = element_blank(),
-        axis.text.y = element_text(colour = "grey20",
-                                   margin = margin(t = 0, r = 0, b = 0, l = 5, unit = "cm"),
-                                   face = "italic"),
-        axis.title.y = element_text(margin = margin(t = 0, r = 0, b = 0, l = 2, unit = "cm")),
-        plot.margin = unit(c(0, 0, 0, 1), "cm")
-        #plot.margin = unit(c(1, 1, 0.5, 0.5), "lines")
-        #plot.margin = rep(unit(0,"null"),4)
-        )
-  
-  }
+        axis.text.y = element_text(family = "Courier", colour = "grey20")
+        
+  )
+}
+
