@@ -168,7 +168,7 @@ shinyServer(function(input, output, session) {
   
   # Define ROI --------------------------------------------------------------
   RegionFlank <- reactive({ req(input$Flank)
-    max(1, input$Flank * 10) })
+    max(c(1, input$Flank * 1000)) })
   
   RegionChr <- reactive({ 
     req(datAssoc())
@@ -294,6 +294,26 @@ shinyServer(function(input, output, session) {
     #return
     res })
   
+  # OncoArrau finemapping Annotaion and TCGA EQTL
+  plotDatAnnot <- reactive({ annotOncoFinemap[ CHR == RegionChrN(), ] })
+  plotDatAnnotEQTL <- reactive({
+    # c(CHR, BP, TYPE1, TYPE2, COLOUR_HEX, TYPE2N) 
+    annotOncoFinemapEQTL %>%
+      filter(CHR == RegionChrN() &
+               between(SNP_BP, zoomStart(), zoomEnd())) %>% 
+      #filter(SNPhit == SNP) %>% 
+      #filter(SNP_BP %in% datLD()[datLD()$SNP_A %in% RegionHitsSelected(), "BP_A"]) %>% 
+      transmute(CHR,
+                BP = SNP_BP,
+                TYPE1 = "EQTL",
+                TYPE2 = GENE,
+                COLOUR_HEX = "#F00034", #ICRcolours("BrighRed")
+                TYPE2N = 4) %>%
+      unique()
+    })
+  
+    
+    
   # Output ------------------------------------------------------------------
   # Output Summary ----------------------------------------------------------
   
@@ -419,8 +439,8 @@ shinyServer(function(input, output, session) {
   plotObjChromosome <- reactive({source("Source/Chromosome.R", local = TRUE)})
   output$PlotChromosome <- renderPlot({print(plotObjChromosome())})
   
-  # Plot: Manhattan ------------------------------------------------------------
-  plotObjManhattan <- reactive({
+  # Plot: Manhattan Pvalues ----------------------------------------------------
+  plotObjManhattanPvalues <- reactive({
     # Create a Progress object
     progress <- shiny::Progress$new()
     progress$set(message = "Plotting please wait...", value = 0)
@@ -437,20 +457,74 @@ shinyServer(function(input, output, session) {
                   xEnd = zoomEnd(),
                   opts = intersect(
                     c("Hits", "LD", "SuggestiveLine", "GenomewideLine", 
-                      input$ShowHideTracks), 
+                      input$ShowHideManhattanPvalues), 
                     c("Recombination", "LDSmooth",
                       "Hits", "LD", "SuggestiveLine", "GenomewideLine")),
-                  pad = TRUE
-    ) + theme_LE()
+                  pad = TRUE,
+                  postprob = FALSE) +
+      theme_LE()
   })
-  output$PlotManhattan <- renderPlot({
+  output$PlotManhattanPvalues <- renderPlot({
     # Create a Progress object
     progress <- shiny::Progress$new()
     progress$set(message = "Almost there...", value = 80)
     # Close the progress when this reactive exits (even if there's an error)
     on.exit(progress$close())
     
-    print(plotObjManhattan())})
+    print(plotObjManhattanPvalues())})
+  
+  
+  # Plot: Manhattan PostProbs --------------------------------------------------
+  plotObjManhattanPostProbs <- reactive({
+    # Create a Progress object
+    progress <- shiny::Progress$new()
+    progress$set(message = "Plotting please wait...", value = 0)
+    # Close the progress when this reactive exits (even if there's an error)
+    on.exit(progress$close())
+    
+    # datAssoc <- fread("../R_ShinyApps/LocusExplorer/Data/ProstateData/OncoArrayFineMapping/plotData/chr2_241657087_242920971_assoc.txt", data.table = FALSE)
+    # datStats <- fread("../R_ShinyApps/LocusExplorer/Data/ProstateData/OncoArrayFineMapping/plotData/chr2_241657087_242920971_stats.txt", data.table = FALSE)
+    # datLD <- fread("../R_ShinyApps/LocusExplorer/Data/ProstateData/OncoArrayFineMapping/plotData/chr2_241657087_242920971_LD.txt", data.table = FALSE)
+    # lookUp <- setNames(datStats$SNP, datStats$rsid)
+    # datStats$PP_best_tag_SNP <- lookUp[ datStats$PP_best_tag]
+    
+    # datStats <- datStats()
+    # lookUp <- setNames(datStats$SNP, datStats$rsid)
+    # datStats$PP_best_tag_SNP <- lookUp[ datStats$PP_best_tag]
+    
+    # c("SNP","BP","P","TYPED") 
+    datStats <- datStats()
+    datStats <- merge(datStats, datAssoc()[, c("SNP", "TYPED")], by = "SNP")
+    plotDat <- unique(data.frame(SNP = datStats$SNP,
+                          BP = datStats$BP,
+                          P = datStats$PostProb,
+                          TYPED = datStats$TYPED))
+    
+    plotManhattan(assoc = plotDat,
+                  LD = plotDatLD(),
+                  geneticMap = plotDatGeneticMap(),
+                  suggestiveLine = input$suggestiveLine,
+                  genomewideLine = input$genomewideLine,
+                  hits = RegionHitsSelected(),
+                  xStart = zoomStart(),
+                  xEnd = zoomEnd(),
+                  opts = intersect(
+                    c("Hits", "LD", "SuggestiveLine", "GenomewideLine", 
+                      input$ShowHideManhattanPostProbs), 
+                    c("Recombination", "LDSmooth",
+                      "Hits", "LD", "SuggestiveLine", "GenomewideLine")),
+                  pad = TRUE,
+                  postprob = TRUE) +
+      theme_LE()
+  })
+  output$PlotManhattanPostProbs <- renderPlot({
+    # Create a Progress object
+    progress <- shiny::Progress$new()
+    progress$set(message = "Almost there...", value = 80)
+    # Close the progress when this reactive exits (even if there's an error)
+    on.exit(progress$close())
+    
+    print(plotObjManhattanPostProbs())})
   
   # Plot: SNPType -------------------------------------------------------------
   # SNP is imputed or typed
@@ -496,29 +570,19 @@ shinyServer(function(input, output, session) {
   
   # Plot: Annot & eQTL OncoFinemap -------------------------------------------
   plotObjAnnotOncoFinemap <- reactive({
-    # plotBlank(xStart = 1, xEnd = 10, yLabel = "test") + theme_LE()
-    eqtl <- annotOncoFinemapEQTL %>%
-      filter(CHR == RegionChrN() &
-               between(SNP_BP, zoomStart(), zoomEnd())) %>% 
-      transmute(CHR,
-                BP = SNP_BP,
-                TYPE1 = "EQTL",
-                TYPE2 = GENE,
-                COLOUR_HEX = "#FF0000",
-                TYPE2N = 4) %>%
-      unique()
-    
-    plotDat <- rbind(annotOncoFinemap[ CHR == RegionChrN(), ], eqtl)
+    plotDat <- rbind(plotDatAnnot(), plotDatAnnotEQTL())
+  
     
     gg <- plotAnnot(plotDat,
                     chrom = RegionChrN(),
-                    chromStart = zoomStart(), chromEnd = zoomEnd(),
-                    vline = NULL, collapse = TRUE) +
+                    xStart = zoomStart(), xEnd = zoomEnd(),
+                    collapse = TRUE) +
       theme_LE()
     # add gene names if there eqtl
-    if(nrow(eqtl) > 0) {
-      gg <- gg +
-        geom_text_repel(data = eqtl, aes(x = BP, y = 4, label = TYPE2), col = "black")}
+    # if(nrow(plotDatAnnotEQTL()) > 0) {
+    #   gg <- gg +
+    #     geom_text_repel(data = plotDatAnnotEQTL(),
+    #                     aes(x = BP, y = 4, label = TYPE2), col = "black")}
     #return ggplot
     gg
     
@@ -532,6 +596,7 @@ shinyServer(function(input, output, session) {
   plotObjGene <- reactive({
     plotGene(chrom = input$Chr,
              chromStart = zoomStart(), chromEnd = zoomEnd(),
+             hits = unique(plotDatAnnotEQTL()$TYPE2),
              pad = TRUE)})
   # ggplot object to plot gene track
   plotObjGenePlot <- reactive({ 

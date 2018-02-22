@@ -4,10 +4,12 @@
 
 # Workspace ---------------------------------------------------------------
 library(dplyr)
+library(tidyr)
 library(data.table)
 library(splitstackshape)
 
-setwd("C:/Users/tdadaev/Desktop/Work/GitHubProjects/LocusExplorer")
+#setwd("C:/Users/tdadaev/Desktop/Work/GitHubProjects/LocusExplorer")
+setwd("N:/Translational Cancer Genetics Team/Bioinformatics/Development/R_ShinyApps/LocusExplorer")
 
 # Data --------------------------------------------------------------------
 annot <- fread("Data/Annotation/Supp_Table2.csv", na.strings = c("", "NA"),
@@ -48,6 +50,7 @@ annotOncoFinemap$TYPE2N <-
              "Heterochromatin","CTCF","CTCF+Enhancer","Promoter","Enhancer",
              "Poised_Promoter","Transcribed","Repressed","CTCF+Promoter")))
 
+#head(annotOncoFinemap, 2)
 #   CHR        BP    TYPE1           TYPE2 COLOUR_HEX TYPE2N
 # 1   1 150267316 ChromHMM        Promoter    #00DD00      6
 # 2   1 150270088 ChromHMM Heterochromatin    #D3D3D3      3
@@ -55,21 +58,29 @@ annotOncoFinemap$TYPE2N <-
 # eQTL --------------------------------------------------------------------
 annotOncoFinemapEQTL <-
   annot %>%
-  filter( TCGA_eQTL_coloc0.9_genes != "") %>%
+  filter( !is.na(TCGA_eQTL_coloc0.9_genes)) %>%
   dplyr::transmute(CHR = Variant_Chromosome,
-                   SNPhit = PP_best_tag,
-                   SNP = Variant_Name,
+                   SNPhit = PP_best_tag_dbSNP,
+                   SNPhit_BP = PP_best_tag_position,
+                   SNP = dbSNP_clean,
+                   SNP_BP = Variant_Position,
                    R2 = PP_tag_r.2,
-                   GENE = TCGA_eQTL_coloc0.9_genes,
-                   SNP_BP = Variant_Position) %>%
+                   GENE = TCGA_eQTL_coloc0.9_genes
+                   ) %>%
   base::unique()
 
 # split stack genes
 annotOncoFinemapEQTL <- cSplit(annotOncoFinemapEQTL, splitCols = "GENE", sep = ";", direction = "long")
 annotOncoFinemapEQTL <- annotOncoFinemapEQTL %>% 
-  mutate(R2 = ifelse(SNPhit == SNP, 1, R2))
+  mutate(R2 = ifelse(SNPhit == SNP, 1, R2)) %>% 
+  arrange(CHR, SNP_BP)
 
+# head(annotOncoFinemapEQTL, 2)
+#   CHR      SNPhit SNPhit_BP         SNP    SNP_BP   R2     GENE
+# 1   1 rs587636640 150283370  rs61305632 150267316 0.94 ADAMTSL4
+# 2   1 rs587636640 150283370 rs570851450 150334248 0.92 ADAMTSL4
 
 # Output ------------------------------------------------------------------
 write.csv(annotOncoFinemap, "Data/Annotation/Supp_Table2_clean_annot.csv", row.names = FALSE)
 write.csv(annotOncoFinemapEQTL, "Data/Annotation/Supp_Table2_clean_eqtl.csv", row.names = FALSE)
+

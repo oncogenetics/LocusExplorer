@@ -62,13 +62,7 @@ shinyUI(
         conditionalPanel("input.dataType == 'OncoArrayFineMapping' ||
                          input.dataType == 'OncoArrayMeta'",
                          uiOutput("Chr"),
-                         uiOutput("RegionID"),
-                         sliderInput("Flank", label = h5("Region Flank"), 
-                                     min = 0,
-                                     max = 100,
-                                     #step = 10,
-                                     round = TRUE,
-                                     value = 10, post = "kb")
+                         uiOutput("RegionID")
                          ),#conditionalPanel - prostate
         
         conditionalPanel("input.dataType == 'Custom'",
@@ -192,6 +186,12 @@ shinyUI(
                                 #                              min = 0, max = 50, 
                                 #                              value = 20, step = 0.5)),
                                 # 
+                                sliderInput("Flank", label = h5("Region Flank"), 
+                                            min = 0,
+                                            max = 100,
+                                            #step = 10,
+                                            round = TRUE,
+                                            value = 10, post = "kb"),
                                 h4("Zoom region:"),
                                 uiOutput("BPrange"),
                                 #Zoom using text: chr1:36020000-36140000
@@ -207,19 +207,33 @@ shinyUI(
                                 uiOutput("HitSNPs"),
                                 # h6("Maximum of 5 hit SNPs can be plotted."),
                                 hr(),
+                                splitLayout(
+                                  checkboxGroupInput("ShowHideManhattanPvalues", "Manhattan: Pvalues",
+                                                     c("Manhattan" = "Manhattan",
+                                                       "Recombination" = "Recombination",
+                                                       "LD smooth" = "LDSmooth"),
+                                                     selected = c("Manhattan", "Recombination", "LDSmooth")),
+                                  checkboxGroupInput("ShowHideManhattanPostProbs", "Manhattan: PostProbs",
+                                                     c("Manhattan" = "Manhattan",
+                                                       "Recombination" = "Recombination",
+                                                       "LD smooth" = "LDSmooth"),
+                                                     selected = "Manhattan"
+                                                     # c("Pvalues" = "Pvalues",
+                                                     #   "PostProbs" = "PostProbs"),
+                                                     # selected = "Pvalues")),
+                                                     )),
                                 checkboxGroupInput("ShowHideTracks", h4("Tracks:"),
                                                    c("Chromosome" = "Chromosome",
-                                                     "Manhattan" = "Manhattan",
-                                                     "Manhattan: Recombination" = "Recombination",
-                                                     "Manhattan: LD smooth" = "LDSmooth",
+                                                     #"Manhattan" = "Manhattan",
+                                                     #"Manhattan: Recombination" = "Recombination",
+                                                     #"Manhattan: LD smooth" = "LDSmooth",
                                                      "SNP type" = "SNPType",
-                                                     "Hit SNPs R^2" = "LD",
+                                                     "Hit SNPs LD" = "LD",
                                                      #"Custom BedGraph" = "BedGraph",
-                                                     "Histone" = "wgEncodeBroadHistone",
+                                                     "ENCODE Histone" = "wgEncodeBroadHistone",
                                                      "Annotation" = "annotOncoFinemap",
                                                      "Gene" = "Gene"),
-                                                   selected = c("Manhattan", "Recombination")
-                                                   ),
+                                                   selected = c("Manhattan", "Recombination")),
                                 
                                 #h6("* Recommneded to hide tracks until final zoom region is decided."),
                                 hr(),
@@ -288,8 +302,14 @@ shinyUI(
                           # Conditional plots
                           conditionalPanel("input.ShowHideTracks.indexOf('Chromosome')>-1",
                                            plotOutput("PlotChromosome",width=800,height=70)),
-                          conditionalPanel("input.ShowHideTracks.indexOf('Manhattan')>-1",
-                                           plotOutput("PlotManhattan",width=800,height=500)),
+                          
+                          # Manhattan with p-values
+                          conditionalPanel("input.ShowHideManhattanPvalues.indexOf('Manhattan')>-1",
+                                           plotOutput("PlotManhattanPvalues",width=800,height=500)),
+                          # Manhattan with PostProbs
+                          conditionalPanel("input.ShowHideManhattanPostProbs.indexOf('Manhattan')>-1",
+                                           plotOutput("PlotManhattanPostProbs",width=800,height=250)),
+                          
                           conditionalPanel("input.ShowHideTracks.indexOf('SNPType')>-1",
                                            plotOutput("PlotSNPType",width=800,height=70)),
                           conditionalPanel("input.ShowHideTracks.indexOf('LD')>-1",
