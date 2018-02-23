@@ -503,8 +503,8 @@ shinyServer(function(input, output, session) {
     plotManhattan(assoc = plotDat,
                   LD = plotDatLD(),
                   geneticMap = plotDatGeneticMap(),
-                  suggestiveLine = input$suggestiveLine,
-                  genomewideLine = input$genomewideLine,
+                  suggestiveLine = 0,
+                  genomewideLine = 0,
                   hits = RegionHitsSelected(),
                   xStart = zoomStart(),
                   xEnd = zoomEnd(),
@@ -551,14 +551,27 @@ shinyServer(function(input, output, session) {
   
   # Plot: wgEncodeBroadHistone 7 bigwig ---------------------------------------
   plotObjwgEncodeBroadHistone <- reactive({
-    plotHistone(folder = "Data/wgEncodeBroadHistone/",
-                chr = input$Chr,
-                xStart = zoomStart(),
-                xEnd = zoomEnd(),
-                pad = TRUE
-    ) + theme_LE()
     
-  })
+    gg <- try({
+      plotHistone(folder = "Data/wgEncodeBroadHistone/",
+                  chr = input$Chr,
+                  xStart = zoomStart(),
+                  xEnd = zoomEnd(),
+                  pad = TRUE
+      ) + theme_LE()}, silent = TRUE)
+    
+    if(class(gg) == "try-error"){ 
+      gg <- plotBlank(zoomStart(), zoomEnd(),
+                      yLabel = expression(ENCODE[]),
+                      textAnnot = "Error: Histone bigwig files are missing.") +
+        theme_LE() #+
+        #ylab(expression(ENCODE[]))
+      }
+    
+    #return 
+    gg
+    })
+  
   output$PlotwgEncodeBroadHistone <- renderPlot({print(plotObjwgEncodeBroadHistone())})
   
   # Plot: BedGraph ------------------------------------------------------------
@@ -597,6 +610,9 @@ shinyServer(function(input, output, session) {
     plotGene(chrom = input$Chr,
              chromStart = zoomStart(), chromEnd = zoomEnd(),
              hits = unique(plotDatAnnotEQTL()$TYPE2),
+               
+               # if("annotOncoFinemap" %in% input$ShowHideTracks){
+               # unique(plotDatAnnotEQTL()$TYPE2)} else { NULL },
              pad = TRUE)})
   # ggplot object to plot gene track
   plotObjGenePlot <- reactive({ 
@@ -675,32 +691,33 @@ shinyServer(function(input, output, session) {
   
   
   # Merged Final plot -------------------------------------------------------  
-  # #merged plot with dynamic plot height
-  # plotObjMerge <- reactive({
-  #   # Create a Progress object
-  #   progress <- shiny::Progress$new()
-  #   progress$set(message = "Plotting please wait...", value = 0)
-  #   # Close the progress when this reactive exits (even if there's an error)
-  #   on.exit(progress$close())
-  #   
-  #   source("Source/MergePlots.R",local=TRUE)
-  #   
-  # })
-  # output$plotMerge <- renderPlot({
-  #   # Create a Progress object
-  #   progress <- shiny::Progress$new()
-  #   progress$set(message = "Almost there...", value = 80)
-  #   # Close the progress when this reactive exits (even if there's an error)
-  #   on.exit(progress$close())
-  #   
-  #   print(plotObjMerge())
-  #   
-  # })
-  # 
-  # #plot merge height is dynamic, based on seleceted tracks
-  # output$plotMergeUI <- renderUI({
-  #   plotOutput("plotMerge",width=800,height=sum(trackHeights()))
-  # })
+  #merged plot with dynamic plot height
+  plotObjMerge <- reactive({
+    # Create a Progress object
+    progress <- shiny::Progress$new()
+    progress$set(message = "Plotting please wait...", value = 0)
+    # Close the progress when this reactive exits (even if there's an error)
+    on.exit(progress$close())
+
+    source("Source/MergePlots.R", local = TRUE)
+
+  })
+  output$plotMerge <- renderPlot({
+    # Create a Progress object
+    progress <- shiny::Progress$new()
+    progress$set(message = "Almost there...", value = 80)
+    # Close the progress when this reactive exits (even if there's an error)
+    on.exit(progress$close())
+
+    print(plotObjMerge())
+
+  })
+
+  #plot merge height is dynamic, based on seleceted tracks
+  output$plotMergeUI <- renderUI({
+    #plotOutput("plotMerge", width = 800, height = sum(trackHeights()))
+    plotOutput("plotMerge", width = 800, height = 1000)
+  })
   
   
   # Observe update ----------------------------------------------------------
@@ -712,8 +729,11 @@ shinyServer(function(input, output, session) {
     #     #selected = RegionHits()[1:min(5, length(RegionHits()))]
     #     selected = RegionHits()[1]
     #     )}
-    if(length(input$ShowHideTracks) < 1){
-      updateCheckboxGroupInput(session, "ShowHideTracks", selected = "Manhattan")}
+    if(length(c(input$ShowHideTracks,
+                input$ShowHideManhattanPvalues,
+                input$ShowHideManhattanPostProbs)) < 1){
+      updateCheckboxGroupInput(session, "ShowHideManhattanPvalues",
+                               selected = "Manhattan")}
   })
   # 
   # #manual chr:start-end zoom values

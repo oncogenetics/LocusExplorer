@@ -217,11 +217,7 @@ shinyUI(
                                                      c("Manhattan" = "Manhattan",
                                                        "Recombination" = "Recombination",
                                                        "LD smooth" = "LDSmooth"),
-                                                     selected = "Manhattan"
-                                                     # c("Pvalues" = "Pvalues",
-                                                     #   "PostProbs" = "PostProbs"),
-                                                     # selected = "Pvalues")),
-                                                     )),
+                                                     selected = "Manhattan")),
                                 checkboxGroupInput("ShowHideTracks", h4("Tracks:"),
                                                    c("Chromosome" = "Chromosome",
                                                      #"Manhattan" = "Manhattan",
@@ -371,8 +367,7 @@ shinyUI(
              sidebarPanel(
                # Choose Title for merged plot
                uiOutput("downloadPlotTitle"),
-               
-               
+
                radioButtons("PlotTheme","Plot theme",
                             choices = list("Shades - Colour picker" = 1,
                                            "Classic - Borders only" = 2,
@@ -380,11 +375,12 @@ shinyUI(
                             selected = 1),
                
                conditionalPanel("input.PlotTheme == 1",
-                                splitLayout(
+                                #splitLayout(
                                   colourInput("PlotThemeColour1",
                                               "Plot theme shade 1", "#C2C2C2"),
                                   colourInput("PlotThemeColour2",
-                                              "Plot theme shade 2", "#E5E5E5"))
+                                              "Plot theme shade 2", "#E5E5E5")
+                                #)
                ),
                
                # Choose download filename.
