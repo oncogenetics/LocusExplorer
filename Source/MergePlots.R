@@ -1,31 +1,23 @@
 # Author: Tokhir Dadaev
 # License: MIT + file LICENSE.txt
-plotList <-
-  list(
-    if("Manhattan" %in% input$ShowHideManhattanPvalues) plotObjManhattanPvalues() else NA,
-    if("Manhattan" %in% input$ShowHideManhattanPostProbs) plotObjManhattanPostProbs() else NA,
-    if("SNPType" %in% input$ShowHideTracks) plotObjSNPType() else NA,
-    if("LD" %in% input$ShowHideTracks) plotObjSNPLD() else NA,
-    if("wgEncodeBroadHistone" %in% input$ShowHideTracks) plotObjwgEncodeBroadHistone() else NA,
-    if("annotOncoFinemap" %in% input$ShowHideTracks) plotObjAnnotOncoFinemap() else NA,
-    if("Gene" %in% input$ShowHideTracks) plotObjGenePlot() else NA
-  )
 
-names(plotList) <- 
-  c("ManhattanPvalues", "ManhattanPostProbs", "SNPType", "LD",
-    "wgEncodeBroadHistone", "annotOncoFinemap", "Gene")
 
-plotHeights <- c(400,
-                 200,
-                 10 * )
-  1
+# names(plotList) <- 
+#   c("Chromosome", "ManhattanPvalues", "ManhattanPostProbs", "SNPType", "LD",
+#     "wgEncodeBroadHistone", "annotOncoFinemap", "Gene")
 
-plotList <- plotList[!is.na(plotList)]
 
-tracks(
-  plotList  
-  #heights = c(7,3)
-  )
+
+
+# ixKeep <- !is.na(plotList)
+# plotList <- plotList[ ixKeep ]
+# plotHeights <- plotHeights[ ixKeep ]
+# 
+# 
+# tracks(
+#   plotList,
+#   heights = plotHeights
+#   )
 
 
 

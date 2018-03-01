@@ -16,6 +16,7 @@ tweaks <-
                                    -column-fill: auto;
                                  }
                                  "))),
+
     #push it down 70px to avoid going under navbar
     tags$style(type = "text/css", "body {padding-top: 70px;}"
         #        HTML(
@@ -61,15 +62,15 @@ shinyUI(
                      selected = "OncoArrayFineMapping"),
         conditionalPanel("input.dataType == 'OncoArrayFineMapping' ||
                          input.dataType == 'OncoArrayMeta'",
-                         uiOutput("Chr"),
-                         uiOutput("RegionID")
+                         uiOutput("ui_Chr"),
+                         uiOutput("ui_RegionID")
                          ),#conditionalPanel - prostate
         
         conditionalPanel("input.dataType == 'Custom'",
                          fileInput("FileStats", "Association File (required)"),
                          fileInput("FileLD", "LD File (recommended)"),
                          fileInput("FileBedGraph", "bedGraph File"),
-                         uiOutput("FileBedGraphName")
+                         uiOutput("ui_FileBedGraphName")
         ),#conditionalPanel- Custom
         
         conditionalPanel("input.dataType == 'Example'"
@@ -88,7 +89,7 @@ shinyUI(
                    # Abstract pudmedID
                    conditionalPanel("input.dataType == 'OncoArrayFineMapping' ||
                                      input.dataType == 'OncoArrayMeta'",
-                                    uiOutput("refProstatePaper"),
+                                    uiOutput("ui_refProstatePaper"),
                                     hr()
                    ),
                    helpText("UCSC link to selected region:"),
@@ -193,7 +194,7 @@ shinyUI(
                                             round = TRUE,
                                             value = 10, post = "kb"),
                                 h4("Zoom region:"),
-                                uiOutput("BPrange"),
+                                uiOutput("ui_BPrange"),
                                 #Zoom using text: chr1:36020000-36140000
                                 # textInput("RegionZoom", label = h5("Region zoom"),
                                 #           value = "chr:start-end"),
@@ -204,14 +205,18 @@ shinyUI(
                                 #                    selected = c("StepwiseForward")
                                 #                    ),
                                 hr(),
-                                uiOutput("HitSNPs"),
+                                uiOutput("ui_HitSNPs"),
+                                hr(),
+                                uiOutput("ui_otherHits"),
+                                
                                 # h6("Maximum of 5 hit SNPs can be plotted."),
                                 hr(),
                                 splitLayout(
                                   checkboxGroupInput("ShowHideManhattanPvalues", "Manhattan: Pvalues",
                                                      c("Manhattan" = "Manhattan",
                                                        "Recombination" = "Recombination",
-                                                       "LD smooth" = "LDSmooth"),
+                                                       "LD smooth" = "LDSmooth",
+                                                       "Effect" = "Effect"),
                                                      selected = c("Manhattan", "Recombination", "LDSmooth")),
                                   checkboxGroupInput("ShowHideManhattanPostProbs", "Manhattan: PostProbs",
                                                      c("Manhattan" = "Manhattan",
@@ -366,7 +371,7 @@ shinyUI(
     tabPanel("3.Final Plot",
              sidebarPanel(
                # Choose Title for merged plot
-               uiOutput("downloadPlotTitle"),
+               uiOutput("ui_downloadPlotTitle"),
 
                radioButtons("PlotTheme","Plot theme",
                             choices = list("Shades - Colour picker" = 1,
@@ -375,16 +380,18 @@ shinyUI(
                             selected = 1),
                
                conditionalPanel("input.PlotTheme == 1",
-                                #splitLayout(
+                                splitLayout(
+                                  cellArgs = list(style = "overflow: visible;"),
                                   colourInput("PlotThemeColour1",
                                               "Plot theme shade 1", "#C2C2C2"),
-                                  colourInput("PlotThemeColour2",
-                                              "Plot theme shade 2", "#E5E5E5")
-                                #)
+                                  uiOutput("ui_PlotThemeColour2")
+                                   # colourInput("PlotThemeColour2",
+                                   #             "Plot theme shade 2", "#E5E5E5")
+                                )
                ),
                
                # Choose download filename.
-               uiOutput("downloadPlotFileName"),
+               uiOutput("ui_downloadPlotFileName"),
                helpText("Use PDF or SVG format for further image editing, e.g.: Photoshop, Inkscape."),
                selectInput("downloadPlotType","File type",
                            choices = list(
@@ -457,7 +464,7 @@ shinyUI(
                                                         selected = "lzw"))
                                           ),#END JPEG/TIFF 
                          actionButton("resetDownloadPlotSettings",
-                                      "Reset inputs",icon = icon("ambulance"),
+                                      "Reset inputs", icon = icon("ambulance"),
                                       style = "background-color:#C9DD03;")
                          )#END Advanced settings wellPane
                ),#END Advanced settings 
@@ -479,7 +486,7 @@ shinyUI(
              ), #sidebarPanel plot Download section
              mainPanel(
                #plot merge height is dynamic, based on seleceted tracks
-               uiOutput("plotMergeUI")
+               uiOutput("ui_plotMergeUI")
              )
              
              ), #tabPanel - "Final Plot"

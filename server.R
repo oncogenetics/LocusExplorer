@@ -207,9 +207,12 @@ shinyServer(function(input, output, session) {
   })
   
   RegionHitsSelected <- reactive({
-    #input$HitSNPs
-    if(is.null(input$HitSNPs)){ x <- "" } else { x <- input$HitSNPs }
-       })
+    x <- unique(c(input$HitSNPs, input$otherHits))
+    
+    if(is.null(x)) x <- "" 
+       
+    x   
+    })
   
   #Genomic ranges to subset bigwig data - wgEncodeBroadHistone
   RegionGR <-
@@ -387,14 +390,10 @@ shinyServer(function(input, output, session) {
   })
   
   
-  output$refProstatePaper <- renderUI(
-    includeMarkdown(paste0("Data/ProstateData/",input$dataType,
-                           "/README.md")))
-  
   output$SummaryStats <- DT::renderDataTable({
     datAssoc() %>% arrange(P) %>%
       #if SNP name has rs number then convert to a link to NCBI
-      mutate(SNP = NCBIrsidHyperlink(SNP))},
+      mutate(SNP = hyperlink(SNP))},
     # FALSE to parse as a link
     escape = FALSE)
   
@@ -408,7 +407,7 @@ shinyServer(function(input, output, session) {
         # https://stackoverflow.com/q/38771807/680068
         Stats = as.character(Stats),
         # output SNP names as links to NCBI
-        SNP = NCBIrsidHyperlink(SNP))
+        SNP = hyperlink(SNP))
   },
   # FALSE to parse as a link
   escape = FALSE)
@@ -419,24 +418,41 @@ shinyServer(function(input, output, session) {
     req(input$RegionID)
     datLD() %>%
       arrange(BP_B) %>%
-      mutate(SNP_A = NCBIrsidHyperlink(SNP_A),
-             SNP_B = NCBIrsidHyperlink(SNP_B))
+      mutate(SNP_A = hyperlink(SNP_A),
+             SNP_B = hyperlink(SNP_B))
   }, escape = FALSE)
   
-  output$SummaryRegion <-
+  output$SummaryROIdatAnnotEQTL <- DT::renderDataTable({
+    annotOncoFinemapEQTL[ CHR == RegionChrN() &
+                            ((SNPhit_BP >= RegionStart() &
+                               SNPhit_BP <= RegionEnd()) |
+                            (SNP_BP >= RegionStart() &
+                               SNP_BP <= RegionEnd())), ] %>% 
+      mutate(SNPhit = hyperlink(SNPhit),
+             SNP  = hyperlink(SNP),
+             GENE = hyperlink(GENE, type = "geneSymbol"))
+    }, escape = FALSE)
+  
+  output$ui_SummaryRegion <-
     renderUI(a(paste0(RegionChr(),':',RegionStart(),'-',RegionEnd()),
                href=paste0('http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=',
                            RegionChr(),'%3A',RegionStart(),'-',RegionEnd()),target="_blank"))
   
   
   # Plot: Title ---------------------------------------------------------------
-  output$plotTitle <-
+  output$ui_plotTitle <-
     renderUI(a(paste0(RegionChr(),':',zoomStart(),'-',zoomEnd()),
                href=paste0('http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=',
                            RegionChr(),'%3A',zoomStart(),'-',zoomEnd()), target="_blank"))
   
   # Plot: Chr ideogram --------------------------------------------------------
-  plotObjChromosome <- reactive({source("Source/Chromosome.R", local = TRUE)})
+  plotObjChromosome <- reactive({
+    Ideogram(genome = "hg19",
+             subchr = RegionChr(), color = "#F00034", fill = "#F00034") +
+      #highlight ROI - region
+      xlim(IRanges(RegionStart(), RegionEnd())) +
+      ylab(NULL)
+    })
   output$PlotChromosome <- renderPlot({print(plotObjChromosome())})
   
   # Plot: Manhattan Pvalues ----------------------------------------------------
@@ -459,7 +475,7 @@ shinyServer(function(input, output, session) {
                     c("Hits", "LD", "SuggestiveLine", "GenomewideLine", 
                       input$ShowHideManhattanPvalues), 
                     c("Recombination", "LDSmooth",
-                      "Hits", "LD", "SuggestiveLine", "GenomewideLine")),
+                      "Hits", "LD", "SuggestiveLine", "GenomewideLine", "Effect")),
                   pad = TRUE,
                   postprob = FALSE) +
       theme_LE()
@@ -495,17 +511,29 @@ shinyServer(function(input, output, session) {
     # c("SNP","BP","P","TYPED") 
     datStats <- datStats()
     datStats <- merge(datStats, datAssoc()[, c("SNP", "TYPED")], by = "SNP")
-    plotDat <- unique(data.frame(SNP = datStats$SNP,
+    plotDat <- data.frame(SNP = datStats$SNP,
                           BP = datStats$BP,
                           P = datStats$PostProb,
-                          TYPED = datStats$TYPED))
+                          TYPED = datStats$TYPED,
+                          BF = datStats$BF)
+    # add BF to snp names, e.g: rs1234 (12.34)
+    plotHits <- plotDat[ plotDat$SNP %in% RegionHitsSelected(), "SNP" ]
+    plotHitsName <- paste0(plotHits, " (",
+                           formatC(plotDat[ plotDat$SNP %in% RegionHitsSelected(), "BF"],
+                                   digits = 2, format = "f"),
+                          ")")
+    
+    # x <- c(0.1111, -Inf, Inf, 23439924.22222, -0.00000001, 0.000002)
+    # format(round(x, 2), nsmall = 2)
+    # formatC(x, digits = 2, format = "f")
     
     plotManhattan(assoc = plotDat,
                   LD = plotDatLD(),
                   geneticMap = plotDatGeneticMap(),
                   suggestiveLine = 0,
                   genomewideLine = 0,
-                  hits = RegionHitsSelected(),
+                  hits = plotHits,
+                  hitsName = plotHitsName,
                   xStart = zoomStart(),
                   xEnd = zoomEnd(),
                   opts = intersect(
@@ -627,8 +655,12 @@ shinyServer(function(input, output, session) {
   
   
   # Dynamic UI --------------------------------------------------------------
+  output$ui_refProstatePaper <- renderUI(
+    includeMarkdown(paste0("Data/ProstateData/",input$dataType,
+                           "/README.md")))
+  
   #Zoom to region X axis BP
-  output$BPrange <-
+  output$ui_BPrange <-
     renderUI({
       req(RegionStart())
       req(RegionEnd())
@@ -639,7 +671,7 @@ shinyServer(function(input, output, session) {
                   step = 20000)})
   
   #Select hit SNPs
-  output$HitSNPs <-
+  output$ui_HitSNPs <-
     renderUI({
       list(tags$div(align = 'left', 
                     class = 'multicol', 
@@ -665,9 +697,13 @@ shinyServer(function(input, output, session) {
       
       #) #END checkboxGroupInput
     })
+  output$ui_otherHits <- renderUI({
+    selectizeInput("otherHits", "Other SNPs:",
+                   choices = plotDatAssoc()$SNP,
+                   multiple = TRUE)
+  })
   
-  
-  output$Chr <- renderUI({
+  output$ui_Chr <- renderUI({
     selectInput(inputId = "Chr", label = h5("Chr"),
                 choices = regions %>%
                   dplyr::filter(DATA == input$dataType) %>%
@@ -676,7 +712,7 @@ shinyServer(function(input, output, session) {
     )
   })
   
-  output$RegionID <- renderUI({
+  output$ui_RegionID <- renderUI({
     req(input$Chr)
     req(input$dataType)
     selectInput(inputId = "RegionID", label= h5("Region ID"),
@@ -688,10 +724,78 @@ shinyServer(function(input, output, session) {
                 selected = "chr2_241657087_242920971"
     )})
   
+  #download file name - default: chr_start_end
+  output$ui_downloadPlotFileName <- renderUI({
+    textInput(
+      inputId = "downloadPlotFileName",
+      label = "Download file name",
+      value = paste(RegionChr(), zoomStart(), zoomEnd(), sep = "_"))})
+  #download plot title - default: chr:start-end
+  output$ui_downloadPlotTitle <- renderUI({
+    textInput(
+      inputId = "downloadPlotTitle",
+      label = "Plot title",
+      value = paste0(RegionChr(), ':', zoomStart(), '-', zoomEnd(), sep=""))})
   
+  
+  output$ui_PlotThemeColour2 <- renderUI({
+    req(input$PlotThemeColour1)
+    x <- input$PlotThemeColour1
+    colourInput("PlotThemeColour2",
+                "Plot theme shade 2",
+                #"#E5E5E5"
+                shadeTintColour(input$PlotThemeColour1, 10)
+                )})
   
   # Merged Final plot -------------------------------------------------------  
   #merged plot with dynamic plot height
+  plotList <- reactive({
+    plots <- list(
+      if("Chromosome" %in% input$ShowHideTracks) plotObjChromosome() else NA,
+        #scale_y_continuous(expand = c(0.05, 0)) 
+      
+      if("Manhattan" %in% input$ShowHideManhattanPvalues) plotObjManhattanPvalues() else NA,
+      if("Manhattan" %in% input$ShowHideManhattanPostProbs) plotObjManhattanPostProbs() else NA,
+      if("SNPType" %in% input$ShowHideTracks) plotObjSNPType() + 
+        scale_y_continuous(breaks = c(0.5, 1.5),
+                           labels = strPadLeft(c("Imputed", "Typed")),
+                           limits = c(-0.90, 2),
+                           name = expression(SNP[])) else NA,
+      if("LD" %in% input$ShowHideTracks) plotObjSNPLD() else NA,
+      if("wgEncodeBroadHistone" %in% input$ShowHideTracks) plotObjwgEncodeBroadHistone() else NA,
+      if("annotOncoFinemap" %in% input$ShowHideTracks) plotObjAnnotOncoFinemap() else NA,
+      if("Gene" %in% input$ShowHideTracks) plotObjGenePlot() else NA
+    )
+    
+    trackHeights <- c(
+      100, # Chromosome
+      300, # ManhattanPvalues
+      120, # ManhattanPostProbs
+      50,  # SNPType
+      20 * length(input$HitSNPs), # LD
+      60,  # wgEncodeBroadHistone
+      80,  # annotOncoFinemap,
+      min(c(240, 30 * plotObjGene()$geneCnt)) # Gene
+    )
+    
+    ixKeep <- !is.na(plots)
+    # return list of plots and heights
+    list(Tracks = plots[ ixKeep ],
+         Heights = trackHeights[ ixKeep ])
+  })
+  
+  trackColours <- reactive({ 
+    myCols <- 
+      if(input$PlotTheme == "1"){
+        c(input$PlotThemeColour1, input$PlotThemeColour2)
+        } else { c("#FFFFFF", "#FFFFFF") }
+
+    res <- cbind(plotList()$Heights, myCols)[, 2][ 1:length(plotList()$Heights) ]  
+    #chromosome background must be white
+    if("Chromosome" %in% input$ShowHideTracks){res <- head(c("white", res), -1)}
+    return(res)
+  })
+    
   plotObjMerge <- reactive({
     # Create a Progress object
     progress <- shiny::Progress$new()
@@ -699,7 +803,18 @@ shinyServer(function(input, output, session) {
     # Close the progress when this reactive exits (even if there's an error)
     on.exit(progress$close())
 
-    source("Source/MergePlots.R", local = TRUE)
+    tracks(
+      plotList()$Tracks,
+      heights = plotList()$Heights,
+      padding = unit(-0.2, "lines"),
+      track.plot.color = trackColours(),
+      title = if(!is.null(input$downloadPlotTitle) &
+                 nchar(input$downloadPlotTitle) > 0) { input$downloadPlotTitle
+        } else { NULL }
+      ) +
+      if(input$PlotTheme == "2") {
+        theme(panel.border = element_rect(fill = NA, color = 'grey80')) }
+      
 
   })
   output$plotMerge <- renderPlot({
@@ -712,13 +827,96 @@ shinyServer(function(input, output, session) {
     print(plotObjMerge())
 
   })
-
+  
+  
   #plot merge height is dynamic, based on seleceted tracks
-  output$plotMergeUI <- renderUI({
-    #plotOutput("plotMerge", width = 800, height = sum(trackHeights()))
-    plotOutput("plotMerge", width = 800, height = 1000)
+  output$ui_plotMergeUI <- renderUI({
+    plotOutput("plotMerge", width = 800, height = sum(plotList()$Heights))
+    #plotOutput("plotMerge", width = 800, height = 1000)
   })
   
+  # Output to a file --------------------------------------------------------
+  # Get the selected download file type.
+  downloadPlotType <- reactive({input$downloadPlotType})
+  
+  observe({
+    plotType    <- input$downloadPlotType
+    plotTypePDF <- plotType %in% c("pdf","svg")
+    plotUnit    <- ifelse(plotTypePDF, "inches", "pixels")
+    plotUnitDefHeight <- ifelse(plotTypePDF, 12, 1200)
+    plotUnitDefWidth <- ifelse(plotTypePDF, 10, 1000)
+    #plotUnitDefMin <- ifelse(plotTypePDF, 5, 800)
+    #plotUnitDefMax <- ifelse(plotTypePDF, 50, 10000)
+    plotUnitDefStep <- ifelse(plotTypePDF, 1, 100)
+    
+    updateSliderInput( session,
+                       inputId = "downloadPlotHeight",
+                       label = sprintf("Height (%s)", plotUnit),
+                       value = plotUnitDefHeight,
+                       step = plotUnitDefStep)
+    
+    updateSliderInput(
+      session,
+      inputId = "downloadPlotWidth",
+      label = sprintf("Width (%s)", plotUnit),
+      value = plotUnitDefWidth,
+      step = plotUnitDefStep)
+  })
+  
+  
+  downloadPlotHeight <- reactive({ input$downloadPlotHeight })
+  downloadPlotWidth <- reactive({ input$downloadPlotWidth })
+  downloadPlotFileName <- reactive({ input$downloadPlotFileName })
+  downloadPlotRes <- reactive({ input$downloadPlotRes })
+  downloadPlotPaper <- reactive({ input$downloadPlotPaper })
+  downloadPlotType <- reactive({ input$downloadPlotType })
+  downloadPlotPointSize <- reactive({ input$downloadPlotPointSize })
+  downloadPlotQuality <- reactive({ input$downloadPlotQuality })
+  downloadPlotTypeJPEG <- reactive({ input$downloadPlotTypeJPEG })
+  downloadPlotTypeCompression <- reactive({ input$downloadPlotCompression })
+  output$downloadPlot <- downloadHandler(
+    filename = function() {
+      paste(downloadPlotFileName(), downloadPlotType(), sep = ".")   
+    },
+    # The argument content below takes filename as a function
+    # and returns what's printed to it.
+    content = function(con) {
+      # Gets the name of the function to use from the 
+      # downloadFileType reactive element. Example:
+      # returns function pdf() if downloadFileType == "pdf".
+      plotFunction <- match.fun(downloadPlotType())
+      
+      switch(input$downloadPlotType,
+             pdf = {plotFunction(con, 
+                                 width = downloadPlotWidth(),
+                                 height = downloadPlotHeight(),
+                                 pointsize = downloadPlotPointSize(),
+                                 paper = downloadPlotPaper(),
+                                 useDingbats = FALSE)},
+             svg = {plotFunction(con, 
+                                 width = downloadPlotWidth(),
+                                 height = downloadPlotHeight(),
+                                 pointsize = downloadPlotPointSize())},
+             jpeg = {plotFunction(con, 
+                                  width = downloadPlotWidth(),
+                                  height = downloadPlotHeight(),
+                                  pointsize = downloadPlotPointSize(),
+                                  res = downloadPlotRes(),
+                                  quality = downloadPlotQuality(),
+                                  type = downloadPlotTypeJPEG())},
+             tiff = {plotFunction(con, 
+                                  width = downloadPlotWidth(),
+                                  height = downloadPlotHeight(),
+                                  pointsize = downloadPlotPointSize(),
+                                  res = downloadPlotRes(),
+                                  type = downloadPlotTypeJPEG(),
+                                  compression = downloadPlotTypeCompression())}
+             
+      )
+      
+      print(plotObjMerge())
+      dev.off(which=dev.cur())
+    }) #downloadHandler downloadPlot
   
   # Observe update ----------------------------------------------------------
   # maximum of 5 SNPs can be selected to display LD, minimum 1 must be ticked.
@@ -773,10 +971,10 @@ shinyServer(function(input, output, session) {
   observeEvent(input$resetDownloadPlotSettings |
                  input$downloadPlotAdvancedSettings,({
                    updateSelectInput(session, "downloadPlotType", selected = "jpeg")
-                   updateNumericInput(session,"downloadPlotWidth", value = 1000)
-                   updateNumericInput(session,"downloadPlotHeight", value = 1200)
-                   updateSliderInput(session,"downloadPlotPointSize", value = 12)
-                   updateSelectInput(session,"downloadPlotPaper", selected = "special")
+                   updateNumericInput(session, "downloadPlotWidth", value = 1000)
+                   updateNumericInput(session, "downloadPlotHeight", value = 1200)
+                   updateSliderInput(session, "downloadPlotPointSize", value = 12)
+                   updateSelectInput(session, "downloadPlotPaper", selected = "special")
                    updateSliderInput(session,"downloadPlotRes", value = 100)
                    updateSliderInput(session, "downloadPlotQuality", value = 100)
                    updateSelectInput(session, "downloadPlotTypeJPEG", selected = "cairo")

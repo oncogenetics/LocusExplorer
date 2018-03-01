@@ -67,11 +67,11 @@ regions <- fread("Data/ProstateData/regions.csv",
                  data.table = FALSE, header = TRUE) %>% 
   mutate(REGIONBED = paste0(CHR,"_",START,"_",END))
 
-# 02 OncoFinemap: annot ---------------------------------------------------
+# 02. OncoFinemap: annot ---------------------------------------------------
 annotOncoFinemap <- fread("Data/Annotation/Supp_Table2_clean_annot.csv")
 annotOncoFinemapEQTL <- fread("Data/Annotation/Supp_Table2_clean_eqtl.csv")
 
-# 04. wgEncodeBroadHistone --------------------------------------------------
+# 03. wgEncodeBroadHistone --------------------------------------------------
 #wgEncodeBroadHistone bigwig data description
 wgEncodeBroadHistoneFileDesc <-
   read.csv("Data/wgEncodeBroadHistone/wgEncodeBroadHistone.csv",
