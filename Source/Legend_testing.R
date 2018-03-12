@@ -15,4 +15,4 @@ ggplot(data=data.frame(x=c(1,1,1,1),
   scale_fill_identity() +
   scale_color_identity() +
   scale_shape_identity() +
-  theme_classic() 
+  theme_null() 

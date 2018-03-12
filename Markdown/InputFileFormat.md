@@ -30,7 +30,9 @@ CHR_A	BP_A	SNP_A	CHR_B	BP_B	SNP_B	R2
 ```
 When using plink or LDlink method this does not need to be manually added.
 
-**3. Custom bedGraph Track**  
+**3. [! Disabled !] Custom bedGraph Track**  
+**Note: This feature is currently disabled, and will be available in version 0.8. See related [GitHub issue](https://github.com/oncogenetics/LocusExplorer/issues/97).**
+
 The first four required bedGraph fields are:
 
 `chrom` - The name of the chromosome (e.g. chr3, chrY).  

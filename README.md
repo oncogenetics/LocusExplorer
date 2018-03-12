@@ -1,13 +1,8 @@
-LocusExplorer v0.4
-=========
-
 ## An interactive graphical illustration of genetic associations and their biological context.
 
 
 <p>
-<a href="https://raw.githubusercontent.com/oncogenetics/LocusExplorer/master/www/Figure1.jpeg">
-<img src="www/Figure1.jpeg" height="840px" width="700px">
-</a>
+<img src="www/Figure1_v07.jpeg" height="840px" width="700px">
 </p>
 
 
@@ -79,9 +74,15 @@ Bioinformatics first published online November 20, 2015 doi:10.1093/bioinformati
 
 ### Publications: LocusExplorer plots
 
-* <a href="http://www.ncbi.nlm.nih.gov/pubmed/26025378" target="_blank">Multiple novel prostate cancer susceptibility signals identified by fine-mapping of known risk loci among Europeans.</a> Al Olama AA *et al.*   
+* <a href="http://www.ncbi.nlm.nih.gov/pubmed/26025378" target="_blank">Multiple novel prostate cancer susceptibility signals identified by fine-mapping of known risk loci among Europeans.</a> Al Olama AA, *et al.*   
     + <a href="http://www.ncbi.nlm.nih.gov/pmc/articles/PMC4572072/figure/DDV203F1/" target="_blank">Figure 1</a>
 
+* Accepted, not published yet:
+    + Fine-mapping of Prostate Cancer Susceptibility Loci in a Large Meta-Analysis Identifies Candidate Causal Variants. Tokhir Dadaev, *et al.*    
+    + Prostate cancer meta-analysis of more than 140,000 men identifies 63 novel prostate cancer susceptibility loci.  Fredrick R. Schumacher, *et al.*       
+    + Germline Variation at 8q24 and Prostate Cancer Risk in Men of European Ancestry. Marco Matejcic, *et al.*    
+    
+    
 ### Frequently asked questions  
 See [FAQ](https://github.com/oncogenetics/LocusExplorer/blob/master/Markdown/FAQ.md).
 

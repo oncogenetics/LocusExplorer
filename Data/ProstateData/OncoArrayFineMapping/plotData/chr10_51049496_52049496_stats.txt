@@ -1,0 +1,2 @@
+SNP,rsid,BP,PP_best_tag,PP_tag_r2,PostProb,BF,JAM99
+rs10993994,chr10_51549496_C_T,51549496,chr10_51549496_C_T,1,1,Inf,1

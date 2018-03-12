@@ -1,5 +1,6 @@
 ## Example data
 
+Example files are stored at: `LocusExplorer\Data\CustomDataExample`
 This folder contains example files that can be used to upload as Custom Data.
 
 ### Association.txt
@@ -20,10 +21,6 @@ CHR_A	BP_A		SNP_A		CHR_B	BP_B		SNP_B		R2
 2		173309618	rs13410475	2		173110755	rs72894812	0.112165
 ...
 ```
-### eQTL.txt
-```
-CHR		START		END			DIRECTION
-chr2	173292313	173371181	-1
-```
 
-See, **LocusExplorer/Markdown/InputFileFormat.md** for more information about Custom Data input formats.
+See, **Input File Format** tab for more information about Custom Data input formats.
+

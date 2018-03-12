@@ -28,6 +28,7 @@ Manuscript/*.*
 # MAC thumbs
 *.db
 
-# test and backup scripts
+# test, backup scripts, and link files
 testing_*.*
 backup_*.*
+*_link.txt
