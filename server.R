@@ -10,14 +10,14 @@ shinyServer(function(input, output, session) {
   # Data level 1 - Raw Input ------------------------------------------------
   datAssoc <- reactive({
     req(input$dataType)
-    req(input$RegionID)
     switch(input$dataType,
            OncoArrayFineMapping = {
+             req(input$RegionID)
              fread(paste0("Data/ProstateData/OncoArrayFineMapping/plotData/", input$RegionID, "_assoc.txt"),
                    header = TRUE, data.table = FALSE)},
-           OncoArrayMeta = {
-             fread(paste0("Data/ProstateData/OncoArrayMeta/plotData/", input$RegionID, "_assoc.txt"),
-                   header = TRUE, data.table = FALSE)},
+           # OncoArrayMeta = {
+           #   fread(paste0("Data/ProstateData/OncoArrayMeta/plotData/", input$RegionID, "_assoc.txt"),
+           #         header = TRUE, data.table = FALSE)},
            Custom = {
              #input file check
              validate(need(input$FileStats != "", "Please upload Association file"))
@@ -34,14 +34,14 @@ shinyServer(function(input, output, session) {
   
   datLD <- reactive({
     req(input$dataType)
-    req(input$RegionID)
     switch(input$dataType,
            OncoArrayFineMapping = {
+             req(input$RegionID)
              fread(paste0("Data/ProstateData/OncoArrayFineMapping/plotData/",input$RegionID,"_LD.txt"),
                    header = TRUE, data.table = FALSE)},
-           OncoArrayMeta = {
-             fread(paste0("Data/ProstateData/OncoArrayMeta/plotData/",input$RegionID,"_LD.txt"),
-                   header = TRUE, data.table = FALSE)},
+           # OncoArrayMeta = {
+           #   fread(paste0("Data/ProstateData/OncoArrayMeta/plotData/",input$RegionID,"_LD.txt"),
+           #         header = TRUE, data.table = FALSE)},
            Custom = {
              #input file check
              #validate(need(input$FileLD != "", "Please upload LD file"))
@@ -92,49 +92,23 @@ shinyServer(function(input, output, session) {
   })
   
   datAnnot <-   reactive({
-    req(input$dataType)
-    switch(input$dataType,
-           OncoArrayFineMapping = { 
-             
-             
-             
-             annotOncoFinemap 
-             
-             # # eqtl subset
-             # plotDatEQTL <- datEQTL %>% 
-             #   dplyr::select(CHR, x, xend, GENE) %>% 
-             #   unique() %>% 
-             #   filter(CHR == regionChrN &
-             #            x %in% unique(LD[ SNP_A %in% hits$name1, BP_B])) %>% 
-             #   group_by(GENE) %>% 
-             #   summarise(START = min(x),
-             #             END = max(x)) %>% 
-             #   transmute(CHR = regionChr,
-             #             START,
-             #             END = ifelse(END < START + 1000, START + 1000, END),
-             #             FILE = "EQTL",
-             #             TYPE = GENE,
-             #             COLOUR_RGB = "255,0,0",
-             #             COLOUR_HEX = "#FF0000",
-             #             TYPEN = 4)
-             # 
-             # 
-             # 
-             
-             
-             },
-           OncoArrayMeta = { NULL },
-           Custom = { NULL },
-           Example = { NULL })
+    annotOncoFinemap
+    # req(input$dataType)
+    # switch(input$dataType,
+    #        OncoArrayFineMapping = { annotOncoFinemap },
+    #        # OncoArrayMeta = { NULL },
+    #        Custom = { NULL },
+    #        Example = { NULL })
   }) # END datAnnot
   
   datAnnotEQTL <-   reactive({
-    req(input$dataType)
-    switch(input$dataType,
-           OncoArrayFineMapping = { annotOncoFinemapEQTL },
-           OncoArrayMeta = { NULL },
-           Custom = { NULL },
-           Example = { NULL })
+    annotOncoFinemapEQTL
+    # req(input$dataType)
+    # switch(input$dataType,
+    #        OncoArrayFineMapping = { annotOncoFinemapEQTL },
+    #        # OncoArrayMeta = { NULL },
+    #        Custom = { NULL },
+    #        Example = { NULL })
   }) # END datAnnotEQTL
   
   datLDlink <- reactive({
@@ -233,13 +207,30 @@ shinyServer(function(input, output, session) {
     req(datLD())
     datLD() %>%
       dplyr::filter(CHR_B == RegionChrN() &
-               BP_B >= RegionStart() &
-               BP_B <= RegionEnd()) })
-  ROIdatBedGraph <- reactive({
-    datBedGraph() %>%
-      dplyr::filter(CHR == RegionChr()) %>%
-      #scale to -1 and 1,
-      mutate(SCORE = SCORE/max(abs(SCORE), na.rm = TRUE))
+                      BP_B >= RegionStart() & BP_B <= RegionEnd()) })
+  # ROIdatBedGraph <- reactive({
+  #   datBedGraph() %>%
+  #     dplyr::filter(CHR == RegionChr()) %>%
+  #     #scale to -1 and 1,
+  #     mutate(SCORE = SCORE/max(abs(SCORE), na.rm = TRUE))
+  # })
+  
+  ROIdatAnnot <- reactive({
+    req(datAnnot())
+    datAnnot() %>%
+      dplyr::filter(CHR == RegionChrN() &
+                      BP >= RegionStart() & BP <= RegionEnd())
+  })
+  
+  ROIdatAnnotEQTL <- reactive({
+    req(datAnnotEQTL())
+    datAnnotEQTL() %>%
+      dplyr::filter(CHR == RegionChrN() &
+                      (
+                        (SNPhit_BP >= RegionStart() & SNPhit_BP <= RegionEnd()) |
+                          (SNP_BP >= RegionStart() & SNP_BP <= RegionEnd())
+                      )
+                    )
   })
   
   ROIPLogMax <- reactive({
@@ -249,15 +240,8 @@ shinyServer(function(input, output, session) {
   })
   
   ROIdatGeneticMap <- reactive({
-    mychr <- ifelse(RegionChr() == "chrX", "chr23", RegionChr())
-    tabixRegion <- paste0(mychr,":",
-                          RegionStart(), "-",
-                          RegionEnd())
-    x <- tabix.read.table("Data/GeneticMap1KG/GeneticMap1KG.txt.gz", tabixRegion)
-    colnames(x) <- c("CHR", "BP", "RECOMB")
-    
-    #return
-    x
+    req(GeneticMap1KG)
+    GeneticMap1KG[ CHR == RegionChrN() & BP >= RegionStart() & BP <= RegionEnd()]
   })
   
   
@@ -268,8 +252,10 @@ shinyServer(function(input, output, session) {
   
   # Data level 3 - Plot data ------------------------------------------------
   plotDatAssoc <- reactive({
-    ROIdatAssoc() %>%
-      dplyr::filter(PLog >= input$FilterMinPlog)})
+    d <- ROIdatAssoc()
+    d <- d[ d$PLog >= input$FilterMinPlog, ]
+    d[ order(d$BP), ] 
+    })
   
   plotDatLD <- reactive({
     #subset LD based on ui input
@@ -297,7 +283,7 @@ shinyServer(function(input, output, session) {
     #return
     res })
   
-  # OncoArrau finemapping Annotaion and TCGA EQTL
+  # OncoArray finemapping Annotaion and TCGA EQTL
   plotDatAnnot <- reactive({ annotOncoFinemap[ CHR == RegionChrN(), ] })
   plotDatAnnotEQTL <- reactive({
     # c(CHR, BP, TYPE1, TYPE2, COLOUR_HEX, TYPE2N) 
@@ -319,76 +305,6 @@ shinyServer(function(input, output, session) {
     
   # Output ------------------------------------------------------------------
   # Output Summary ----------------------------------------------------------
-  
-  # testing vars ------------------------------------------------------------
-  output$testVars <- DT::renderDataTable({
-    data.frame(Data =
-                 c("input$FilterMinPlog",
-                   "input$FilterMinLD",
-                   "RegionFlank",
-                   "RegionStart",
-                   "RegionEnd",
-                   "zoomStart", #reactive({ input$BPrange[1] })
-                   "zoomEnd",   #reactive({ input$BPrange[2] })
-                   "input$suggestiveLine, input$genomewideLine",
-                   "input$Chr",
-                   
-                   "RegionHits",
-                   "RegionHitsSelected",
-                   
-                   "datAssoc",
-                   "ROIdatAssoc",
-                   "plotDatAssoc",
-                   "colnames(plotDatAssoc)",
-                   
-                   "datLD",
-                   "ROIdatLD",
-                   "plotDatLD",
-                   "colnames(plotDatLD)",
-                   
-                   "datStats",
-                   "colnames(datStats)",
-                   
-                   "ROIdatGeneticMap",
-                   "plotDatGeneticMap",
-                   "colnames(plotDatGeneticMap)"
-                 ),
-               Size = c(
-                 input$FilterMinPlog,
-                 input$FilterMinLD,
-                 input$Flank,
-                 RegionStart(),
-                 RegionEnd(),
-                 zoomStart(),
-                 zoomEnd(),
-                 paste(input$suggestiveLine, input$genomewideLine, sep = ","),
-                 input$Chr,
-                 
-                 paste(RegionHits(), collapse = ","),
-                 paste(RegionHitsSelected(), collapse = ","),
-                 
-                 paste(dim(datAssoc()), collapse = ","),
-                 paste(dim(ROIdatAssoc()), collapse = ","),
-                 paste(dim(plotDatAssoc()), collapse = ","),
-                 paste(colnames(plotDatAssoc()), collapse = ","),
-                 
-                 paste(dim(datLD()), collapse = ","),
-                 paste(dim(ROIdatLD()), collapse = ","),
-                 paste(dim(plotDatLD()), collapse = ","),
-                 paste(colnames(plotDatLD()), collapse = ","),
-                 
-                 paste(dim(datStats()), collapse = ","),
-                 paste(colnames(datStats()), collapse = ","),
-                 
-                 paste(dim(ROIdatGeneticMap()), collapse = ","),
-                 paste(dim(plotDatGeneticMap()), collapse = ","),
-                 paste(colnames(plotDatGeneticMap()), collapse = ",")
-               )
-    ) %>% datatable(options = list(pageLength = 100))
-    
-    
-  })
-  
   
   output$SummaryStats <- DT::renderDataTable({
     datAssoc() %>% arrange(P) %>%
@@ -415,29 +331,40 @@ shinyServer(function(input, output, session) {
   
   output$SummaryLD <- DT::renderDataTable({
     req(input$dataType)
-    req(input$RegionID)
     datLD() %>%
       arrange(BP_B) %>%
       mutate(SNP_A = hyperlink(SNP_A),
              SNP_B = hyperlink(SNP_B))
   }, escape = FALSE)
   
+  output$SummaryROIdatAnnot <- DT::renderDataTable({
+    merge(datAssoc()[, c("SNP", "BP")], ROIdatAnnot(), by = "BP") %>% 
+      transmute(SNP = hyperlink(SNP),
+                BP,
+                TYPE1, TYPE2) %>% 
+      arrange(BP)
+    
+    }, escape = FALSE)
+  
   output$SummaryROIdatAnnotEQTL <- DT::renderDataTable({
-    annotOncoFinemapEQTL[ CHR == RegionChrN() &
-                            ((SNPhit_BP >= RegionStart() &
-                               SNPhit_BP <= RegionEnd()) |
-                            (SNP_BP >= RegionStart() &
-                               SNP_BP <= RegionEnd())), ] %>% 
+    ROIdatAnnotEQTL() %>% 
       mutate(SNPhit = hyperlink(SNPhit),
              SNP  = hyperlink(SNP),
+             R2,
              GENE = hyperlink(GENE, type = "geneSymbol"))
     }, escape = FALSE)
+  
+  # output$SummaryBedGraph <- 
+  #   DT::renderDataTable({datBedGraph() %>% arrange(START)},
+  #                       options = list(searching = FALSE, searchable = FALSE))
   
   output$ui_SummaryRegion <-
     renderUI(a(paste0(RegionChr(),':',RegionStart(),'-',RegionEnd()),
                href=paste0('http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=',
                            RegionChr(),'%3A',RegionStart(),'-',RegionEnd()),target="_blank"))
   
+  
+  # ~~~ TAB: Manhattan --------------------------------------------------------
   
   # Plot: Title ---------------------------------------------------------------
   output$ui_plotTitle <-
@@ -448,10 +375,11 @@ shinyServer(function(input, output, session) {
   # Plot: Chr ideogram --------------------------------------------------------
   plotObjChromosome <- reactive({
     Ideogram(genome = "hg19",
-             subchr = RegionChr(), color = "#F00034", fill = "#F00034") +
-      #highlight ROI - region
-      xlim(IRanges(RegionStart(), RegionEnd())) +
-      ylab(NULL)
+             subchr = RegionChr(),
+             #highlight ROI - region
+             color = "#F00034", fill = "#F00034",
+             zoom.region = c(RegionStart(), RegionEnd())) +
+      ylab(label = element_blank())
     })
   output$PlotChromosome <- renderPlot({print(plotObjChromosome())})
   
@@ -463,12 +391,14 @@ shinyServer(function(input, output, session) {
     # Close the progress when this reactive exits (even if there's an error)
     on.exit(progress$close())
     
+    plotHits <- plotDatAssoc()[ plotDatAssoc()$SNP %in% RegionHitsSelected(), "SNP" ]
+    
     plotManhattan(assoc = plotDatAssoc(),
                   LD = plotDatLD(),
                   geneticMap = plotDatGeneticMap(),
                   suggestiveLine = input$suggestiveLine,
                   genomewideLine = input$genomewideLine,
-                  hits = RegionHitsSelected(),
+                  hits = plotHits,
                   xStart = zoomStart(),
                   xEnd = zoomEnd(),
                   opts = intersect(
@@ -478,7 +408,8 @@ shinyServer(function(input, output, session) {
                       "Hits", "LD", "SuggestiveLine", "GenomewideLine", "Effect")),
                   pad = TRUE,
                   postprob = FALSE) +
-      theme_LE()
+      theme_LE() 
+      
   })
   output$PlotManhattanPvalues <- renderPlot({
     # Create a Progress object
@@ -498,24 +429,15 @@ shinyServer(function(input, output, session) {
     # Close the progress when this reactive exits (even if there's an error)
     on.exit(progress$close())
     
-    # datAssoc <- fread("../R_ShinyApps/LocusExplorer/Data/ProstateData/OncoArrayFineMapping/plotData/chr2_241657087_242920971_assoc.txt", data.table = FALSE)
-    # datStats <- fread("../R_ShinyApps/LocusExplorer/Data/ProstateData/OncoArrayFineMapping/plotData/chr2_241657087_242920971_stats.txt", data.table = FALSE)
-    # datLD <- fread("../R_ShinyApps/LocusExplorer/Data/ProstateData/OncoArrayFineMapping/plotData/chr2_241657087_242920971_LD.txt", data.table = FALSE)
-    # lookUp <- setNames(datStats$SNP, datStats$rsid)
-    # datStats$PP_best_tag_SNP <- lookUp[ datStats$PP_best_tag]
-    
-    # datStats <- datStats()
-    # lookUp <- setNames(datStats$SNP, datStats$rsid)
-    # datStats$PP_best_tag_SNP <- lookUp[ datStats$PP_best_tag]
-    
     # c("SNP","BP","P","TYPED") 
     datStats <- datStats()
-    datStats <- merge(datStats, datAssoc()[, c("SNP", "TYPED")], by = "SNP")
+    datStats$TYPED <- ifelse(datStats$SNP %in% datAssoc()[datAssoc()$TYPED == 2, "SNP"], 2, 1)
     plotDat <- data.frame(SNP = datStats$SNP,
                           BP = datStats$BP,
                           P = datStats$PostProb,
                           TYPED = datStats$TYPED,
                           BF = datStats$BF)
+    plotDat <- plotDat[ order(plotDat$BP), ]
     # add BF to snp names, e.g: rs1234 (12.34)
     plotHits <- plotDat[ plotDat$SNP %in% RegionHitsSelected(), "SNP" ]
     plotHitsName <- paste0(plotHits, " (",
@@ -533,7 +455,7 @@ shinyServer(function(input, output, session) {
                   suggestiveLine = 0,
                   genomewideLine = 0,
                   hits = plotHits,
-                  hitsName = plotHitsName,
+                  #hitsName = plotHitsName,
                   xStart = zoomStart(),
                   xEnd = zoomEnd(),
                   opts = intersect(
@@ -582,7 +504,7 @@ shinyServer(function(input, output, session) {
     
     gg <- try({
       plotHistone(folder = "Data/wgEncodeBroadHistone/",
-                  chr = input$Chr,
+                  chr = RegionChr(),
                   xStart = zoomStart(),
                   xEnd = zoomEnd(),
                   pad = TRUE
@@ -635,12 +557,10 @@ shinyServer(function(input, output, session) {
   # Plot: Gene ---------------------------------------------------------------
   # returns ggplot and count of genes
   plotObjGene <- reactive({
-    plotGene(chrom = input$Chr,
+    plotGene(chrom = RegionChr(),
              chromStart = zoomStart(), chromEnd = zoomEnd(),
              hits = unique(plotDatAnnotEQTL()$TYPE2),
-               
-               # if("annotOncoFinemap" %in% input$ShowHideTracks){
-               # unique(plotDatAnnotEQTL()$TYPE2)} else { NULL },
+             vline = unique(plotDatLD()$BP_A),
              pad = TRUE)})
   # ggplot object to plot gene track
   plotObjGenePlot <- reactive({ 
@@ -652,12 +572,152 @@ shinyServer(function(input, output, session) {
   
   output$PlotGene <- renderPlot({print(plotObjGenePlot())})
   
+  # ~~~ TAB: LD-Heatmap ------------------------------------------------------
+  plotObjSNP_LDheatmap <- reactive({
+    plotLDmatrix(data = plotDatLD(), hits = RegionHitsSelected())
+  })
   
+  output$plotSNP_LDheatmap <- renderPlot({print(plotObjSNP_LDheatmap())})
+  
+  # ~~~ TAB: LD-Network -----------------------------------------------------
+  
+  # 1. Nodes ------------------------------------------------------------------
+  nodes <- reactive({
+    nodeHits <-  data.frame(id = RegionHitsSelected(),
+                            label = RegionHitsSelected(),
+                            group = "Hits")
+    
+    nodeTags <- 
+      rbind.data.frame(
+        plotDatLD() %>% 
+          transmute(
+            id = SNP_A,
+            label = SNP_A,
+            group = "Tags"),
+        plotDatLD() %>% 
+          transmute(
+            id = SNP_B,
+            label = SNP_B,
+            group = "Tags")) %>% 
+      filter(!(id %in% nodeHits$id)) %>% 
+      unique 
+    # %>% 
+    #   filter(
+    #     # filter on BF
+    #     id %in% metaRegionClean[ MaxBF > input$filterMinBF, SNP]
+    #   )
+    
+    #merge hit nodes and other tag nodes
+    if(nrow(nodeTags) > 0) {
+      res <- rbind.data.frame(nodeHits, nodeTags)} else {
+        res <- nodeHits}
+    
+    #keep only hits?
+    if(input$hitsOnly){
+      res <- res %>%
+        filter(id %in% RegionHitsSelected())
+    }
+    
+    # remove nodes that have no links
+    res <- res %>%
+      filter(id %in% RegionHitsSelected() |
+               id %in% c(links()$from, links()$to))
+    
+    #add meta info: pvalue, infoscore, allele, maf
+    # res <- merge(res,
+    #              metaRegionClean[, list(SNPid, MaxBF, title)],
+    #              by = "SNPid", all.x = TRUE)
+    
+    
+    # # set the size of nodes
+    # if(input$nodeSizeBF){
+    #   res <- res %>% 
+    #     mutate(size = as.numeric(
+    #       as.character(cut(MaxBF,
+    #                        breaks = c(-1, 0, 1,  3,  5, 10, 100, Inf),
+    #                        labels =    c(1, 4, 10, 12, 15, 20, 25)))))
+    #   #return
+    #   res %>%
+    #     arrange(group) %>% 
+    #     select(id, label, group, size, title) %>% unique
+    # } else {
+    #   #return
+    #   res %>%
+    #     arrange(group) %>% 
+    #     select(id, label, group, title) %>% unique
+    #   
+    # }
+    
+    #return
+    res %>%
+      arrange(group) %>% 
+      dplyr::select(id, label, group) %>%
+      unique
+    
+  })
+  
+  # 2. Links ---------------------------------------------------------------------
+  links <- reactive({
+    if(input$hitsOnly){
+      res <-
+        plotDatLD() %>%
+        transmute(from = SNP_A,
+                  to = SNP_B,
+                  value = R2)%>%
+        filter(from != to) %>%
+        filter(from %in% RegionHitsSelected() &
+                 to %in% RegionHitsSelected())
+    } else {
+      res <-
+        plotDatLD() %>%
+        transmute(from = SNP_A,
+                  to = SNP_B,
+                  value = R2) %>%
+        filter(from != to &
+                 from %in% RegionHitsSelected())
+    }
+    
+    #res$color <- if_else(res$value < 0.1, "gray", "lightblue")
+    res$color <- "lightblue"
+    #res$value <- round(res$value, 2) * 100
+    res$title <- paste0("R2:", round(res$value, 2))
+    
+    res %>%
+      filter(value >= input$FilterMinLD)
+    
+  })
+  # 3. networkHits ----------------------------------------------------------
+  output$plotSNP_LDnetwork <- renderVisNetwork({
+    visNetwork(nodes(), links(),
+               main = "LD network",
+               submain = paste0("Filter R2>", input$FilterMinLD)
+               ) %>%
+      visOptions(highlightNearest = TRUE) %>%
+      visLegend(useGroups = FALSE,
+                addNodes = data.frame(label = c("Hit SNPs", "Tag SNPs"),
+                                      shape = c("circle", "circle"),
+                                      color = c("#97C2FC", "yellow")),
+                addEdges = data.frame(label = "LD",
+                                      color = "lightblue",
+                                      arrows = "none", width = 2),
+                zoom = FALSE) %>% 
+      visInteraction(navigationButtons = TRUE) %>% 
+      visIgraphLayout(layout = input$networkLayout, randomSeed = 12) %>% 
+      visExport(name = paste(RegionChr(), zoomStart(), zoomEnd(), "network", sep = "_"),
+                label = "Save as PNG",
+                style = "background-color:#85E7FF")
+  })
   
   # Dynamic UI --------------------------------------------------------------
   output$ui_refProstatePaper <- renderUI(
-    includeMarkdown(paste0("Data/ProstateData/",input$dataType,
-                           "/README.md")))
+    if(input$dataType %in% c("OncoArrayFineMapping",
+                             "OncoArrayMeta","iCOGS")){
+      includeMarkdown(
+        paste0("Data/ProstateData/", input$dataType, "/README.md"))
+      } else if(input$dataType == "Custom") {
+        includeMarkdown("Data/CustomDataExample/README.md")
+        }
+    )
   
   #Zoom to region X axis BP
   output$ui_BPrange <-
@@ -932,6 +992,15 @@ shinyServer(function(input, output, session) {
                 input$ShowHideManhattanPostProbs)) < 1){
       updateCheckboxGroupInput(session, "ShowHideManhattanPvalues",
                                selected = "Manhattan")}
+    if(input$dataType %in% c("Custom", "Example")){
+
+      updateCheckboxGroupInput(session, "ShowHideManhattanPostProbs",
+                               label = "Manhattan: PostProbs",
+                               choices = c("Manhattan" = "Manhattan",
+                                           "Recombination" = "Recombination",
+                                           "LD smooth" = "LDSmooth"),
+                               selected = NULL)
+    }
   })
   # 
   # #manual chr:start-end zoom values
@@ -1040,3 +1109,91 @@ shinyServer(function(input, output, session) {
 #          transmute(BP,
 #                    Recomb=RECOMB,
 #                    RecombAdj=Recomb * ROIPLogMax() / 100))
+
+
+
+# ROIdatGeneticMap <- reactive({
+#   req(GeneticMap1KG)
+#   GeneticMap1KG[ CHR == RegionChrN() & BP >= RegionStart() & BP <= RegionEnd()]
+#   
+#   # mychr <- ifelse(RegionChr() == "chrX", "chr23", RegionChr())
+#   # tabixRegion <- paste0(mychr,":",
+#   #                       RegionStart(), "-",
+#   #                       RegionEnd())
+#   # x <- tabix.read.table("Data/GeneticMap1KG/GeneticMap1KG.txt.gz", tabixRegion)
+#   # colnames(x) <- c("CHR", "BP", "RECOMB")
+#   # 
+#   # #return
+#   # x
+# })
+
+
+# Testing vars ------------------------------------------------------------
+# output$testVars <- DT::renderDataTable({
+#   data.frame(Data =
+#                c("input$FilterMinPlog",
+#                  "input$FilterMinLD",
+#                  "RegionFlank",
+#                  "RegionStart",
+#                  "RegionEnd",
+#                  "zoomStart", #reactive({ input$BPrange[1] })
+#                  "zoomEnd",   #reactive({ input$BPrange[2] })
+#                  "input$suggestiveLine, input$genomewideLine",
+#                  "input$Chr",
+#                  
+#                  "RegionHits",
+#                  "RegionHitsSelected",
+#                  
+#                  "datAssoc",
+#                  "ROIdatAssoc",
+#                  "plotDatAssoc",
+#                  "colnames(plotDatAssoc)",
+#                  
+#                  "datLD",
+#                  "ROIdatLD",
+#                  "plotDatLD",
+#                  "colnames(plotDatLD)",
+#                  
+#                  "datStats",
+#                  "colnames(datStats)",
+#                  
+#                  "ROIdatGeneticMap",
+#                  "plotDatGeneticMap",
+#                  "colnames(plotDatGeneticMap)"
+#                ),
+#              Size = c(
+#                input$FilterMinPlog,
+#                input$FilterMinLD,
+#                input$Flank,
+#                RegionStart(),
+#                RegionEnd(),
+#                zoomStart(),
+#                zoomEnd(),
+#                paste(input$suggestiveLine, input$genomewideLine, sep = ","),
+#                input$Chr,
+#                
+#                paste(RegionHits(), collapse = ","),
+#                paste(RegionHitsSelected(), collapse = ","),
+#                
+#                paste(dim(datAssoc()), collapse = ","),
+#                paste(dim(ROIdatAssoc()), collapse = ","),
+#                paste(dim(plotDatAssoc()), collapse = ","),
+#                paste(colnames(plotDatAssoc()), collapse = ","),
+#                
+#                paste(dim(datLD()), collapse = ","),
+#                paste(dim(ROIdatLD()), collapse = ","),
+#                paste(dim(plotDatLD()), collapse = ","),
+#                paste(colnames(plotDatLD()), collapse = ","),
+#                
+#                paste(dim(datStats()), collapse = ","),
+#                paste(colnames(datStats()), collapse = ","),
+#                
+#                paste(dim(ROIdatGeneticMap()), collapse = ","),
+#                paste(dim(plotDatGeneticMap()), collapse = ","),
+#                paste(colnames(plotDatGeneticMap()), collapse = ",")
+#              )
+#   ) %>% datatable(options = list(pageLength = 100))
+#   
+#   
+# })
+
