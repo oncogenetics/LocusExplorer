@@ -447,7 +447,8 @@ shinyUI(
                           fileInput("FileLDlink", "Unprocessed LDlink output file"),
                           
                           # File downloads when this button is clicked.
-                          downloadButton(outputId = "downloadLDFile", label = "Download LD file")
+                          downloadButton(outputId = "downloadLDFile",
+                                         label = "Download LD file")
                           
                         ),
                         mainPanel(

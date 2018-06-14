@@ -1,3 +1,10 @@
+### **Note:** 
+
+Outcomes of this study is now superceded by Finemapping Oncoarray data, and plotting functionality is removed from LocusExplorer, plots as PDF files per regions, are archived at:
+`LocusExplorer\Data\ProstateData\iCOGS\Archive_iCOGs_plots`
+
+----------------
+
 ## Multiple novel prostate cancer susceptibility signals identified by fine-mapping of known risk loci among Europeans.
 
 #### Ali Amin Al Olama<sup>1</sup>, Tokhir Dadaev<sup>5</sup>, Rosalind A. Eeles<sup>5,+</sup>, Zsofia Kote-Jarai<sup>5,+</sup>, *et al.*

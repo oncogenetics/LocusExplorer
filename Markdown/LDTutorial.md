@@ -69,3 +69,5 @@ plink --vcf  genotypes.vcf \
 --out LD_rs9935228_rs1864163
 ```
 
+#### 3. Create linkage disequilibrium file, where SNP IDs are duplicated
+https://www.biostars.org/p/315219/

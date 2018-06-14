@@ -20,19 +20,27 @@ LocusExplorer runs in the R environment but is designed to be an easy to use int
 LocusExplorer requires R version 3.2.2 to run and can be downloaded by following the instructions at [https://www.r-project.org/](https://www.r-project.org/). Some required packages are not available for earlier versions of R.
 
 After installation of  the R software, R packages used by LocusExplorer must be installed prior to use. This may take a few minutes, but is only required on the first occasion. To install packages, open the R program, copy the following code into the R console and hit Return:
+
+
+
+
+
 ```R
 #install CRAN packages, if missing
-packages <- c("shiny", "shinyjs", "data.table", "dplyr", "tidyr", "ggplot2", "knitr", "markdown", "stringr","DT","seqminer")
+packages <- c("shiny","dplyr","tidyr","lazyeval","data.table","ggplot2","ggrepel","knitr","markdown","DT","lattice","acepack","cluster","DBI","colourpicker","igraph","visNetwork", "devtools")
 if (length(setdiff(packages, rownames(installed.packages()))) > 0) {
   install.packages(setdiff(packages, rownames(installed.packages())), dependencies = TRUE)  
 } else { print("All required CRAN packages installed")}
 
 #install Bioconductor packages if missing
 source("https://bioconductor.org/biocLite.R")
-bioc <- c("ggbio","GenomicRanges","TxDb.Hsapiens.UCSC.hg19.knownGene","org.Hs.eg.db")
+bioc <- c("ggbio","GenomicRanges","TxDb.Hsapiens.UCSC.hg19.knownGene","org.Hs.eg.db","rtracklayer")
 if (length(setdiff(bioc, rownames(installed.packages()))) > 0) {
   biocLite(setdiff(bioc, rownames(installed.packages())))  
 } else { print("All required Bioconductor packages installed")}
+
+#install GitHub packages:
+devtools::install_github("oncogenetics/oncofunco")
 ```
 - In cases when user do not have admin rights, pop up window will prompt to set a personal library location for installation of packages, please click yes.
 - If using R GUI then user might get prompted to choose CRAN mirror to use for package downloads, please choose the city nearer to your location.

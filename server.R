@@ -362,8 +362,18 @@ shinyServer(function(input, output, session) {
     renderUI(a(paste0(RegionChr(),':',RegionStart(),'-',RegionEnd()),
                href=paste0('http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=',
                            RegionChr(),'%3A',RegionStart(),'-',RegionEnd()),target="_blank"))
-  
-  
+  # Output: LD Link -----------------------------------------------------------
+  output$SummaryLDlink <- DT::renderDataTable( datLDlink() )
+  output$SummaryLDlinkProcess <- DT::renderDataTable( datLDlinkProcess() )
+  output$downloadLDFile <- downloadHandler(
+    filename = function() { paste0(
+      tools::file_path_sans_ext(input$FileLDlink),
+      "_LD.txt") },
+    content = function(file) {
+      write.table(datLDlinkProcess(), file,
+                  sep = " ", row.names = FALSE, quote = FALSE)
+    })
+    
   # ~~~ TAB: Manhattan --------------------------------------------------------
   
   # Plot: Title ---------------------------------------------------------------
@@ -455,7 +465,7 @@ shinyServer(function(input, output, session) {
                   suggestiveLine = 0,
                   genomewideLine = 0,
                   hits = plotHits,
-                  #hitsName = plotHitsName,
+                  hitsName = plotHitsName,
                   xStart = zoomStart(),
                   xEnd = zoomEnd(),
                   opts = intersect(
@@ -557,7 +567,7 @@ shinyServer(function(input, output, session) {
   # Plot: Gene ---------------------------------------------------------------
   # returns ggplot and count of genes
   plotObjGene <- reactive({
-    plotGene(chrom = RegionChr(),
+    plotGene(chrom = ifelse(RegionChr() == "chr23", "chrX", RegionChr()),
              chromStart = zoomStart(), chromEnd = zoomEnd(),
              hits = unique(plotDatAnnotEQTL()$TYPE2),
              vline = unique(plotDatLD()$BP_A),
