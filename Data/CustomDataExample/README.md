@@ -7,7 +7,7 @@ This folder contains example files that can be used to upload as Custom Data.
 ```
 CHR		SNP					BP			P			TYPED
 chr2	chr2:173552302:I	173552302	1.694e-07	1
-chr2	rs10169835			173249130	0.09154		1
+chr2	rs10169835			173249130	0.09154		2
 chr2	rs4972824			173264702	0.5007		1
 chr2	rs6735215			173167641	0.6051		1
 ...

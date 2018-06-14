@@ -10,6 +10,7 @@
 
 library(shiny)
 library(dplyr) 
+library(tidyr)
 library(lazyeval) # dplyr
 library(data.table)
 library(ggplot2)
