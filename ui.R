@@ -36,7 +36,7 @@ shinyUI(
     # Application title
     id = "navBarPageID",
     #title = "LocusExplorer v0.7",
-    title = div(h4("LocusExplorer v0.7",
+    title = div(h4("LocusExplorer v0.7.1",
                    style = "margin-top: 0px;"),
                 img(src = "icr_logo_white_on_black.PNG", height = "70px",
                     style = "position: relative; top: -60px; right: -800px;")),
