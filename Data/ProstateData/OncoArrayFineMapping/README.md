@@ -22,6 +22,5 @@ The refined set of candidate variants substantially increase the proportion of f
 
 ----------------
 
-! To be updated with PMID hyperlink !    
-[Nature Communications](https://www.nature.com/ncomms/)   
-[PMID: XXX](http://www.ncbi.nlm.nih.gov/pubmed/XXX)
+<a href="https://www.nature.com/articles/s41467-018-04109-8" target="_blank">Nature Communications</a>   
+<a href="https://pubmed.ncbi.nlm.nih.gov/29892050/" target="_blank">PMID: 29892050</a>

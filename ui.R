@@ -36,7 +36,7 @@ shinyUI(
     # Application title
     id = "navBarPageID",
     #title = "LocusExplorer v0.7",
-    title = div(h4("LocusExplorer v0.7.1",
+    title = div(h4("LocusExplorer v0.7.2",
                    style = "margin-top: 0px;"),
                 img(src = "icr_logo_white_on_black.PNG", height = "70px",
                     style = "position: relative; top: -60px; right: -800px;")),
@@ -200,9 +200,12 @@ shinyUI(
                                                      "Hit SNPs LD" = "LD",
                                                      "ENCODE Histone" = "wgEncodeBroadHistone",
                                                      "Annotation" = "annotOncoFinemap",
-                                                     "Gene" = "Gene"),
+                                                     "Gene" = "Gene",
+                                                     "Caption" = "Caption"),
                                                    selected = c("Manhattan", "Recombination")),
-                                
+                                # Caption settings --------------------------------------------------------
+                                #checkboxInput("IncludeCaption", label = "Include caption", value = TRUE),
+                                uiOutput("ui_captionText"),
                                 hr(),
                                 splitLayout(
                                   actionButton("resetInput", "Reset inputs",
@@ -236,7 +239,6 @@ shinyUI(
                                                            "mds" = "layout_with_mds",
                                                            "sugiyama" = "layout_with_sugiyama"),
                                             selected = "layout_nicely"))
-               
              ), # END sidebarPanel
              # ~~~ mainPanel -----------------------------------------------
              mainPanel(
@@ -267,7 +269,9 @@ shinyUI(
                                     conditionalPanel("input.ShowHideTracks.indexOf('annotOncoFinemap')>-1",
                                                      plotOutput("PlotAnnotOncoFinemap",width=800,height=120)),
                                     conditionalPanel("input.ShowHideTracks.indexOf('Gene')>-1",
-                                                     plotOutput("PlotGene",width=800,height=350))
+                                                     plotOutput("PlotGene",width=800,height=350)),
+                                    conditionalPanel("input.ShowHideTracks.indexOf('Caption')>-1",
+                                                     plotOutput("PlotCaption",width=800,height=100))
                                     
                            ), # END tabPanel("Manhattan"
                            # LD-Heatmap ---------------------------------------

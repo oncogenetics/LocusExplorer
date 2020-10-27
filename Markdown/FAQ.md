@@ -97,4 +97,86 @@ biocLite(bioPackages)
 ```
 
 
+#### Q7: Plink Error: Duplicate ID '.'
+When creating LD file using "LD Tutorial", getting "Duplicate ID '.'" error.
+
+**A:** Here is a guide on how to get LD files when we have duplicated ID issue in the 1000 genomes vcf files. I am using your example `snplist.txt` file
+
+We need to get 1000 genomes vcf for the region, usually I give 250Kb flank based on my SNPs in `snplist.txt`.
+
+```
+tabix -fh ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20100804/ALL.2of4intersection.20100804.genotypes.vcf.gz 17:1-71324000 > genotypes.vcf
+```
+
+This as you described give us an error.
+```
+plink --vcf  genotypes.vcf \
+--r2 \
+--ld-snp-list snplist.txt \
+--ld-window-kb 1000 \
+--ld-window 99999 \
+--ld-window-r2 0 \
+--out myLD
+
+# ...
+# Error: Duplicate ID '.'.
+```
+
+As some SNP names are actually dots `"."`, they don't have an RS ID attached to them. So we need to give them unique names.
+
+Convert to plink format   
+
+```
+plink --vcf  genotypes.vcf \
+--make-bed \
+--out genotypes
+```
+
+Here is the cause of the problem, dots as SNP IDs:
+
+```
+head -n5 genotypes.bim
+# 17      .       0       56      T       C
+# 17      .       0       78      C       G
+# 17      .       0       355     A       G
+# 17      .       0       684     T       C
+# 17      rs62053745      0       828     T       C
+```
+Run [this R script](https://github.com/oncogenetics/Miscellaneous/blob/master/convert/makeSNPnamesUnique.R) to make unique names:
+```
+Rscript makeSNPnamesUnique.R genotypes.bim 
+head -n5 genotypes.bim 
+# 17      17_56_T_C       0       56      T       C
+# 17      17_78_C_G       0       78      C       G
+# 17      17_355_A_G      0       355     A       G
+# 17      17_684_T_C      0       684     T       C
+# 17      rs62053745      0       828     T       C
+```
+Now, the SNP  IDs are fixed, we run plink LD as usual:
+```
+plink --bfile genotypes \
+--r2 \
+--ld-snp-list snplist.txt \
+--ld-window-kb 1000 \
+--ld-window 99999 \
+--ld-window-r2 0 \                   # to have smaller output file: --ld-window-r2 0.2
+--out myLD
+```
+
+**Note:** If the output file is too big, then consider setting higher R2 filter value, for example `--ld-window-r2 0.2`, meaning only output R2 values that are more than `0.2`.
+
+Check the output
+```
+wc -l myLD.ld
+# 49172 myLD.ld
+
+head -n5 myLD.ld
+#  CHR_A         BP_A             SNP_A  CHR_B         BP_B             SNP_B           R2
+#     17          834         rs9747082     17           56         17_56_T_C   0.00137027
+#     17          834         rs9747082     17          355        17_355_A_G   0.00151223
+#     17          834         rs9747082     17          684        17_684_T_C   0.00127126
+#     17          834         rs9747082     17          828        rs62053745     0.678207
+```
+
+Finally, we can use this file as input for LocusExplorer.
 

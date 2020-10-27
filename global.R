@@ -23,14 +23,15 @@ library(acepack) # ggbio
 library(cluster)
 library(DBI) # gene plot
 library(colourpicker)
-
 library(igraph)
 library(visNetwork)
 
 #Bioconductor packages
-# source("http://bioconductor.org/biocLite.R")
-# biocLite(c("ggbio","GenomicRanges","TxDb.Hsapiens.UCSC.hg19.knownGene",
-#            "org.Hs.eg.db","rtracklayer"))
+# if (!requireNamespace("BiocManager", quietly = TRUE))
+#    install.packages("BiocManager")
+# BiocManager::install(c("ggbio","GenomicRanges","TxDb.Hsapiens.UCSC.hg19.knownGene",
+#                        "org.Hs.eg.db","rtracklayer"))
+
 
 library(ggbio)
 library(GenomicRanges)
@@ -53,17 +54,13 @@ if(Sys.info()['sysname'] == "Windows") {
 }
 
 
-
-
 # Data --------------------------------------------------------------------
 # 01. prostate data region names ------------------------------------------
-regions <- fread("Data/ProstateData/regions.csv",
-                 data.table = FALSE, header = TRUE) %>% 
-  mutate(REGIONBED = paste0(CHR,"_",START,"_",END))
+regions <- fread("Data/ProstateData/regions.csv", header = TRUE)
 
 # 02. OncoFinemap: annot ---------------------------------------------------
-annotOncoFinemap <- fread("Data/Annotation/Supp_Data1_clean_annot.csv")
-annotOncoFinemapEQTL <- fread("Data/Annotation/Supp_Data1_clean_eqtl.csv")
+annotOncoFinemap <- fread("Data/Annotation/Supp_Data1_clean_annot.csv", header = TRUE)
+annotOncoFinemapEQTL <- fread("Data/Annotation/Supp_Data1_clean_eqtl.csv", header = TRUE)
 
 # 03. wgEncodeBroadHistone ------------------------------------------------
 #wgEncodeBroadHistone bigwig data description
@@ -71,18 +68,7 @@ wgEncodeBroadHistoneFileDesc <-
   read.csv("Data/wgEncodeBroadHistone/wgEncodeBroadHistone.csv",
            stringsAsFactors = FALSE)
 # 04. GeneticMap1KG -------------------------------------------------------
-GeneticMap1KG <- readRDS("Data/GeneticMap1KG/GeneticMap1KG.RData")
+GeneticMap1KG <- readRDS("Data/GeneticMap1KG/GeneticMap1KG.rds")
 
 
 # TESTING -----------------------------------------------------------------
-#removed dependency on
-#library(tidyr)
-#library(shinyjs) #colourInput
-#library(dtplyr)
-#library(stringr)
-#library(seqminer) # query tabix
-#Custom functions - replaced by "oncofunco" package
-#source("Source/UDF.R", local = TRUE)
-
-#Custom functions - replaced by "oncofunco" package
-#source("Source/UDF.R", local = TRUE)
