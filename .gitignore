@@ -32,3 +32,5 @@ Manuscript/*.*
 testing_*.*
 backup_*.*
 *_link.txt
+.Rprofile
+renv/*
