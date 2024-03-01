@@ -466,7 +466,7 @@ shinyServer(function(input, output, session) {
     
     gg <- try({
       #plotHistone(folder = "Data/wgEncodeBroadHistone/",
-      plotHistone(folder = "/Data/",
+      plotHistone(folder = "/app/mnt",
                   chr = RegionChr(),
                   xStart = zoomStart(),
                   xEnd = zoomEnd(),

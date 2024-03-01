@@ -4,7 +4,7 @@
 # docker build -t icrsc/locus-explorer:latest .
 #
 ### RUN IMAGE
-# docker run -p 3838:3838 --rm --name locus-explorer icrsc/locus-explorer:latest
+# docker run -p 3838:3838 --rm --name locus-explorer -v  /mnt/c/Users/ralcraft/Documents/shiny-proxy-data/locus-explorer:/app/mnt icrsc/locus-explorer:latest
 #
 # Should then be visible on http://localhost:3838/
 #
@@ -59,6 +59,9 @@ RUN mkdir www
 COPY www ./www
 RUN mkdir Data
 COPY Data ./Data
+RUN mkdir Markdown
+COPY Markdown ./Markdown
+RUN mkdir mnt
 COPY global.R server.R ui.R README.md ./
 
 RUN Rscript -e "install.packages('BiocManager')"
