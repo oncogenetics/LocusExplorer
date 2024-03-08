@@ -35,7 +35,6 @@ shinyUI(
   navbarPage(
     # Application title
     id = "navBarPageID",
-    #title = "LocusExplorer v0.7",
     title = div(h4("LocusExplorer v0.7.2",
                    style = "margin-top: 0px;"),
                 img(src = "icr_logo_white_on_black.PNG", height = "70px",
@@ -54,14 +53,11 @@ shinyUI(
         #Choose data type
         radioButtons("dataType", h4("Input data:"),
                      c("Prostate OncoArray Fine-mapping" = "OncoArrayFineMapping",
-                       #"Prostate OncoArray Meta" = "OncoArrayMeta",
-                       #"Prostate iCOGS" = "iCOGS",
                        "Custom" = "Custom"
-                       #"Example" = "Example"
                      ),
                      selected = "OncoArrayFineMapping"),
+        
         conditionalPanel("input.dataType == 'OncoArrayFineMapping'", 
-                         #input.dataType == 'OncoArrayMeta'",
                          uiOutput("ui_Chr"),
                          uiOutput("ui_RegionID")
         ),#conditionalPanel - prostate
@@ -69,12 +65,11 @@ shinyUI(
         conditionalPanel("input.dataType == 'Custom'",
                          fileInput("FileStats", "Association File (required)"),
                          fileInput("FileLD", "LD File (recommended)")#,
-                         # fileInput("FileBedGraph", "bedGraph File"),
-                         # uiOutput("ui_FileBedGraphName")
         ),#conditionalPanel- Custom
         
         conditionalPanel("input.dataType == 'Example'"
         ),#conditionalPanel- CustomExample
+        
         actionButton("goToPlotSettings", "2.Plot Settings", icon = icon("cogs"),
                      style = "background-color:#85E7FF")
       ),#sidebarPanel
@@ -84,21 +79,8 @@ shinyUI(
           tabPanel("Summary",
                    h4("Summary"),
                    hr(),
-                   # if Prostate data is selected then link to relevant paper
-                   # Abstract pudmedID
                    uiOutput("ui_refProstatePaper"),
                    hr()
-                   # conditionalPanel("input.dataType == 'OncoArrayFineMapping' ||
-                   #                  input.dataType == 'OncoArrayMeta' ||
-                   #                  input.dataType == 'iCOGS'",
-                   #                  uiOutput("ui_refProstatePaper"),
-                   #                  hr()
-                   # )#,
-                   # helpText("UCSC link to selected region:"),
-                   # htmlOutput("ui_SummaryRegion")
-                   # hr(),
-                   # helpText("NCBI link to hit SNPs:"),
-                   # dataTableOutput("SummaryHits")
           ),
           #hr() #dataTableOutput("tempSummaryplotDatLD")
           tabPanel("Association",
@@ -112,13 +94,7 @@ shinyUI(
                    h4("Linkage Disequilibrium"),
                    hr(),
                    dataTableOutput("SummaryLD")),
-          # tabPanel("BedGraph",
-          #         h4("BedGraph"),
-          #         hr(),
-          #         includeMarkdown("Markdown/bedGraphFileFormat.md"),
-          #         helpText("bedGraph input data summary"),
-          #         dataTableOutput("SummaryBedGraph"),
-          #         hr(),
+
           tabPanel("Annotation",
                    h4("Annotation"),
                    hr(),
@@ -129,12 +105,14 @@ shinyUI(
                    dataTableOutput("SummaryROIdatAnnotEQTL")
                    #includeMarkdown("Data/Annotation/README.md")
                    ),
+          
           tabPanel("ENCODE",
                    h4("ENCODE"),
                    hr(),
                    includeMarkdown("Data/wgEncodeBroadHistone/README.md")
                    #helpText("Scores filtered at 5+, and rounded and set maximum value to 100.")
                    ),
+          
           tabPanel("Input File Format",
                    h4("Input File Format"),
                    hr(),
@@ -198,7 +176,9 @@ shinyUI(
                                                    c("Chromosome" = "Chromosome",
                                                      "SNP type" = "SNPType",
                                                      "Hit SNPs LD" = "LD",
-                                                     "ENCODE Histone" = "wgEncodeBroadHistone",
+                                                     "ENCODE H3k27ac" = "wgEncodeBroadHistone",
+                                                     "ENCODE H3k4me1" = "wgEncodeBroadHistone_H3k4me1",
+                                                     "ENCODE H3k4me3" = "wgEncodeBroadHistone_H3k4me3",
                                                      "Annotation" = "annotOncoFinemap",
                                                      "Gene" = "Gene",
                                                      "Caption" = "Caption"),
@@ -259,13 +239,16 @@ shinyUI(
                                     # Manhattan with PostProbs
                                     conditionalPanel("input.ShowHideManhattanPostProbs.indexOf('Manhattan')>-1",
                                                      plotOutput("PlotManhattanPostProbs",width=800,height=250)),
-                                    
                                     conditionalPanel("input.ShowHideTracks.indexOf('SNPType')>-1",
                                                      plotOutput("PlotSNPType",width=800,height=70)),
                                     conditionalPanel("input.ShowHideTracks.indexOf('LD')>-1",
                                                      plotOutput("PlotSNPLD",width=800,height=110)),
                                     conditionalPanel("input.ShowHideTracks.indexOf('wgEncodeBroadHistone')>-1",
                                                      plotOutput("PlotwgEncodeBroadHistone",width=800,height=90)),
+                                    conditionalPanel("input.ShowHideTracks.indexOf('wgEncodeBroadHistone_H3k4me1')>-1",
+                                                     plotOutput("PlotwgEncodeBroadHistone_H3k4me1",width=800,height=90)),
+                                    conditionalPanel("input.ShowHideTracks.indexOf('wgEncodeBroadHistone_H3k4me3')>-1",
+                                                     plotOutput("PlotwgEncodeBroadHistone_H3k4me3",width=800,height=90)),
                                     conditionalPanel("input.ShowHideTracks.indexOf('annotOncoFinemap')>-1",
                                                      plotOutput("PlotAnnotOncoFinemap",width=800,height=120)),
                                     conditionalPanel("input.ShowHideTracks.indexOf('Gene')>-1",
