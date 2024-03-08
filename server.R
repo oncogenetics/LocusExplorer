@@ -9,8 +9,6 @@ shinyServer(function(input, output, session) {
   
   # Data level 1 - Raw Input ------------------------------------------------
   datAssoc <- reactive({
-    #fread("Data/ProstateData/OncoArrayFineMapping/plotData/chr2_241657087_242920971_assoc.txt", 
-    #      header = TRUE)
     req(input$dataType)
     switch(input$dataType,
            OncoArrayFineMapping = {
@@ -485,6 +483,56 @@ shinyServer(function(input, output, session) {
     })
   
   output$PlotwgEncodeBroadHistone <- renderPlot({print(plotObjwgEncodeBroadHistone())})
+  
+  plotObjwgEncodeBroadHistone_H3k4me1 <- reactive({
+    
+    gg <- try({
+      plotHistone(folder = "Data/wgEncodeBroadHistone/",
+                  Type = "H3k4me1",
+                  chr = RegionChr(),
+                  xStart = zoomStart(),
+                  xEnd = zoomEnd(),
+                  pad = TRUE
+      ) + theme_LE()}, silent = TRUE)
+    
+    if(class(gg) == "try-error"){ 
+      gg <- plotBlank(zoomStart(), zoomEnd(),
+                      yLabel = expression(ENCODE[]),
+                      textAnnot = "Error: Histone bigwig files are missing.") +
+        theme_LE() #+
+      #ylab(expression(ENCODE[]))
+    }
+    
+    #return 
+    gg
+  })
+  
+  output$PlotwgEncodeBroadHistone_H3k4me1 <- renderPlot({print(plotObjwgEncodeBroadHistone_H3k4me1())})
+  
+  plotObjwgEncodeBroadHistone_H3k4me3 <- reactive({
+    
+    gg <- try({
+      plotHistone(folder = "Data/wgEncodeBroadHistone/",
+                  chr = RegionChr(),
+                  Type = "H3k4me3",
+                  xStart = zoomStart(),
+                  xEnd = zoomEnd(),
+                  pad = TRUE
+      ) + theme_LE()}, silent = TRUE)
+    
+    if(class(gg) == "try-error"){ 
+      gg <- plotBlank(zoomStart(), zoomEnd(),
+                      yLabel = expression(ENCODE[]),
+                      textAnnot = "Error: Histone bigwig files are missing.") +
+        theme_LE() #+
+      #ylab(expression(ENCODE[]))
+    }
+    
+    #return 
+    gg
+  })
+  
+  output$PlotwgEncodeBroadHistone_H3k4me3 <- renderPlot({print(plotObjwgEncodeBroadHistone_H3k4me3())})
   
   # Plot: BedGraph ------------------------------------------------------------
   # plotObjBedGraph <- reactive({
