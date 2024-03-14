@@ -464,8 +464,8 @@ shinyServer(function(input, output, session) {
   # Plot: wgEncodeBroadHistone 7 bigwig ---------------------------------------
   
   plotObjwgEncodeBroadHistone <- reactive({        
-      plotHistone(folder = "Data/wgEncodeBroadHistone/",
-      #plotHistone(folder = "/app/mnt/",      
+      #plotHistone(folder = "Data/wgEncodeBroadHistone/",
+      plotHistone(folder = "/app/mnt/",      
                   chr = RegionChr(),
                   xStart = zoomStart(),
                   xEnd = zoomEnd(),
