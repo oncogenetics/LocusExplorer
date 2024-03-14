@@ -462,31 +462,33 @@ shinyServer(function(input, output, session) {
   output$PlotSNPLD <- renderPlot({print(plotObjSNPLD())})
   
   # Plot: wgEncodeBroadHistone 7 bigwig ---------------------------------------
-  plotObjwgEncodeBroadHistone <- reactive({
-    
-    gg <- try({
-      #plotHistone(folder = "Data/wgEncodeBroadHistone/",
-      plotHistone(folder = "/app/mnt",
+  
+  plotObjwgEncodeBroadHistone <- reactive({        
+      plotHistone(folder = "Data/wgEncodeBroadHistone/",
+      #plotHistone(folder = "/app/mnt/",      
                   chr = RegionChr(),
                   xStart = zoomStart(),
                   xEnd = zoomEnd(),
-                  pad = TRUE
-      ) + theme_LE()}, silent = TRUE)
-    
-    if(class(gg) == "try-error"){ 
-      gg <- plotBlank(zoomStart(), zoomEnd(),
-                      yLabel = expression(ENCODE[]),
-                      textAnnot = "Error: Histone bigwig files are missing.") +
-        theme_LE() #+
-        #ylab(expression(ENCODE[]))
-      }
-    
-    #return 
-    gg
-    })
-  
+                  pad = TRUE) + 
+        theme_LE()
+  })
   output$PlotwgEncodeBroadHistone <- renderPlot({print(plotObjwgEncodeBroadHistone())})
+    
+    #if(class(gg) == "try-error"){ 
+    #  gg <- plotBlank(zoomStart(), zoomEnd(),
+    #                  yLabel = expression(ENCODE[]),
+    #                  textAnnot = "Error: Histone bigwig files are missing.") +
+    #    theme_LE() #+
+    #    #ylab(expression(ENCODE[]))
+    #  }
+
   
+    #return 
+    #gg
+    #})
+  
+  #output$PlotSNPLD <- renderPlot({print(plotObjwgEncodeBroadHistone())})
+    
   # Plot: BedGraph ------------------------------------------------------------
   # plotObjBedGraph <- reactive({
   #   plotBlank(xStart = 1, xEnd = 10, yLabel = "test") + theme_LE()

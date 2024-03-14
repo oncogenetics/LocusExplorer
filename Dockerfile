@@ -5,11 +5,14 @@
 #
 ### RUN IMAGE
 # docker run -p 3838:3838 --rm --name locus-explorer -v  /mnt/c/Users/ralcraft/Documents/shiny-proxy-data/locus-explorer:/app/mnt icrsc/locus-explorer:latest
+# docker run -p 3838:3838 --rm --name locus-explorer icrsc/locus-explorer:latest
 #
 # Should then be visible on http://localhost:3838/
 #
 # PUSH IMAGE
 # docker push icrsc/locus-explorer:latest
+# 
+# docker image prune
 ####################################################
 
 #https://github.com/lescailab/r-ggbio-reporting/blob/main/Dockerfile
@@ -78,12 +81,6 @@ RUN Rscript -e "BiocManager::install(c(\
 RUN Rscript -e 'install.packages(c("shiny","dplyr","tidyr","lazyeval","data.table","ggplot2","ggrepel","knitr","markdown","DT","lattice","acepack","cluster","DBI","colourpicker","igraph","visNetwork", "devtools"))'
 RUN R -e 'BiocManager::install(c("TxDb.Hsapiens.UCSC.hg19.knownGene","org.Hs.eg.db","rtracklayer"))'
 RUN installGithub.r oncogenetics/oncofunco
-
-
-          
-    
-
-
-
+              
 EXPOSE 3838
 CMD Rscript -e "shiny::runApp('/app', port = 3838, host = '0.0.0.0')"
