@@ -9,7 +9,7 @@
 #                    "colourpicker"))
 
 library(shiny)
-library(dplyr) 
+library(dplyr)
 library(tidyr)
 library(lazyeval) # dplyr
 library(data.table)
@@ -40,8 +40,8 @@ library(org.Hs.eg.db) # gene symobols
 library(rtracklayer) # bigwig
 
 #GitHub packages
-# install.packages("devtools")
-# devtools::install_github("oncogenetics/oncofunco")
+# install.packages("remotes")
+# remotes::install_github("oncogenetics/oncofunco")
 library(oncofunco)
 
 # increase upload limit to 20Mb
@@ -50,7 +50,7 @@ options(shiny.maxRequestSize = 20 * 1024 ^ 2)
 
 #Map fonts to Windows
 if(Sys.info()['sysname'] == "Windows") {
-  windowsFonts(Courier=windowsFont("TT Courier New")) 
+  windowsFonts(Courier=windowsFont("TT Courier New"))
 }
 
 

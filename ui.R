@@ -5,7 +5,7 @@
 # User interface file for shiny
 
 
-tweaks <- 
+tweaks <-
   list(
     tags$head(tags$style(HTML("
                               .multicol {
@@ -43,7 +43,7 @@ shinyUI(
     fluid = FALSE,
     position = "fixed-top",
     inverse = TRUE,
-    
+
     # 1.Input Data ------------------------------------------------------------
     tabPanel(
       # ~~~ sidebarPanel ------------------------------------------------------
@@ -56,20 +56,20 @@ shinyUI(
                        "Custom" = "Custom"
                      ),
                      selected = "OncoArrayFineMapping"),
-        
-        conditionalPanel("input.dataType == 'OncoArrayFineMapping'", 
+
+        conditionalPanel("input.dataType == 'OncoArrayFineMapping'",
                          uiOutput("ui_Chr"),
                          uiOutput("ui_RegionID")
         ),#conditionalPanel - prostate
-        
+
         conditionalPanel("input.dataType == 'Custom'",
                          fileInput("FileStats", "Association File (required)"),
                          fileInput("FileLD", "LD File (recommended)")#,
         ),#conditionalPanel- Custom
-        
+
         conditionalPanel("input.dataType == 'Example'"
         ),#conditionalPanel- CustomExample
-        
+
         actionButton("goToPlotSettings", "2.Plot Settings", icon = icon("cogs"),
                      style = "background-color:#85E7FF")
       ),#sidebarPanel
@@ -105,14 +105,14 @@ shinyUI(
                    dataTableOutput("SummaryROIdatAnnotEQTL")
                    #includeMarkdown("Data/Annotation/README.md")
                    ),
-          
+
           tabPanel("ENCODE",
                    h4("ENCODE"),
                    hr(),
                    includeMarkdown("Data/wgEncodeBroadHistone/README.md")
                    #helpText("Scores filtered at 5+, and rounded and set maximum value to 100.")
                    ),
-          
+
           tabPanel("Input File Format",
                    h4("Input File Format"),
                    hr(),
@@ -120,7 +120,7 @@ shinyUI(
         )#tabsetPanel
         )#mainPanel
     ),#tabPanel - Data
-    # 2.Plot Settings ---------------------------------------------------------  
+    # 2.Plot Settings ---------------------------------------------------------
     tabPanel("2.Plot Settings",
              #icon = icon("cogs"),
              # ~~~ sidebarPanel ----------------------------------------------
@@ -136,13 +136,13 @@ shinyUI(
                conditionalPanel("input.plotTypePanelSelected=='Manhattan'",
                                 #Add suggestiveline and genomewideline
                                 splitLayout(
-                                  numericInput("suggestiveLine", 
+                                  numericInput("suggestiveLine",
                                                h5("Suggestive"),
                                                value = 5, min = 0, max = 15, step = 0.1),
                                   numericInput("genomewideLine",
                                                h5("Genomewide"),
                                                value = 8, min = 0, max = 15, step = 0.1)),
-                                sliderInput("Flank", label = h5("Region Flank"), 
+                                sliderInput("Flank", label = h5("Region Flank"),
                                             min = 0,
                                             max = 100,
                                             #step = 10,
@@ -177,8 +177,8 @@ shinyUI(
                                                      "SNP type" = "SNPType",
                                                      "Hit SNPs LD" = "LD",
                                                      "ENCODE H3k27ac" = "wgEncodeBroadHistone",
-                                                     "ENCODE H3k4me1" = "wgEncodeBroadHistone_H3k4me1",
-                                                     "ENCODE H3k4me3" = "wgEncodeBroadHistone_H3k4me3",
+                                                     #"ENCODE H3k4me1" = "wgEncodeBroadHistone_H3k4me1",
+                                                     #"ENCODE H3k4me3" = "wgEncodeBroadHistone_H3k4me3",
                                                      "Annotation" = "annotOncoFinemap",
                                                      "Gene" = "Gene",
                                                      "Caption" = "Caption"),
@@ -191,12 +191,12 @@ shinyUI(
                                   actionButton("resetInput", "Reset inputs",
                                                icon = icon("ambulance"),
                                                style = "background-color:#C9DD03"),
-                                  
+
                                   actionButton("goToFinalPlot", "3.Final Plot",
                                                icon = icon("area-chart"),
                                                style = "background-color:#85E7FF"))
                ), # END  conditionalPanel("input.plotTypePanelSelected=='Manhattan'"
-               
+
                # Network settings --------------------------------------------------------
                conditionalPanel("input.plotTypePanelSelected=='LD-Network'",
                                 hr(),
@@ -232,7 +232,7 @@ shinyUI(
                                     # Conditional plots
                                     conditionalPanel("input.ShowHideTracks.indexOf('Chromosome')>-1",
                                                      plotOutput("PlotChromosome",width=800,height=70)),
-                                    
+
                                     # Manhattan with p-values
                                     conditionalPanel("input.ShowHideManhattanPvalues.indexOf('Manhattan')>-1",
                                                      plotOutput("PlotManhattanPvalues",width=800,height=500)),
@@ -255,7 +255,7 @@ shinyUI(
                                                      plotOutput("PlotGene",width=800,height=350)),
                                     conditionalPanel("input.ShowHideTracks.indexOf('Caption')>-1",
                                                      plotOutput("PlotCaption",width=800,height=100))
-                                    
+
                            ), # END tabPanel("Manhattan"
                            # LD-Heatmap ---------------------------------------
                            tabPanel("LD-Heatmap",
@@ -270,24 +270,24 @@ shinyUI(
                                     hr(),
                                     visNetworkOutput("plotSNP_LDnetwork", width = "100%", height = "800px")
                                     )
-                           
+
                ) # END tabsetPanel(id = "plotTypePanelSelected",
-               
+
              ) # END mainPanel
     ), #tabPanel - "2.Plot Settings"
-    # 3.Final Plot ------------------------------------------------------------  
+    # 3.Final Plot ------------------------------------------------------------
     tabPanel("3.Final Plot",
              # ~~~ sidebarPanel ----------------------------------------------
              sidebarPanel(
                # Choose Title for merged plot
                uiOutput("ui_downloadPlotTitle"),
-               
+
                radioButtons("PlotTheme","Plot theme",
                             choices = list("Shades - Colour picker" = 1,
                                            "Classic - Borders only" = 2,
                                            "None - No colours no borders" = 3),
                             selected = 1),
-               
+
                conditionalPanel("input.PlotTheme == 1",
                                 splitLayout(
                                   cellArgs = list(style = "overflow: visible;"),
@@ -298,7 +298,7 @@ shinyUI(
                                   #             "Plot theme shade 2", "#E5E5E5")
                                 )
                ),
-               
+
                # Choose download filename.
                uiOutput("ui_downloadPlotFileName"),
                helpText("Use PDF or SVG format for further image editing, e.g.: Photoshop, Inkscape."),
@@ -311,7 +311,7 @@ shinyUI(
                            selected = "jpeg"),
                checkboxInput("downloadPlotAdvancedSettings","Advanced settings",
                              value = FALSE),
-               
+
                # Advanced settings
                conditionalPanel(
                  "(input.downloadPlotAdvancedSettings)",
@@ -320,16 +320,16 @@ shinyUI(
                                         "Width (pixels)",
                                         value = 1000,
                                         step = 100),
-                           
-                           numericInput("downloadPlotHeight", 
+
+                           numericInput("downloadPlotHeight",
                                         "Height (pixels)",
                                         value = 1200,
                                         step = 100),
-                           
+
                            sliderInput("downloadPlotPointSize",
                                        "Point size",
                                        value = 12, min = 1, max = 100),
-                           
+
                            conditionalPanel(
                              "(input.downloadPlotType == 'pdf')",
                              selectInput("downloadPlotPaper",
@@ -338,7 +338,7 @@ shinyUI(
                                               "executive","a4r","USr",
                                               "special"),
                                          selected = "special")),
-                           
+
                            conditionalPanel("(input.downloadPlotType == 'jpeg' ||
                                             input.downloadPlotType == 'tiff')",
                                             sliderInput("downloadPlotRes",
@@ -354,13 +354,13 @@ shinyUI(
                                                           min = 1, max = 100,
                                                           value = 100,
                                                           step = 5)),
-                                            
+
                                             selectInput("downloadPlotTypeJPEG",
                                                         "Type",
                                                         list("windows","cairo",
                                                              "Xlib","quartz"),
                                                         selected = "cairo"),
-                                            
+
                                             #if TIFF input compression
                                             conditionalPanel(
                                               "(input.downloadPlotType == 'tiff')",
@@ -371,25 +371,25 @@ shinyUI(
                                                                "zip", "lzw+p",
                                                                "zip+p"),
                                                           selected = "lzw"))
-                 ),#END JPEG/TIFF 
+                 ),#END JPEG/TIFF
                  actionButton("resetDownloadPlotSettings",
                               "Reset inputs", icon = icon("ambulance"),
                               style = "background-color:#C9DD03;")
                )#END Advanced settings wellPane
-               ),#END Advanced settings 
-               
-               
+               ),#END Advanced settings
+
+
                #              pdf(file = ifelse(onefile, "Rplots.pdf", "Rplot%03d.pdf"),
                #                  width, height, onefile, family, title, fonts, version,
                #                  paper, encoding, bg, fg, pointsize, pagecentre, colormodel,
                #                  useDingbats, useKerning, fillOddEven, compress)
-               
+
                #              svg(filename = if(onefile) "Rplots.svg" else "Rplot%03d.svg",
                #                  width = 7, height = 7, pointsize = 12,
                #                  onefile = FALSE, family = "sans", bg = "white",
                #                  antialias = c("default", "none", "gray", "subpixel"))
-               
-               
+
+
                # File downloads when this button is clicked.
                downloadButton("downloadPlot", "Download Plot")
              ), #sidebarPanel plot Download section
@@ -398,7 +398,7 @@ shinyUI(
                #plot merge height is dynamic, based on seleceted tracks
                uiOutput("ui_plotMergeUI")
              )
-             
+
     ), #tabPanel - "Final Plot"
     # 4.Help ------------------------------------------------------------------
     navbarMenu(title = "Help",
@@ -432,11 +432,11 @@ shinyUI(
                tabPanel("Make LD file",
                         sidebarPanel(
                           fileInput("FileLDlink", "Unprocessed LDlink output file"),
-                          
+
                           # File downloads when this button is clicked.
                           downloadButton(outputId = "downloadLDFile",
                                          label = "Download LD file")
-                          
+
                         ),
                         mainPanel(
                           tabsetPanel(
@@ -492,7 +492,7 @@ shinyUI(
 #                                                forceNetworkOutput("plotGraphLD_ElasticNet"),
 #                                                hr(), h4("BVS"),
 #                                                forceNetworkOutput("plotGraphLD_BVS")
-#                                                
+#
 #                                                # trying to add borders....FAIL
 #                                                # splitLayout ...
 #                                                # verticalLayout(
@@ -502,7 +502,7 @@ shinyUI(
 #                                                #   forceNetworkOutput("plotGraphLD_StepwiseForward")#,
 #                                                #   # forceNetworkOutput("plotGraphLD_StepwiseBackward"),
 #                                                #   # forceNetworkOutput("plotGraphLD_ElasticNet"),
-#                                                #   # forceNetworkOutput("plotGraphLD_BVS")  
+#                                                #   # forceNetworkOutput("plotGraphLD_BVS")
 #                                                # )
 #                                                ),
 #                                       tabPanel("Hits vs other SNPs vs Methods - R2",
@@ -541,7 +541,7 @@ shinyUI(
 
 
 #        HTML(
-#          ".checkbox-inline { 
+#          ".checkbox-inline {
 #             margin-left: 0px;
 #             margin-right: 10px;
 #   }
